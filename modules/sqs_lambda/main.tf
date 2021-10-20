@@ -157,28 +157,34 @@ module "output_request_fn" {
     timeout = 30
 
     source_path = [
-    {
-        path = "${path.module}/../../code/output_request"
-    }
+        {
+            path = "${path.module}/../../code/output_request"
+            pip_requirements = "${path.module}/../../code/output_request/requirements.txt"
+        }
     ]
 
     attach_policy_json    = true
 
     policy_json = jsonencode({
-    "Version": "2012-10-17",
-    "Statement": [
-    {
-        "Effect": "Allow",
-        "Action": [
-            "sqs:ReceiveMessage",
-            "sqs:DeleteMessage",
-            "sqs:GetQueueAttributes",
-            "s3:GetObject"
-        ],
-        "Resource": ["*"]
-    }
-    ]
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "sqs:ReceiveMessage",
+                    "sqs:DeleteMessage",
+                    "sqs:GetQueueAttributes",
+                    "s3:GetObject",
+                    "s3:ListBucket"
+                ],
+                "Resource": ["*"]
+            }
+        ]
     })
+
+    build_in_docker = true
+    store_on_s3 = true
+    s3_bucket = "${var.processed_docs_bucket}"
 }
 
 resource "aws_lambda_event_source_mapping" "sqs_to_output_lambda_trigger" {
