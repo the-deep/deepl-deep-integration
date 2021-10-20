@@ -82,7 +82,7 @@ def get_extracted_content_links(file_name):
     return s3_file_path, s3_images_path
 
 
-def send_filepath_sqs(url_id, url, s3_file_path, s3_images_path):
+def send_message2sqs(client_id, url, callback_url, s3_file_path, s3_images_path):
     message_attributes = {}
     message_attributes['url'] = {
             'DataType': 'String',
@@ -98,10 +98,15 @@ def send_filepath_sqs(url_id, url, s3_file_path, s3_images_path):
             'DataType': 'String',
             'StringValue': s3_images_path
         }
+    if callback_url:
+        message_attributes['callback_url'] = {
+            'DataType': 'String',
+            'StringValue': callback_url
+        }
     if processed_queue_name and s3_file_path:
         sqs_client.send_message(
             QueueUrl=processed_queue_name,
-            MessageBody=url_id,
+            MessageBody=client_id,
             DelaySeconds=0,
             MessageAttributes=message_attributes
         )
@@ -142,8 +147,9 @@ def process_docs(event, context):
     records = event['Records']
 
     for record in records:
-        url_id = record['body']
-        url = record['messageAttributes']['link']['stringValue']
+        client_id = record['body']
+        url = record['messageAttributes']['url']['stringValue']
+        callback_url = record['messageAttributes']['callback_url']['stringValue']
         print(f"Processing {url}")
 
         file_name = None
@@ -167,4 +173,17 @@ def process_docs(event, context):
 
         print(f"The extracted file path is {s3_file_path}")
         print(f"The extracted image path is {s3_images_path}")
-        send_filepath_sqs(url_id, url, s3_file_path, s3_images_path)
+
+        sqs_message = {
+            'client_id': client_id,
+            'url': url,
+            'callback_url': callback_url,
+            's3_file_path': s3_file_path,
+            's3_images_path': s3_images_path
+        }
+        send_message2sqs(**sqs_message)
+
+    return {
+        'StatusCode': 200,
+        'Body': 'Message processed successfully.'
+    }
