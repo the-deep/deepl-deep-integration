@@ -5,10 +5,8 @@ import boto3
 from botocore.exceptions import ClientError
 
 REQUEST_TIMEOUT = 60
-SQS_MSG_DELAY_SECS = 600
 
 aws_region = os.environ.get("AWS_REGION")
-processed_queue_name = os.environ.get("PROCESSED_QUEUE")
 signed_url_expiry_secs = os.environ.get("SIGNED_URL_EXPIRY_SECS")
 
 s3_client = boto3.client('s3', region_name=aws_region)
@@ -43,38 +41,6 @@ def generate_signed_url(bucket_name, key_name):
         print(f"ClientError: {e}")
         return None
     return url
-
-
-def send_message2sqs(client_id, url, callback_url, s3_file_path, s3_images_path):
-    message_attributes = {}
-    message_attributes['url'] = {
-            'DataType': 'String',
-            'StringValue': url
-    }
-    if s3_file_path:
-        message_attributes['s3_file_path'] = {
-                'DataType': 'String',
-                'StringValue': s3_file_path
-        }
-    if s3_images_path:
-        message_attributes['s3_images_path'] = {
-            'DataType': 'String',
-            'StringValue': s3_images_path
-        }
-    if callback_url:
-        message_attributes['callback_url'] = {
-            'DataType': 'String',
-            'StringValue': callback_url
-        }
-    if processed_queue_name and s3_file_path:
-        sqs_client.send_message(
-            QueueUrl=processed_queue_name,
-            MessageBody=client_id,
-            DelaySeconds=SQS_MSG_DELAY_SECS,
-            MessageAttributes=message_attributes
-        )
-    else:
-        print("Message not sent to the processed SQS.")
 
 
 def output_request(event, context):
@@ -128,26 +94,9 @@ def output_request(event, context):
                 print(f'Successfully sent the request with client_id: {client_id}')
             else:
                 print('Request not sent successfully.')
-                print(f'Message added back in the queue with client_id: {client_id}')
-                sqs_message = {
-                    'client_id': client_id,
-                    'url': url,
-                    'callback_url': callback_url,
-                    's3_file_path': s3_file_path,
-                    's3_images_path': s3_images_path
-                }
-                send_message2sqs(**sqs_message)    
+                raise Exception(f'Exception occurred while sending request: StatusCode {response.status_code}')    
         except requests.exceptions.RequestException as e:
-            print(f"Exception occurred while sending request - {e}")
-            print(f'Message added back in the queue with client_id: {client_id}')
-            sqs_message = {
-                'client_id': client_id,
-                'url': url,
-                'callback_url': callback_url,
-                's3_file_path': s3_file_path,
-                's3_images_path': s3_images_path
-            }
-            send_message2sqs(**sqs_message)
+            raise Exception(f'Exception occurred while sending request - {e}')
 
     return {
         'statusCode': 200,

@@ -16,9 +16,25 @@ resource "aws_sqs_queue" "processed_queue" {
   max_message_size          = 2048
   message_retention_seconds = 86400
   receive_wait_time_seconds = 5
+  redrive_policy            = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.failed_msgs_dlq.arn
+    maxReceiveCount     = 4
+  })
 
   tags = {
     Environment = "${var.environment}"
+  }
+}
+
+resource "aws_sqs_queue" "failed_msgs_dlq" {
+  name_prefix               = "failed-msgs-dlq-${var.environment}-"
+  delay_seconds             = 0
+  max_message_size          = 2048
+  message_retention_seconds = 86400
+  receive_wait_time_seconds = 5
+
+  tags = {
+      Environment = "${var.environment}"
   }
 }
 
@@ -189,11 +205,52 @@ module "output_request_fn" {
 
     environment_variables = {
         SIGNED_URL_EXPIRY_SECS = "${var.signed_url_expiry_secs}"
-        PROCESSED_QUEUE = aws_sqs_queue.processed_queue.id
     }
 }
 
 resource "aws_lambda_event_source_mapping" "sqs_to_output_lambda_trigger" {
   event_source_arn = aws_sqs_queue.processed_queue.arn
   function_name    = module.output_request_fn.lambda_function_arn
+}
+
+module "transfer_dlq_msg" {
+    source = "terraform-aws-modules/lambda/aws"
+
+    function_name = "te-transfer-dlq-msg-func-${var.environment}"
+    handler = "app.dlq_msgs_handler"
+    runtime = "python3.8"
+    timeout = 30
+
+    source_path = [
+        {
+            path = "${path.module}/../../code/dlq_msgs"
+        }
+    ]
+
+    attach_policy_json    = true
+
+    policy_json = jsonencode({
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "sqs:SendMessage",
+                    "sqs:ReceiveMessage",
+                    "sqs:DeleteMessage",
+                    "sqs:GetQueueAttributes"
+                ],
+                "Resource": ["*"]
+            }
+        ]
+    })
+
+    environment_variables = {
+        PROCESSED_QUEUE = aws_sqs_queue.processed_queue.id
+    }
+}
+
+resource "aws_lambda_event_source_mapping" "transfer_dlq_msgs_lambda_trigger" {
+  event_source_arn = aws_sqs_queue.failed_msgs_dlq.arn
+  function_name    = module.transfer_dlq_msg.lambda_function_arn
 }
