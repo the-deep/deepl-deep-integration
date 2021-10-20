@@ -15,17 +15,22 @@ def send_msg_sqs(event, context):
 
     request_body = json.loads(event['body'])
     urls = request_body['urls']
+    callback_url = request_body['callback_url']
 
     if queue_url:
         try:
             entries = [{
                 'Id': str(uuid.uuid4()),
-                'MessageBody': item['id'],
+                'MessageBody': item['client_id'],
                 'DelaySeconds': 0,
                 'MessageAttributes': {
-                    'link': {
+                    'url': {
                         'DataType': 'String',
                         'StringValue': item['url']
+                    },
+                    'callback_url': {
+                        'DataType': 'String',
+                        'StringValue': callback_url
                     }
                 }
             } for item in urls]
@@ -35,7 +40,7 @@ def send_msg_sqs(event, context):
             )
             return {
                 'statusCode': 200,
-                'body': "returned"
+                'body': 'Message Enqueued Successfully'
             }
         except Exception as err:
             print(err)
