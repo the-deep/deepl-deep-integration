@@ -1,9 +1,9 @@
 resource "aws_sqs_queue" "input_queue" {
-  name                      = "input-queue-${var.environment}"
+  name_prefix               = "input-queue-${var.environment}-"
   delay_seconds             = 0
   max_message_size          = 2048
   message_retention_seconds = 86400
-  receive_wait_time_seconds = 0
+  receive_wait_time_seconds = 5
 
   tags = {
     Environment = "${var.environment}"
@@ -11,11 +11,11 @@ resource "aws_sqs_queue" "input_queue" {
 }
 
 resource "aws_sqs_queue" "processed_queue" {
-  name                      = "processed-queue-${var.environment}"
+  name_prefix               = "processed-queue-${var.environment}-"
   delay_seconds             = 0
   max_message_size          = 2048
   message_retention_seconds = 86400
-  receive_wait_time_seconds = 0
+  receive_wait_time_seconds = 5
 
   tags = {
     Environment = "${var.environment}"
@@ -171,6 +171,7 @@ module "output_request_fn" {
             {
                 "Effect": "Allow",
                 "Action": [
+                    "sqs:SendMessage",
                     "sqs:ReceiveMessage",
                     "sqs:DeleteMessage",
                     "sqs:GetQueueAttributes",
@@ -185,6 +186,11 @@ module "output_request_fn" {
     build_in_docker = true
     store_on_s3 = true
     s3_bucket = "${var.processed_docs_bucket}"
+
+    environment_variables = {
+        SIGNED_URL_EXPIRY_SECS = "${var.signed_url_expiry_secs}"
+        PROCESSED_QUEUE = aws_sqs_queue.processed_queue.id
+    }
 }
 
 resource "aws_lambda_event_source_mapping" "sqs_to_output_lambda_trigger" {

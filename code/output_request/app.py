@@ -4,12 +4,15 @@ import requests
 import boto3
 from botocore.exceptions import ClientError
 
-SIGNED_URL_EXPIRY_SECONDS = 3600
+REQUEST_TIMEOUT = 60
+SQS_MSG_DELAY_SECS = 600
 
 aws_region = os.environ.get("AWS_REGION")
+processed_queue_name = os.environ.get("PROCESSED_QUEUE")
+signed_url_expiry_secs = os.environ.get("SIGNED_URL_EXPIRY_SECS")
 
 s3_client = boto3.client('s3', region_name=aws_region)
-# sqs_client = boto3.client('sqs', region_name=aws_region)
+sqs_client = boto3.client('sqs', region_name=aws_region)
 
 
 def extract_path(filepath):
@@ -34,12 +37,44 @@ def generate_signed_url(bucket_name, key_name):
                 'Bucket': bucket_name,
                 'Key': key_name
             },
-            ExpiresIn=SIGNED_URL_EXPIRY_SECONDS
+            ExpiresIn=signed_url_expiry_secs
         )
     except ClientError as e:
         print(f"ClientError: {e}")
         return None
     return url
+
+
+def send_message2sqs(client_id, url, callback_url, s3_file_path, s3_images_path):
+    message_attributes = {}
+    message_attributes['url'] = {
+            'DataType': 'String',
+            'StringValue': url
+    }
+    if s3_file_path:
+        message_attributes['s3_file_path'] = {
+                'DataType': 'String',
+                'StringValue': s3_file_path
+        }
+    if s3_images_path:
+        message_attributes['s3_images_path'] = {
+            'DataType': 'String',
+            'StringValue': s3_images_path
+        }
+    if callback_url:
+        message_attributes['callback_url'] = {
+            'DataType': 'String',
+            'StringValue': callback_url
+        }
+    if processed_queue_name and s3_file_path:
+        sqs_client.send_message(
+            QueueUrl=processed_queue_name,
+            MessageBody=client_id,
+            DelaySeconds=SQS_MSG_DELAY_SECS,
+            MessageAttributes=message_attributes
+        )
+    else:
+        print("Message not sent to the processed SQS.")
 
 
 def output_request(event, context):
@@ -82,11 +117,39 @@ def output_request(event, context):
             if image_urls:
                 request_body['s3_images_signed_urls'] = image_urls
 
-        print(request_body)
-        print(callback_url)
-        # todo: send request
+        # Sending the request towards Deep
+        try:
+            response = requests.post(
+                callback_url,
+                data=request_body,
+                timeout=60
+            )
+            if response.status_code == 200:
+                print(f'Successfully sent the request with client_id: {client_id}')
+            else:
+                print('Request not sent successfully.')
+                print(f'Message added back in the queue with client_id: {client_id}')
+                sqs_message = {
+                    'client_id': client_id,
+                    'url': url,
+                    'callback_url': callback_url,
+                    's3_file_path': s3_file_path,
+                    's3_images_path': s3_images_path
+                }
+                send_message2sqs(**sqs_message)    
+        except requests.exceptions.RequestException as e:
+            print(f"Exception occurred while sending request - {e}")
+            print(f'Message added back in the queue with client_id: {client_id}')
+            sqs_message = {
+                'client_id': client_id,
+                'url': url,
+                'callback_url': callback_url,
+                's3_file_path': s3_file_path,
+                's3_images_path': s3_images_path
+            }
+            send_message2sqs(**sqs_message)
 
     return {
         'statusCode': 200,
-        'body': json.dumps(records)
+        'body': None
     }
