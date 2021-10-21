@@ -40,7 +40,7 @@ def store_text_s3(data, bucket_name, key):
     )
 
 
-def get_extracted_content_links(file_name):
+def get_extracted_content_links(file_name, mock):
     with open(os.path.join("/tmp", file_name), "rb") as f:
         binary = base64.b64encode(f.read())
 
@@ -56,33 +56,51 @@ def get_extracted_content_links(file_name):
     dir_name = "-".join(processed_file_name.split())
 
     s3_path_prefix = f"{date_today}/{dir_name}"
-    store_text_s3(
-        extracted_text,
-        dest_bucket_name,
-        f"{s3_path_prefix}/{processed_file_name}.txt"
-    )
+    if mock:
+        dir_path = f'/tmp/{s3_path_prefix}'
+        os.makedirs(f'{dir_path}/images')
+        with open(f'{dir_path}/{processed_file_name}.txt', 'w') as f:
+            f.write(extracted_text)
 
-    local_temp_directory = f"/tmp/{processed_file_name}"
-    os.mkdir(local_temp_directory)
-    images.save_images(directory_path=local_temp_directory)
+        images.save_images(directory_path=f'{dir_path}/images')
 
-    for subdir, dirs, files in os.walk(local_temp_directory):
-        for f in files:
-            full_path = os.path.join(subdir, f)
-            with open(full_path, 'rb') as data:
-                store_text_s3(
-                    data,
-                    dest_bucket_name,
-                    f"{s3_path_prefix}/images/{f}"
-                )
+        s3_file_path = f'{dir_path}/{processed_file_name}.txt'
+        s3_images_path = f'{dir_path}/images'
 
-    s3_file_path = f"s3://{dest_bucket_name}/{s3_path_prefix}/{processed_file_name}.txt"
-    s3_images_path = f"s3://{dest_bucket_name}/{s3_path_prefix}/images"
+    else:
+        store_text_s3(
+            extracted_text,
+            dest_bucket_name,
+            f"{s3_path_prefix}/{processed_file_name}.txt"
+        )
+
+        local_temp_directory = f"/tmp/{processed_file_name}"
+        os.mkdir(local_temp_directory)
+        images.save_images(directory_path=local_temp_directory)
+
+        for subdir, dirs, files in os.walk(local_temp_directory):
+            for f in files:
+                full_path = os.path.join(subdir, f)
+                with open(full_path, 'rb') as data:
+                    store_text_s3(
+                        data,
+                        dest_bucket_name,
+                        f"{s3_path_prefix}/images/{f}"
+                    )
+
+        s3_file_path = f"s3://{dest_bucket_name}/{s3_path_prefix}/{processed_file_name}.txt"
+        s3_images_path = f"s3://{dest_bucket_name}/{s3_path_prefix}/images"
 
     return s3_file_path, s3_images_path
 
 
-def send_message2sqs(client_id, url, callback_url, s3_file_path, s3_images_path):
+def send_message2sqs(
+    client_id,
+    url,
+    callback_url,
+    s3_file_path,
+    s3_images_path
+):
     message_attributes = {}
     message_attributes['url'] = {
             'DataType': 'String',
@@ -114,7 +132,7 @@ def send_message2sqs(client_id, url, callback_url, s3_file_path, s3_images_path)
         print("Message not sent to the processed SQS.")
 
 
-def get_extracted_text_web_links(link):
+def get_extracted_text_web_links(link, mock=False):
     try:
         web_text = TextFromWeb(url=link)
         entries = web_text.extract_text(output_format="list")
@@ -128,12 +146,19 @@ def get_extracted_text_web_links(link):
         dir_name = uuid.uuid4().hex
 
         s3_path_prefix = f"{date_today}/{dir_name}"
-        store_text_s3(
-            extracted_text,
-            dest_bucket_name,
-            f"{s3_path_prefix}/{processed_file_name}.txt"
-        )
-        s3_file_path = f"s3://{dest_bucket_name}/{s3_path_prefix}/{processed_file_name}.txt"
+        if mock:
+            dir_path = f'/tmp/{s3_path_prefix}'
+            os.makedirs(f'{dir_path}/images')
+            with open(f'{dir_path}/{processed_file_name}.txt', 'w') as f:
+                f.write(extracted_text)
+            s3_file_path = f'{dir_path}/{processed_file_name}.txt'
+        else:
+            store_text_s3(
+                extracted_text,
+                dest_bucket_name,
+                f"{s3_path_prefix}/{processed_file_name}.txt"
+            )
+            s3_file_path = f"s3://{dest_bucket_name}/{s3_path_prefix}/{processed_file_name}.txt"
 
         return s3_file_path, None  # No images extraction (lib doesn't support?)
     except Exception as e:
@@ -141,47 +166,70 @@ def get_extracted_text_web_links(link):
         return None, None
 
 
+def handle_urls(url, mock=False):
+    file_name = None
+    if url.startswith("s3"):
+        bucket_name, file_path, file_name = extract_path(url)
+        s3_client.download_file(
+            bucket_name,
+            file_path,
+            f"/tmp/{file_name}"
+        )
+        s3_file_path, s3_images_path = get_extracted_content_links(file_name, mock)
+    elif url.endswith(".pdf"):  # assume it is http/https pdf weblink
+        response = requests.get(url, stream=True)
+        file_name = f"{str(uuid.uuid4())}.pdf"
+        with open(f"/tmp/{file_name}", 'wb') as fd:
+            for chunk in response.iter_content(chunk_size=128):
+                fd.write(chunk)
+        s3_file_path, s3_images_path = get_extracted_content_links(file_name, mock)
+    else:  # assume it is a webpage
+        s3_file_path, s3_images_path = get_extracted_text_web_links(url, mock)
+
+    print(f"The extracted file path is {s3_file_path}")
+    print(f"The extracted image path is {s3_images_path}")
+
+    return s3_file_path, s3_images_path
+
+
 def process_docs(event, context):
     print(f"The event output is {event}")
 
-    records = event['Records']
-
-    for record in records:
-        client_id = record['body']
-        url = record['messageAttributes']['url']['stringValue']
-        callback_url = record['messageAttributes']['callback_url']['stringValue']
-        print(f"Processing {url}")
-
-        file_name = None
-        if url.startswith("s3"):
-            bucket_name, file_path, file_name = extract_path(url)
-            s3_client.download_file(
-                bucket_name,
-                file_path,
-                f"/tmp/{file_name}"
-            )
-            s3_file_path, s3_images_path = get_extracted_content_links(file_name)
-        elif url.endswith(".pdf"):  # assume it is http/https pdf weblink
-            response = requests.get(url, stream=True)
-            file_name = f"{str(uuid.uuid4())}.pdf"
-            with open(f"/tmp/{file_name}", 'wb') as fd:
-                for chunk in response.iter_content(chunk_size=128):
-                    fd.write(chunk)
-            s3_file_path, s3_images_path = get_extracted_content_links(file_name)
-        else:  # assume it is a webpage
-            s3_file_path, s3_images_path = get_extracted_text_web_links(url)
-
-        print(f"The extracted file path is {s3_file_path}")
-        print(f"The extracted image path is {s3_images_path}")
-
-        sqs_message = {
-            'client_id': client_id,
-            'url': url,
-            'callback_url': callback_url,
-            's3_file_path': s3_file_path,
-            's3_images_path': s3_images_path
+    if event.get('mock', False):
+        urls = event['urls']
+        responses = []
+        for item in urls:
+            url = item['url']
+            client_id = item['client_id']
+            file_path, images_path = handle_urls(url, mock=True)
+            responses.append({
+                'client_id': client_id,
+                'url': url,
+                'file_path': file_path,
+                'images_path': images_path
+            })
+        return {
+            'results': responses
         }
-        send_message2sqs(**sqs_message)
+    else:
+        records = event['Records']
+
+        for record in records:
+            client_id = record['body']
+            url = record['messageAttributes']['url']['stringValue']
+            callback_url = record['messageAttributes']['callback_url']['stringValue']
+            print(f"Processing {url}")
+
+            s3_file_path, s3_images_path = handle_urls(url)
+
+            sqs_message = {
+                'client_id': client_id,
+                'url': url,
+                'callback_url': callback_url,
+                's3_file_path': s3_file_path,
+                's3_images_path': s3_images_path
+            }
+            send_message2sqs(**sqs_message)
 
     return {
         'StatusCode': 200,
