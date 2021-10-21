@@ -48,7 +48,7 @@ module "input_request_fn" {
 
     source_path = [
     {
-        path = "${path.module}/../../code/input_request"
+        path = "${path.module}/../../lambda_fns/input_request"
     }
     ]
 
@@ -91,7 +91,7 @@ module "predict_entry_fn" {
 
     source_path = [
     {
-        path = "${path.module}/../../code/predict_entry"
+        path = "${path.module}/../../lambda_fns/predict_entry"
     }
     ]
 
@@ -126,8 +126,8 @@ module "extract_docs_fn" {
 
     source_path = [
     {
-        path = "${path.module}/../../code/extract_docs"
-        pip_requirements = "${path.module}/../../code/extract_docs/requirements.txt"
+        path = "${path.module}/../../lambda_fns/extract_docs"
+        pip_requirements = "${path.module}/../../lambda_fns/extract_docs/requirements.txt"
     }
     ]
 
@@ -174,8 +174,8 @@ module "output_request_fn" {
 
     source_path = [
         {
-            path = "${path.module}/../../code/output_request"
-            pip_requirements = "${path.module}/../../code/output_request/requirements.txt"
+            path = "${path.module}/../../lambda_fns/output_request"
+            pip_requirements = "${path.module}/../../lambda_fns/output_request/requirements.txt"
         }
     ]
 
@@ -223,7 +223,7 @@ module "transfer_dlq_msg" {
 
     source_path = [
         {
-            path = "${path.module}/../../code/dlq_msgs"
+            path = "${path.module}/../../lambda_fns/dlq_msgs"
         }
     ]
 
