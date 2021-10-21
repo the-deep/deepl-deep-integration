@@ -168,6 +168,9 @@ def get_extracted_text_web_links(link, mock=False):
 
 def handle_urls(url, mock=False):
     file_name = None
+    resp_headers = requests.head(url)  # get the headers from the url
+    url_content_type = resp_headers.headers['Content-Type']
+
     if url.startswith("s3"):
         bucket_name, file_path, file_name = extract_path(url)
         s3_client.download_file(
@@ -175,16 +178,25 @@ def handle_urls(url, mock=False):
             file_path,
             f"/tmp/{file_name}"
         )
-        s3_file_path, s3_images_path = get_extracted_content_links(file_name, mock)
-    elif url.endswith(".pdf"):  # assume it is http/https pdf weblink
+        s3_file_path, s3_images_path = get_extracted_content_links(
+            file_name, mock
+        )
+    elif url_content_type in ['text/html']:  # assume it is a static webpage
+        s3_file_path, s3_images_path = get_extracted_text_web_links(url, mock)
+    elif url.endswith(".pdf") or url_content_type in [
+                'application/pdf',
+                'binary/octet-stream',
+                'application/xml']:  # assume it is http/https pdf weblink
         response = requests.get(url, stream=True)
         file_name = f"{str(uuid.uuid4())}.pdf"
         with open(f"/tmp/{file_name}", 'wb') as fd:
             for chunk in response.iter_content(chunk_size=128):
                 fd.write(chunk)
-        s3_file_path, s3_images_path = get_extracted_content_links(file_name, mock)
-    else:  # assume it is a webpage
-        s3_file_path, s3_images_path = get_extracted_text_web_links(url, mock)
+        s3_file_path, s3_images_path = get_extracted_content_links(
+            file_name, mock
+        )
+    else:
+        raise NotImplementedError
 
     print(f"The extracted file path is {s3_file_path}")
     print(f"The extracted image path is {s3_images_path}")
