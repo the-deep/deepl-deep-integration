@@ -100,5 +100,5 @@ def output_request(event, context):
 
     return {
         'statusCode': 200,
-        'body': None
+        'body': 'Successfully sent on the callback url'
     }
