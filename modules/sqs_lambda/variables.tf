@@ -6,8 +6,6 @@ variable "signed_url_expiry_secs" {
 }
 
 variable "processed_docs_bucket" {
-    type = string
-    default = "lambda-sqs-test-bucket-1"
 }
 
 variable ep_name_1d_model {
