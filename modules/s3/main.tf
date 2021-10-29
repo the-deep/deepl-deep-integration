@@ -21,8 +21,8 @@ resource "aws_s3_bucket_policy" "processed_bucket_policy" {
                     "s3:ListBucket"
                 ],
                 Resource = [
-                aws_s3_bucket.processed_bucket.arn,
-                "${aws_s3_bucket.processed_bucket.arn}/*",
+                    aws_s3_bucket.processed_bucket.arn,
+                    "${aws_s3_bucket.processed_bucket.arn}/*",
                 ]
             }
         ]

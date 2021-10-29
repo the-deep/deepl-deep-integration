@@ -3,13 +3,21 @@ import json
 import requests
 import boto3
 from botocore.exceptions import ClientError
+from botocore.client import Config
 
 REQUEST_TIMEOUT = 60
 
 aws_region = os.environ.get("AWS_REGION")
 signed_url_expiry_secs = os.environ.get("SIGNED_URL_EXPIRY_SECS")
 
-s3_client = boto3.client('s3', region_name=aws_region)
+s3_client = boto3.client(
+    's3',
+    region_name=aws_region,
+    config=Config(
+        signature_version='s3v4',
+        s3={'addressing_style': 'path'}
+    )
+)
 sqs_client = boto3.client('sqs', region_name=aws_region)
 
 
@@ -40,6 +48,7 @@ def generate_signed_url(bucket_name, key_name):
     except ClientError as e:
         print(f"ClientError: {e}")
         return None
+    print(f'The generated signed url is {url}')
     return url
 
 
