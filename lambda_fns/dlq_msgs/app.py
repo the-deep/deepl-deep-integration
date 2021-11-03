@@ -3,7 +3,9 @@ import boto3
 
 SQS_MSG_DELAY_SECS = 600
 
-aws_region = os.environ.get("AWS_REGION")
+DEFAULT_AWS_REGION = "us-east-1"
+
+aws_region = os.environ.get("AWS_REGION", DEFAULT_AWS_REGION)
 processed_queue_name = os.environ.get("PROCESSED_QUEUE")
 
 sqs_client = boto3.client('sqs', region_name=aws_region)

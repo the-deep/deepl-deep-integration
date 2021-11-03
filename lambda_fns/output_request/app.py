@@ -6,8 +6,9 @@ from botocore.exceptions import ClientError
 from botocore.client import Config
 
 REQUEST_TIMEOUT = 60
+DEFAULT_AWS_REGION = "us-east-1"
 
-aws_region = os.environ.get("AWS_REGION")
+aws_region = os.environ.get("AWS_REGION", DEFAULT_AWS_REGION)
 signed_url_expiry_secs = os.environ.get("SIGNED_URL_EXPIRY_SECS")
 
 s3_client = boto3.client(

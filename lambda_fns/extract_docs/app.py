@@ -10,7 +10,9 @@ from botocore.exceptions import ClientError
 from deep_parser.parser.base import TextFromFile
 from deep_parser import TextFromWeb
 
-aws_region = os.environ.get("AWS_REGION")
+DEFAULT_AWS_REGION = "us-east-1"
+
+aws_region = os.environ.get("AWS_REGION", DEFAULT_AWS_REGION)
 dest_bucket_name = os.environ.get("DEST_S3_BUCKET")
 processed_queue_name = os.environ.get("PROCESSED_QUEUE")
 

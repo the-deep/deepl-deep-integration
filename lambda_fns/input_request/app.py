@@ -4,7 +4,9 @@ import uuid
 import boto3
 from botocore.exceptions import ClientError
 
-aws_region = os.environ.get("AWS_REGION")
+DEFAULT_AWS_REGION = "us-east-1"
+
+aws_region = os.environ.get("AWS_REGION", DEFAULT_AWS_REGION)
 queue_url = os.environ.get("INPUT_QUEUE")
 
 sqs_client = boto3.client("sqs", region_name=aws_region)
