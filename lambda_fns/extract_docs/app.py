@@ -2,6 +2,7 @@ import os
 import requests
 import uuid
 import base64
+import json
 from datetime import datetime
 
 import boto3
@@ -15,6 +16,8 @@ DEFAULT_AWS_REGION = "us-east-1"
 aws_region = os.environ.get("AWS_REGION", DEFAULT_AWS_REGION)
 dest_bucket_name = os.environ.get("DEST_S3_BUCKET")
 processed_queue_name = os.environ.get("PROCESSED_QUEUE")
+
+domain_name = os.environ.get("DOMAIN_NAME", "file://localhost")
 
 s3_client = boto3.client('s3', region_name=aws_region)
 sqs_client = boto3.client('sqs', region_name=aws_region)
@@ -66,9 +69,15 @@ def get_extracted_content_links(file_name, mock):
 
         images.save_images(directory_path=f'{dir_path}/images')
 
-        s3_file_path = f'{dir_path}/{processed_file_name}.txt'
-        s3_images_path = f'{dir_path}/images'
-
+        s3_file_path = f'{domain_name}{dir_path}/{processed_file_name}.txt'
+        s3_images_path_prefix = f'{dir_path}/images'
+        s3_images_path = []
+        for subdir, dirs, files in os.walk(s3_images_path_prefix):
+            for f in files:
+                full_path = os.path.join(subdir, f)
+                with open(full_path, 'rb') as data:
+                    s3_images_path.append(f"{domain_name}{s3_images_path_prefix}/{f}")
+        return s3_file_path, json.dumps(s3_images_path)
     else:
         store_text_s3(
             extracted_text,
@@ -100,7 +109,7 @@ def send_message2sqs(
     client_id,
     url,
     callback_url,
-    s3_file_path,
+    s3_text_path,
     s3_images_path
 ):
     message_attributes = {}
@@ -108,10 +117,10 @@ def send_message2sqs(
             'DataType': 'String',
             'StringValue': url
     }
-    if s3_file_path:
-        message_attributes['s3_file_path'] = {
+    if s3_text_path:
+        message_attributes['s3_text_path'] = {
                 'DataType': 'String',
-                'StringValue': s3_file_path
+                'StringValue': s3_text_path
         }
     if s3_images_path:
         message_attributes['s3_images_path'] = {
@@ -123,7 +132,7 @@ def send_message2sqs(
             'DataType': 'String',
             'StringValue': callback_url
         }
-    if processed_queue_name and s3_file_path:
+    if processed_queue_name and s3_text_path:
         sqs_client.send_message(
             QueueUrl=processed_queue_name,
             MessageBody=client_id,
@@ -215,11 +224,11 @@ def process_docs(event, context):
         for item in urls:
             url = item['url']
             client_id = item['client_id']
-            file_path, images_path = handle_urls(url, mock=True)
+            text_path, images_path = handle_urls(url, mock=True)
             responses.append({
                 'client_id': client_id,
                 'url': url,
-                'file_path': file_path,
+                'text_path': text_path,
                 'images_path': images_path
             })
         return {
@@ -234,13 +243,13 @@ def process_docs(event, context):
             callback_url = record['messageAttributes']['callback_url']['stringValue']
             print(f"Processing {url}")
 
-            s3_file_path, s3_images_path = handle_urls(url)
+            s3_text_path, s3_images_path = handle_urls(url)
 
             sqs_message = {
                 'client_id': client_id,
                 'url': url,
                 'callback_url': callback_url,
-                's3_file_path': s3_file_path,
+                's3_text_path': s3_text_path,
                 's3_images_path': s3_images_path
             }
             send_message2sqs(**sqs_message)

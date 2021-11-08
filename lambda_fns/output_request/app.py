@@ -62,7 +62,7 @@ def output_request(event, context):
 
         client_id = record['body']
         message_attributes = record['messageAttributes']
-        s3_file_path = message_attributes['s3_file_path']['stringValue'] if 's3_file_path' in message_attributes else None
+        s3_text_path = message_attributes['s3_text_path']['stringValue'] if 's3_text_path' in message_attributes else None
         s3_images_path = message_attributes['s3_images_path']['stringValue'] if 's3_images_path' in message_attributes else None
         url = message_attributes['url']['stringValue']
         callback_url = message_attributes['callback_url']['stringValue']
@@ -70,7 +70,7 @@ def output_request(event, context):
         request_body['client_id'] = client_id
         request_body['url'] = url
 
-        doc_bucket_name, doc_key_name = extract_path(s3_file_path)
+        doc_bucket_name, doc_key_name = extract_path(s3_text_path)
         if doc_bucket_name and doc_key_name:
             s3_file_signed_url = generate_signed_url(
                 doc_bucket_name, doc_key_name

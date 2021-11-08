@@ -11,16 +11,22 @@ processed_queue_name = os.environ.get("PROCESSED_QUEUE")
 sqs_client = boto3.client('sqs', region_name=aws_region)
 
 
-def send_message2sqs(client_id, url, callback_url, s3_file_path, s3_images_path):
+def send_message2sqs(
+    client_id,
+    url,
+    callback_url,
+    s3_text_path,
+    s3_images_path
+):
     message_attributes = {}
     message_attributes['url'] = {
             'DataType': 'String',
             'StringValue': url
     }
-    if s3_file_path:
-        message_attributes['s3_file_path'] = {
+    if s3_text_path:
+        message_attributes['s3_text_path'] = {
             'DataType': 'String',
-            'StringValue': s3_file_path
+            'StringValue': s3_text_path
         }
     if s3_images_path:
         message_attributes['s3_images_path'] = {
@@ -32,7 +38,7 @@ def send_message2sqs(client_id, url, callback_url, s3_file_path, s3_images_path)
             'DataType': 'String',
             'StringValue': callback_url
         }
-    if processed_queue_name and s3_file_path:
+    if processed_queue_name and s3_text_path:
         sqs_client.send_message(
             QueueUrl=processed_queue_name,
             MessageBody=client_id,
@@ -49,7 +55,7 @@ def dlq_msgs_handler(event, context):
     for record in records:
         client_id = record['body']
         message_attributes = record['messageAttributes']
-        s3_file_path = message_attributes['s3_file_path']['stringValue'] if 's3_file_path' in message_attributes else None
+        s3_text_path = message_attributes['s3_text_path']['stringValue'] if 's3_text_path' in message_attributes else None
         s3_images_path = message_attributes['s3_images_path']['stringValue'] if 's3_images_path' in message_attributes else None
         url = message_attributes['url']['stringValue']
         callback_url = message_attributes['callback_url']['stringValue']
@@ -60,7 +66,7 @@ def dlq_msgs_handler(event, context):
             'client_id': client_id,
             'url': url,
             'callback_url': callback_url,
-            's3_file_path': s3_file_path,
+            's3_text_path': s3_text_path,
             's3_images_path': s3_images_path
         }
         send_message2sqs(**sqs_message)
