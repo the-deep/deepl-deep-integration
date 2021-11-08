@@ -3,5 +3,7 @@ version: "3.7"
 services:
   mockserver:
     build: .
+    environment:
+      - DOMAIN_NAME=${DOMAIN_NAME}
     ports:
       - "5000:5000"
