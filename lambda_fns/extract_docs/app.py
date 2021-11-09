@@ -17,7 +17,7 @@ aws_region = os.environ.get("AWS_REGION", DEFAULT_AWS_REGION)
 dest_bucket_name = os.environ.get("DEST_S3_BUCKET")
 processed_queue_name = os.environ.get("PROCESSED_QUEUE")
 
-domain_name = os.environ.get("DOMAIN_NAME", "http://localhost:8081")
+domain_name = os.environ.get("EXTRACTOR_DOMAIN_NAME", "http://localhost:8001")
 
 s3_client = boto3.client('s3', region_name=aws_region)
 sqs_client = boto3.client('sqs', region_name=aws_region)
@@ -181,7 +181,6 @@ def handle_urls(url, mock=False):
     file_name = None
     resp_headers = requests.head(url)  # get the headers from the url
     url_content_type = resp_headers.headers['Content-Type']
-
     if url.startswith("s3"):
         bucket_name, file_path, file_name = extract_path(url)
         s3_client.download_file(
@@ -192,7 +191,8 @@ def handle_urls(url, mock=False):
         s3_file_path, s3_images_path = get_extracted_content_links(
             file_name, mock
         )
-    elif url_content_type in ['text/html']:  # assume it is a static webpage
+    elif url_content_type in ['text/html', 'text/html; charset=utf-8']:
+        # assume it is a static webpage
         s3_file_path, s3_images_path = get_extracted_text_web_links(url, mock)
     elif url.endswith(".pdf") or url_content_type in [
                 'application/pdf',
