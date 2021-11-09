@@ -114,13 +114,13 @@ def send_message2sqs(
 ):
     message_attributes = {}
     message_attributes['url'] = {
-            'DataType': 'String',
-            'StringValue': url
+        'DataType': 'String',
+        'StringValue': url
     }
     if s3_text_path:
         message_attributes['s3_text_path'] = {
-                'DataType': 'String',
-                'StringValue': s3_text_path
+            'DataType': 'String',
+            'StringValue': s3_text_path
         }
     if s3_images_path:
         message_attributes['s3_images_path'] = {
@@ -162,7 +162,7 @@ def get_extracted_text_web_links(link, mock=False):
             os.makedirs(f'{dir_path}/images')
             with open(f'{dir_path}/{processed_file_name}.txt', 'w') as f:
                 f.write(extracted_text)
-            s3_file_path = f'{dir_path}/{processed_file_name}.txt'
+            s3_file_path = f'{domain_name}{dir_path}/{processed_file_name}.txt'
         else:
             store_text_s3(
                 extracted_text,
@@ -191,13 +191,10 @@ def handle_urls(url, mock=False):
         s3_file_path, s3_images_path = get_extracted_content_links(
             file_name, mock
         )
-    elif url_content_type in ['text/html', 'text/html; charset=utf-8']:
-        # assume it is a static webpage
-        s3_file_path, s3_images_path = get_extracted_text_web_links(url, mock)
     elif url.endswith(".pdf") or url_content_type in [
-                'application/pdf',
-                'binary/octet-stream',
-                'application/xml']:  # assume it is http/https pdf weblink
+            'application/pdf',
+            'binary/octet-stream',
+            'application/xml']:  # assume it is http/https pdf weblink
         response = requests.get(url, stream=True)
         file_name = f"{str(uuid.uuid4())}.pdf"
         with open(f"/tmp/{file_name}", 'wb') as fd:
@@ -206,6 +203,9 @@ def handle_urls(url, mock=False):
         s3_file_path, s3_images_path = get_extracted_content_links(
             file_name, mock
         )
+    elif url_content_type in ['text/html', 'text/html; charset=utf-8']:
+        # assume it is a static webpage
+        s3_file_path, s3_images_path = get_extracted_text_web_links(url, mock)
     else:
         raise NotImplementedError
 
