@@ -225,11 +225,13 @@ def process_docs(event, context):
             url = item['url']
             client_id = item['client_id']
             text_path, images_path = handle_urls(url, mock=True)
+            total_pages = 10  # todo: update this part when parsing tool returns it
             responses.append({
                 'client_id': client_id,
                 'url': url,
                 'text_path': text_path,
-                'images_path': images_path
+                'images_path': images_path,
+                'total_pages': total_pages
             })
         return responses
     else:

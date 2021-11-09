@@ -23,7 +23,7 @@ def extract_documents():
     event = {}
     event['mock'] = True
     event['urls'] = body['urls']
-    
+
     callback_url = body['callback_url']
 
     responses = process_docs(event, None)
