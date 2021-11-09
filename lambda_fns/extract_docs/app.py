@@ -17,7 +17,7 @@ aws_region = os.environ.get("AWS_REGION", DEFAULT_AWS_REGION)
 dest_bucket_name = os.environ.get("DEST_S3_BUCKET")
 processed_queue_name = os.environ.get("PROCESSED_QUEUE")
 
-domain_name = os.environ.get("EXTRACTOR_DOMAIN_NAME", "http://localhost:8001")
+domain_name = os.environ.get("EXTRACTOR_DOMAIN_NAME", "http://extractor:8001")
 
 s3_client = boto3.client('s3', region_name=aws_region)
 sqs_client = boto3.client('sqs', region_name=aws_region)
