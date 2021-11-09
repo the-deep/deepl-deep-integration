@@ -12,6 +12,4 @@ RUN pip install --upgrade pip setuptools wheel
 RUN pip install -r mockserver/requirements.txt
 
 
-EXPOSE 5000
-
-CMD ["python3", "mockserver/app.py"]
+EXPOSE 8001

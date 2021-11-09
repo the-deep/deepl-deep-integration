@@ -18,7 +18,7 @@ def homepage():
 @app.route('/extract_docs', methods=['POST'])
 def extract_documents():
     body = request.get_json()
-
+    print(body)
     event = {}
 
     event['mock'] = True
@@ -30,4 +30,4 @@ def extract_documents():
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", debug=True)
+    app.run(host="0.0.0.0", port="8001", debug=True)
