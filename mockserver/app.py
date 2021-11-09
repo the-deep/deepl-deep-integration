@@ -1,5 +1,6 @@
 import sys
 import os.path
+from flask.helpers import send_from_directory
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
 )
@@ -44,6 +45,11 @@ def extract_documents():
             raise Exception(f"Exception occurred while sending request - {e}")
 
     return "Requests handled successfully"
+
+
+@app.route('/tmp/<path:filename>', methods=['GET'])
+def get_file(filename):
+    return send_from_directory("/tmp/", filename, as_attachment=True)
 
 
 if __name__ == '__main__':
