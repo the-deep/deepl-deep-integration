@@ -17,7 +17,7 @@ aws_region = os.environ.get("AWS_REGION", DEFAULT_AWS_REGION)
 dest_bucket_name = os.environ.get("DEST_S3_BUCKET")
 processed_queue_name = os.environ.get("PROCESSED_QUEUE")
 
-domain_name = os.environ.get("DOMAIN_NAME", "file://localhost")
+domain_name = os.environ.get("DOMAIN_NAME", "http://localhost:8081")
 
 s3_client = boto3.client('s3', region_name=aws_region)
 sqs_client = boto3.client('sqs', region_name=aws_region)
@@ -77,7 +77,7 @@ def get_extracted_content_links(file_name, mock):
                 full_path = os.path.join(subdir, f)
                 with open(full_path, 'rb') as data:
                     s3_images_path.append(f"{domain_name}{s3_images_path_prefix}/{f}")
-        return s3_file_path, json.dumps(s3_images_path)
+        return s3_file_path, s3_images_path
     else:
         store_text_s3(
             extracted_text,
@@ -231,9 +231,7 @@ def process_docs(event, context):
                 'text_path': text_path,
                 'images_path': images_path
             })
-        return {
-            'results': responses
-        }
+        return responses
     else:
         records = event['Records']
 
