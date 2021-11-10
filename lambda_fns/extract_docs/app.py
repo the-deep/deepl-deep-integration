@@ -2,11 +2,9 @@ import os
 import requests
 import uuid
 import base64
-import json
 from datetime import datetime
 
 import boto3
-from botocore.exceptions import ClientError
 
 from deep_parser.parser.base import TextFromFile
 from deep_parser import TextFromWeb

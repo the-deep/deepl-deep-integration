@@ -48,7 +48,6 @@ def send_message2sqs(
         'DataType': 'Number',
         'StringValue': total_words_count
     }
-    print(message_attributes)
     if processed_queue_name and s3_text_path:
         sqs_client.send_message(
             QueueUrl=processed_queue_name,
@@ -73,7 +72,7 @@ def dlq_msgs_handler(event, context):
         total_pages = message_attributes['total_pages']['stringValue']
         total_words_count = message_attributes['total_words_count']['stringValue']
 
-        print(f'Storing message from dlq to processed queue with client id {client_id}')
+        print(f"Storing message from dlq to processed queue with client id {client_id}")
 
         sqs_message = {
             'client_id': client_id,

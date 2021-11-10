@@ -1,13 +1,14 @@
 import sys
 import os.path
 from flask.helpers import send_from_directory
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
-)
 
 import requests
 from flask import Flask, request
 from lambda_fns.extract_docs.app import process_docs
+
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
+)
 
 app = Flask(__name__)
 
@@ -40,7 +41,7 @@ def extract_documents():
                 print(f"Successfully sent the request on callback url with client id {response_body['client_id']}")
             else:
                 print("Request not sent successfully.")
-                raise Exception(f"Exception occurred while sending request: StatusCode {response.status_code}")    
+                raise Exception(f"Exception occurred while sending request: StatusCode {response.status_code}")
         except requests.exceptions.RequestException as e:
             raise Exception(f"Exception occurred while sending request - {e}")
 
