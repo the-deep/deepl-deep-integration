@@ -45,6 +45,58 @@ def store_text_s3(data, bucket_name, key):
     )
 
 
+def get_words_count(text):
+    return len(text.split()) if text else 0
+
+
+def send_message2sqs(
+    client_id,
+    url,
+    callback_url,
+    s3_text_path,
+    s3_images_path,
+    total_pages,
+    total_words_count
+):
+    message_attributes = {}
+    message_attributes['url'] = {
+        'DataType': 'String',
+        'StringValue': url
+    }
+    if s3_text_path:
+        message_attributes['s3_text_path'] = {
+            'DataType': 'String',
+            'StringValue': s3_text_path
+        }
+    if s3_images_path:
+        message_attributes['s3_images_path'] = {
+            'DataType': 'String',
+            'StringValue': s3_images_path
+        }
+    if callback_url:
+        message_attributes['callback_url'] = {
+            'DataType': 'String',
+            'StringValue': callback_url
+        }
+    message_attributes['total_pages'] = {
+        'DataType': 'Number',
+        'StringValue': total_pages
+    }
+    message_attributes['total_words_count'] = {
+        'DataType': 'Number',
+        'StringValue': total_words_count
+    }
+    if processed_queue_name and s3_text_path:
+        sqs_client.send_message(
+            QueueUrl=processed_queue_name,
+            MessageBody=client_id,
+            DelaySeconds=0,
+            MessageAttributes=message_attributes
+        )
+    else:
+        print("Message not sent to the processed SQS.")
+
+
 def get_extracted_content_links(file_name, mock):
     with open(os.path.join("/tmp", file_name), "rb") as f:
         binary = base64.b64encode(f.read())
@@ -54,6 +106,9 @@ def get_extracted_content_links(file_name, mock):
 
     entries_list = [item for sublist in entries for item in sublist]
     extracted_text = "\n".join(entries_list)
+
+    total_pages = 10  # todo: fix this once parsing tool is updated.
+    total_words_count = get_words_count(extracted_text)
 
     date_today = str(datetime.now().date())
 
@@ -77,7 +132,7 @@ def get_extracted_content_links(file_name, mock):
                 full_path = os.path.join(subdir, f)
                 with open(full_path, 'rb') as data:
                     s3_images_path.append(f"{domain_name}{s3_images_path_prefix}/{f}")
-        return s3_file_path, s3_images_path
+        return s3_file_path, s3_images_path, total_pages, total_words_count
     else:
         store_text_s3(
             extracted_text,
@@ -102,45 +157,7 @@ def get_extracted_content_links(file_name, mock):
         s3_file_path = f"s3://{dest_bucket_name}/{s3_path_prefix}/{processed_file_name}.txt"
         s3_images_path = f"s3://{dest_bucket_name}/{s3_path_prefix}/images"
 
-    return s3_file_path, s3_images_path
-
-
-def send_message2sqs(
-    client_id,
-    url,
-    callback_url,
-    s3_text_path,
-    s3_images_path
-):
-    message_attributes = {}
-    message_attributes['url'] = {
-        'DataType': 'String',
-        'StringValue': url
-    }
-    if s3_text_path:
-        message_attributes['s3_text_path'] = {
-            'DataType': 'String',
-            'StringValue': s3_text_path
-        }
-    if s3_images_path:
-        message_attributes['s3_images_path'] = {
-            'DataType': 'String',
-            'StringValue': s3_images_path
-        }
-    if callback_url:
-        message_attributes['callback_url'] = {
-            'DataType': 'String',
-            'StringValue': callback_url
-        }
-    if processed_queue_name and s3_text_path:
-        sqs_client.send_message(
-            QueueUrl=processed_queue_name,
-            MessageBody=client_id,
-            DelaySeconds=0,
-            MessageAttributes=message_attributes
-        )
-    else:
-        print("Message not sent to the processed SQS.")
+    return s3_file_path, s3_images_path, total_pages, total_words_count
 
 
 def get_extracted_text_web_links(link, mock=False):
@@ -150,6 +167,9 @@ def get_extracted_text_web_links(link, mock=False):
 
         entries_list = [item for sublist in entries for item in sublist]
         extracted_text = "\n".join(entries_list)
+
+        total_pages = -1
+        total_words_count = get_words_count(extracted_text)
 
         date_today = str(datetime.now().date())
 
@@ -171,10 +191,10 @@ def get_extracted_text_web_links(link, mock=False):
             )
             s3_file_path = f"s3://{dest_bucket_name}/{s3_path_prefix}/{processed_file_name}.txt"
 
-        return s3_file_path, None  # No images extraction (lib doesn't support?)
+        return s3_file_path, None, total_pages, total_words_count  # No images extraction (lib doesn't support?)
     except Exception as e:
         print(f"Extraction from website failed {e}")
-        return None, None
+        return None, None, -1, -1
 
 
 def handle_urls(url, mock=False):
@@ -188,7 +208,7 @@ def handle_urls(url, mock=False):
             file_path,
             f"/tmp/{file_name}"
         )
-        s3_file_path, s3_images_path = get_extracted_content_links(
+        s3_file_path, s3_images_path, total_pages, total_words_count = get_extracted_content_links(
             file_name, mock
         )
     elif url.endswith(".pdf") or url_content_type in [
@@ -200,19 +220,19 @@ def handle_urls(url, mock=False):
         with open(f"/tmp/{file_name}", 'wb') as fd:
             for chunk in response.iter_content(chunk_size=128):
                 fd.write(chunk)
-        s3_file_path, s3_images_path = get_extracted_content_links(
+        s3_file_path, s3_images_path, total_pages, total_words_count = get_extracted_content_links(
             file_name, mock
         )
     elif url_content_type in ['text/html', 'text/html; charset=utf-8']:
         # assume it is a static webpage
-        s3_file_path, s3_images_path = get_extracted_text_web_links(url, mock)
+        s3_file_path, s3_images_path, total_pages, total_words_count = get_extracted_text_web_links(url, mock)
     else:
         raise NotImplementedError
 
     print(f"The extracted file path is {s3_file_path}")
     print(f"The extracted image path is {s3_images_path}")
 
-    return s3_file_path, s3_images_path
+    return s3_file_path, s3_images_path, str(total_pages), str(total_words_count)
 
 
 def process_docs(event, context):
@@ -224,14 +244,14 @@ def process_docs(event, context):
         for item in urls:
             url = item['url']
             client_id = item['client_id']
-            text_path, images_path = handle_urls(url, mock=True)
-            total_pages = 10  # todo: update this part when parsing tool returns it
+            text_path, images_path, total_pages, total_words_count = handle_urls(url, mock=True)
             responses.append({
                 'client_id': client_id,
                 'url': url,
                 'text_path': text_path,
                 'images_path': images_path,
-                'total_pages': total_pages
+                'total_pages': total_pages,
+                'total_words_count': total_words_count
             })
         return responses
     else:
@@ -243,14 +263,16 @@ def process_docs(event, context):
             callback_url = record['messageAttributes']['callback_url']['stringValue']
             print(f"Processing {url}")
 
-            s3_text_path, s3_images_path = handle_urls(url)
+            s3_text_path, s3_images_path, total_pages, total_words_count = handle_urls(url)
 
             sqs_message = {
                 'client_id': client_id,
                 'url': url,
                 'callback_url': callback_url,
                 's3_text_path': s3_text_path,
-                's3_images_path': s3_images_path
+                's3_images_path': s3_images_path,
+                'total_pages': total_pages,
+                'total_words_count': total_words_count
             }
             send_message2sqs(**sqs_message)
 

@@ -66,6 +66,8 @@ def output_request(event, context):
         s3_images_path = message_attributes['s3_images_path']['stringValue'] if 's3_images_path' in message_attributes else None
         url = message_attributes['url']['stringValue']
         callback_url = message_attributes['callback_url']['stringValue']
+        total_pages = message_attributes['total_pages']['stringValue']
+        total_words_count = message_attributes['total_words_count']['stringValue']
 
         request_body['client_id'] = client_id
         request_body['url'] = url
@@ -93,6 +95,9 @@ def output_request(event, context):
             if image_urls:
                 request_body['s3_images_signed_urls'] = image_urls
 
+        request_body['total_pages'] = total_pages
+        request_body['total_words_count'] = total_words_count
+
         # Sending the request towards Deep
         try:
             response = requests.post(
@@ -101,12 +106,12 @@ def output_request(event, context):
                 timeout=60
             )
             if response.status_code == 200:
-                print(f'Successfully sent the request with client_id: {client_id}')
+                print(f"Successfully sent the request with client_id: {client_id}")
             else:
-                print('Request not sent successfully.')
-                raise Exception(f'Exception occurred while sending request: StatusCode {response.status_code}')    
+                print("Request not sent successfully.")
+                raise Exception(f"Exception occurred while sending request: StatusCode {response.status_code}")
         except requests.exceptions.RequestException as e:
-            raise Exception(f'Exception occurred while sending request - {e}')
+            raise Exception(f"Exception occurred while sending request - {e}")
 
     return {
         'statusCode': 200,

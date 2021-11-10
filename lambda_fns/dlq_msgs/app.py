@@ -16,12 +16,14 @@ def send_message2sqs(
     url,
     callback_url,
     s3_text_path,
-    s3_images_path
+    s3_images_path,
+    total_pages,
+    total_words_count
 ):
     message_attributes = {}
     message_attributes['url'] = {
-            'DataType': 'String',
-            'StringValue': url
+        'DataType': 'String',
+        'StringValue': url
     }
     if s3_text_path:
         message_attributes['s3_text_path'] = {
@@ -38,6 +40,15 @@ def send_message2sqs(
             'DataType': 'String',
             'StringValue': callback_url
         }
+    message_attributes['total_pages'] = {
+        'DataType': 'Number',
+        'StringValue': total_pages
+    }
+    message_attributes['total_words_count'] = {
+        'DataType': 'Number',
+        'StringValue': total_words_count
+    }
+    print(message_attributes)
     if processed_queue_name and s3_text_path:
         sqs_client.send_message(
             QueueUrl=processed_queue_name,
@@ -59,6 +70,8 @@ def dlq_msgs_handler(event, context):
         s3_images_path = message_attributes['s3_images_path']['stringValue'] if 's3_images_path' in message_attributes else None
         url = message_attributes['url']['stringValue']
         callback_url = message_attributes['callback_url']['stringValue']
+        total_pages = message_attributes['total_pages']['stringValue']
+        total_words_count = message_attributes['total_words_count']['stringValue']
 
         print(f'Storing message from dlq to processed queue with client id {client_id}')
 
@@ -67,7 +80,9 @@ def dlq_msgs_handler(event, context):
             'url': url,
             'callback_url': callback_url,
             's3_text_path': s3_text_path,
-            's3_images_path': s3_images_path
+            's3_images_path': s3_images_path,
+            'total_pages': total_pages,
+            'total_words_count': total_words_count
         }
         send_message2sqs(**sqs_message)
 
