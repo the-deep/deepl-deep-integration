@@ -65,8 +65,10 @@ def dlq_msgs_handler(event, context):
     for record in records:
         client_id = record['body']
         message_attributes = record['messageAttributes']
-        s3_text_path = message_attributes['s3_text_path']['stringValue'] if 's3_text_path' in message_attributes else None
-        s3_images_path = message_attributes['s3_images_path']['stringValue'] if 's3_images_path' in message_attributes else None
+        s3_text_path = message_attributes['s3_text_path']['stringValue'] \
+            if 's3_text_path' in message_attributes else None
+        s3_images_path = message_attributes['s3_images_path']['stringValue'] \
+            if 's3_images_path' in message_attributes else None
         url = message_attributes['url']['stringValue']
         callback_url = message_attributes['callback_url']['stringValue']
         total_pages = message_attributes['total_pages']['stringValue']

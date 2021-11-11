@@ -112,7 +112,7 @@ module "predict_entry_fn" {
     })
 
     environment_variables = {
-        EP_NAME_1D_MODEL = var.ep_name_1d_model
+        EP_NAME_MODEL = var.ep_name_model
     }
 }
 

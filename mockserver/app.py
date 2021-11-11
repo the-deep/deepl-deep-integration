@@ -4,11 +4,14 @@ from flask.helpers import send_from_directory
 
 import requests
 from flask import Flask, request
-from lambda_fns.extract_docs.app import process_docs
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
 )
+
+from lambda_fns.extract_docs.app import process_docs
+from lambda_fns.predict_entry.app import predict_entry_handler
+
 
 app = Flask(__name__)
 
@@ -51,6 +54,18 @@ def extract_documents():
 @app.route('/tmp/<path:filename>', methods=['GET'])
 def get_file(filename):
     return send_from_directory("/tmp/", filename, as_attachment=True)
+
+
+@app.route('/entry_predict', methods=['POST'])
+def predict_entry():
+    body = request.get_json()
+
+    event = {}
+    event['mock'] = True
+    event['entries'] = body['entries']
+
+    responses = predict_entry_handler(event, None)
+    return str(responses)
 
 
 if __name__ == '__main__':

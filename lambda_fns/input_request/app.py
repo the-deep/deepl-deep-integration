@@ -2,7 +2,6 @@ import os
 import json
 import uuid
 import boto3
-from botocore.exceptions import ClientError
 
 DEFAULT_AWS_REGION = "us-east-1"
 
