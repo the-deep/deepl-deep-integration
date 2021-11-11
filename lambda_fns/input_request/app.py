@@ -29,6 +29,10 @@ def send_msg_sqs(event, context):
                         'DataType': 'String',
                         'StringValue': item['url']
                     },
+                    'url_content_type': {
+                        'DataType': 'String',
+                        'StringValue': item['url_content_type']
+                    },
                     'callback_url': {
                         'DataType': 'String',
                         'StringValue': callback_url
