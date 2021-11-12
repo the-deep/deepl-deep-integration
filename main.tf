@@ -1,3 +1,24 @@
+terraform {
+  required_version = "1.0.4"
+  backend "s3" {
+    bucket         = "terraform-state-deep"
+    key            = "deep_deepl_integration/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-lock-integration-db"
+    encrypt        = true
+  }
+}
+
+resource "aws_dynamodb_table" "terraform_locks" {
+  hash_key       = "LockID"
+  name           = "terraform-lock-integration-db"
+  billing_mode   = "PAY_PER_REQUEST"
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
+}
+
 provider "aws" {
   region = var.aws_region
   profile = var.aws_profile
