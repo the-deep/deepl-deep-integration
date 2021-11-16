@@ -64,8 +64,25 @@ def predict_entry():
     event['mock'] = True
     event['entries'] = body['entries']
 
+    callback_url = body['callback_url']
+
     responses = predict_entry_handler(event, None)
-    return str(responses)
+    for response_body in responses:
+        try:
+            response = requests.post(
+                callback_url,
+                data=response_body,
+                timeout=60
+            )
+            if response.status_code == 200:
+                print(f"Successfully sent the request on callback url with entry id {response_body['entry_id']}")
+            else:
+                print("Request not sent successfully.")
+                raise Exception(f"Exception occurred while sending request: StatusCode {response.status_code}")
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Exception occurred while sending request - {e}")
+
+    return "Response handled successfully"
 
 
 if __name__ == '__main__':
