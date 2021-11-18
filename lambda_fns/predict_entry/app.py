@@ -171,8 +171,8 @@ def predict_entry_handler(event, context):
 
         preds = fake_data[0]
         thresholds = fake_data[1]
-        del preds["column_present"]
-        del thresholds["column_present"]
+        # del preds["column_present"]
+        # del thresholds["column_present"]
 
         fake_response = []
         for entry in entries:
@@ -182,7 +182,6 @@ def predict_entry_handler(event, context):
         return fake_response
     else:
         body = json.loads(event["body"])
-        # print(body)
         entries = body["entries"]
         data = {
             "columns": ["excerpt"],
