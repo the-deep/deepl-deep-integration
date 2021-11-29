@@ -13,7 +13,7 @@ sys.path.append(
 from lambda_fns.extract_docs.app import process_docs
 from lambda_fns.predict_entry.app import predict_entry_handler
 
-from mappings.tags_mapping import Categories, Tags, get_all_mappings
+from mappings.tags_mapping import Categories, Tags
 
 
 app = Flask(__name__)
@@ -84,37 +84,12 @@ def predict_entry():
         'Content-Type': 'application/json'
     }
 
-    mappings = get_all_mappings()
-
     for response_body in responses:
-        data = {
-            'predictions': {},
-            'thresholds': {},
-            'versions': {}
-        }
-        data['entry_id'] = response_body['entry_id']
-        for k1, v1 in response_body['predictions'].items():
-            category = mappings[k1][0]
-            tags = {}
-            versions = {}
-            for k2, v2 in v1.items():
-                tags[mappings[k2][0]] = v2
-                versions[mappings[k2][0]] = mappings[k2][1]
-            data['predictions'][category] = tags
-            data['versions'][category] = versions
-
-        for k1, v1 in response_body['thresholds'].items():
-            category = mappings[k1][0]
-            tags = {}
-            for k2, v2 in v1.items():
-                tags[mappings[k2][0]] = v2
-            data['thresholds'][category] = tags
-
         try:
             response = requests.post(
                 callback_url,
                 headers=headers,
-                data=json.dumps(data),
+                data=json.dumps(response_body),
                 timeout=60
             )
             if response.status_code == 200:

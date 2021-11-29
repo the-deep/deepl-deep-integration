@@ -2,12 +2,15 @@ import os
 import json
 import boto3
 
+from mappings.tags_mapping import Categories, Tags, get_all_mappings
+
 DEFAULT_AWS_REGION = "us-east-1"
 
 AWS_REGION = os.environ.get("AWS_REGION", DEFAULT_AWS_REGION)
 runtime = boto3.client("runtime.sagemaker", region_name="us-east-1")  # todo: update the region later.
 
 ENDPOINT_NAME_MODEL = os.environ.get("EP_NAME_MODEL")
+mappings = get_all_mappings()
 
 fake_data = [{
     'column_present': [{
@@ -163,6 +166,33 @@ def prepare_response(entry, preds, thresholds):
     }
 
 
+def handle_mappings(response_body):
+    data = {
+        'predictions': {},
+        'thresholds': {},
+        'versions': {}
+    }
+    data['entry_id'] = response_body['entry_id']
+    for k1, v1 in response_body['predictions'].items():
+        category = mappings[k1][0]
+        tags = {}
+        versions = {}
+        for k2, v2 in v1.items():
+            tags[mappings[k2][0]] = v2
+            versions[mappings[k2][0]] = mappings[k2][1]
+        data['predictions'][category] = tags
+        data['versions'][category] = versions
+
+    for k1, v1 in response_body['thresholds'].items():
+        category = mappings[k1][0]
+        tags = {}
+        for k2, v2 in v1.items():
+            tags[mappings[k2][0]] = v2
+        data['thresholds'][category] = tags
+
+    return data
+
+
 def predict_entry_handler(event, context):
     preds = {}
     thresholds = {}
@@ -177,7 +207,7 @@ def predict_entry_handler(event, context):
         fake_response = []
         for entry in entries:
             fake_response.append(
-                prepare_response(entry, preds, thresholds)
+                handle_mappings(prepare_response(entry, preds, thresholds))
             )
         return fake_response
     else:
@@ -204,7 +234,7 @@ def predict_entry_handler(event, context):
         responses = []
         for entry in entries:
             responses.append(
-                prepare_response(entry, preds, thresholds)
+                handle_mappings(prepare_response(entry, preds, thresholds))
             )
 
         return {
@@ -212,5 +242,5 @@ def predict_entry_handler(event, context):
             "headers": {
                 "Content-Type": "application/json",
             },
-            "body": str(responses),
+            "body": json.dumps(responses),
         }
