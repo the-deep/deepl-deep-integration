@@ -113,7 +113,7 @@ def get_extracted_content_links(file_name, mock):
     entries_list = [item for sublist in entries for item in sublist]
     extracted_text = "\n".join(entries_list)
 
-    total_pages = 10  # todo: fix this once parsing tool is updated.
+    total_pages = len(entries)
     total_words_count = get_words_count(extracted_text)
 
     date_today = str(datetime.now().date())
