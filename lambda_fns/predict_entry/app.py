@@ -1,8 +1,10 @@
 import os
 import json
 import boto3
+import requests
 
-from mappings.tags_mapping import Categories, Tags, get_all_mappings
+from mappings.tags_mapping import get_all_mappings
+
 
 DEFAULT_AWS_REGION = "us-east-1"
 
@@ -196,7 +198,7 @@ def handle_mappings(response_body):
 def predict_entry_handler(event, context):
     preds = {}
     thresholds = {}
-    if event.get('mock', False):
+    if event.get("mock", False):
         entries = event["entries"]
 
         preds = fake_data[0]
@@ -213,6 +215,8 @@ def predict_entry_handler(event, context):
     else:
         body = json.loads(event["body"])
         entries = body["entries"]
+        callback_url = body["callback_url"]
+
         data = {
             "columns": ["excerpt"],
             "index": list(range(len(entries))),
@@ -237,10 +241,27 @@ def predict_entry_handler(event, context):
                 handle_mappings(prepare_response(entry, preds, thresholds))
             )
 
-        return {
-            "statusCode": 200,
-            "headers": {
-                "Content-Type": "application/json",
-            },
-            "body": json.dumps(responses),
+        headers = {
+            'Content-Type': 'application/json'
         }
+
+        for response_body in responses:
+            try:
+                response = requests.post(
+                    callback_url,
+                    headers=headers,
+                    data=json.dumps(response_body),
+                    timeout=60
+                )
+                if response.status_code == 200:
+                    print(f"Successfully sent the request on callback url with entry id {response_body['entry_id']}")
+                else:
+                    print("Request not sent successfully.")
+                    raise Exception(f"Exception occurred while sending request: StatusCode {response.status_code}")
+            except requests.exceptions.RequestException as e:
+                raise Exception(f"Exception occurred while sending request - {e}")
+
+    return {
+        'statusCode': 200,
+        'body': 'Successfully sent on the callback url'
+    }

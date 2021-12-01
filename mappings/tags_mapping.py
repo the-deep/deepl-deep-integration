@@ -2,7 +2,7 @@ from collections import namedtuple
 
 from enum import Enum
 
-from common.constants import *
+from .constants import *
 
 MainCategories = namedtuple('MainCategories', ['id', 'key', 'version'])
 MainTags = namedtuple('MainTags', ['id', 'key', 'version'])

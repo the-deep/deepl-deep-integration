@@ -6,10 +6,6 @@ from flask.helpers import send_from_directory
 import requests
 from flask import Flask, request
 
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
-)
-
 from lambda_fns.extract_docs.app import process_docs
 from lambda_fns.predict_entry.app import predict_entry_handler
 
