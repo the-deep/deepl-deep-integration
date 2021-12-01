@@ -131,7 +131,7 @@ module "predict_entry_fn" {
 
 resource "aws_lambda_layer_version" "lambda_layer" {
   filename   = "${path.module}/../../python.zip"
-  layer_name = "mappingsd"
+  layer_name = "tags_mapping_layer"
 
   compatible_runtimes = ["python3.8"]
 }
