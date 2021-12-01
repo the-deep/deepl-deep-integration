@@ -92,6 +92,7 @@ module "predict_entry_fn" {
     source_path = [
     {
         path = "${path.module}/../../lambda_fns/predict_entry"
+        pip_requirements = "${path.module}/../../lambda_fns/predict_entry/requirements.txt"
     }
     ]
 
@@ -111,9 +112,28 @@ module "predict_entry_fn" {
         ]
     })
 
+    layers = ["${aws_lambda_layer_version.lambda_layer.arn}"]
+
+    build_in_docker = true
+    store_on_s3 = true
+    s3_bucket = "${var.processed_docs_bucket}"
+
     environment_variables = {
         EP_NAME_MODEL = var.ep_name_model
     }
+}
+
+#data "archive_file" "mappingfiles" {
+#    type = "zip"
+#    output_path = "${path.module}/../../python.zip"
+#    source_dir = "${path.module}/../../mappings"
+#}
+
+resource "aws_lambda_layer_version" "lambda_layer" {
+  filename   = "${path.module}/../../python.zip"
+  layer_name = "mappingsd"
+
+  compatible_runtimes = ["python3.8"]
 }
 
 module "extract_docs_fn" {
