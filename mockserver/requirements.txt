@@ -2,7 +2,7 @@ Flask==2.0.2
 anytree==2.8.0
 certifi==2021.5.30
 charset-normalizer==2.0.4
-deep-parser @ git+https://github.com/the-deep/deepl-pdf-extraction@022aa985b9141a1f75dd96f2c7f9c7f322a10319
+deep-parser @ git+https://github.com/the-deep/deepl-pdf-extraction@948279ed8893ba5e5263c12c0963297be744b7f8
 idna==3.2
 numpy==1.21.2
 PyMuPDF==1.18.17
