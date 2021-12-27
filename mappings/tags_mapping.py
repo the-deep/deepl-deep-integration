@@ -2,7 +2,15 @@ from collections import namedtuple
 
 from enum import Enum
 
-from .constants import *
+from .constants import (
+    SECTOR_VERSION,
+    SUBPILLARS_1D_VERSION,
+    SUBPILLARS_2D_VERSION,
+    AGE_VERSION,
+    GENDER_VERSION,
+    SPECIFIC_NEEDS_GROUP_VERSION,
+    SEVERITY_VERSION
+)
 
 MainCategories = namedtuple('MainCategories', ['id', 'key', 'version'])
 MainTags = namedtuple('MainTags', ['id', 'key', 'version'])
@@ -10,19 +18,23 @@ MainTags = namedtuple('MainTags', ['id', 'key', 'version'])
 
 class Categories(Enum):
     SECTORS = MainCategories(id=1, key='sectors', version=SECTOR_VERSION)
-    ONE_D_MATRIX = MainCategories(id=2, key='subpillars_1d', version=SUBPILLARS_1D_VERSION)
-    TWO_D_MATRIX = MainCategories(id=3, key='subpillars_2d', version=SUBPILLARS_2D_VERSION)
-    SPECIFIC_NEEDS_GROUPS = MainCategories(id=4, key='specific_needs_groups', version=SPECIFIC_NEEDS_GROUP_VERSION)
-    GENDER = MainCategories(id=5, key='gender', version=GENDER_VERSION)
-    AGE = MainCategories(id=6, key='age', version=AGE_VERSION)
-    SEVERITY = MainCategories(id=7, key='severity', version=SEVERITY_VERSION)
+    ONE_D_PILLAR = MainCategories(id=2, key='pillars_1d', version=SUBPILLARS_1D_VERSION)
+    TWO_D_PILLAR = MainCategories(id=3, key='pillars_2d', version=SUBPILLARS_2D_VERSION)
+    ONE_D_SUBPILLAR = MainCategories(id=4, key='subpillars_1d', version=SUBPILLARS_1D_VERSION)
+    TWO_D_SUBPILLAR = MainCategories(id=5, key='subpillars_2d', version=SUBPILLARS_2D_VERSION)
+    SPECIFIC_NEEDS_GROUPS = MainCategories(id=6, key='specific_needs_groups', version=SPECIFIC_NEEDS_GROUP_VERSION)
+    GENDER = MainCategories(id=7, key='gender', version=GENDER_VERSION)
+    AGE = MainCategories(id=8, key='age', version=AGE_VERSION)
+    SEVERITY = MainCategories(id=9, key='severity', version=SEVERITY_VERSION)
 
     @classmethod
     def all_models(cls):
         return [
             Categories.SECTORS.value._asdict(),
-            Categories.ONE_D_MATRIX.value._asdict(),
-            Categories.TWO_D_MATRIX.value._asdict(),
+            Categories.ONE_D_PILLAR.value._asdict(),
+            Categories.TWO_D_PILLAR.value._asdict(),
+            Categories.ONE_D_SUBPILLAR.value._asdict(),
+            Categories.TWO_D_SUBPILLAR.value._asdict(),
             Categories.SPECIFIC_NEEDS_GROUPS.value._asdict(),
             Categories.GENDER.value._asdict(),
             Categories.AGE.value._asdict(),
@@ -43,6 +55,23 @@ class Tags(Enum):
     PROTECTION = MainTags(id=109, key='Protection', version=SECTOR_VERSION)
     SHELTER = MainTags(id=110, key='Shelter', version=SECTOR_VERSION)
     WASH = MainTags(id=111, key='WASH', version=SECTOR_VERSION)
+
+    # 1D Pillars
+    CASUALTIES = MainTags(id=2001, key='Casualties', version=SUBPILLARS_1D_VERSION)
+    CONTEXT = MainTags(id=2002, key='Context', version=SUBPILLARS_1D_VERSION)
+    COVID_19 = MainTags(id=2003, key='Covid-19', version=SUBPILLARS_1D_VERSION)
+    DISPLACEMENT = MainTags(id=2004, key='Displacement', version=SUBPILLARS_1D_VERSION)
+    HUMANITARIAN_ACCESS = MainTags(id=2005, key='Humanitarian Access', version=SUBPILLARS_1D_VERSION)
+    INFORMATION_AND_COMMUNICATION = MainTags(id=2006, key='Information And Communication', version=SUBPILLARS_1D_VERSION)
+    SHOCK_EVENT = MainTags(id=2007, key='Shock/Event', version=SUBPILLARS_1D_VERSION)
+
+    # 2D Pillars
+    AT_RISK = MainTags(id=3001, key='At Risk', version=SUBPILLARS_2D_VERSION)
+    CAPACITIES_RESPONSE = MainTags(id=3002, key='Capacities & Response', version=SUBPILLARS_2D_VERSION)
+    HUMANITARIAN_CONDITIONS = MainTags(id=3003, key='Humanitarian Conditions', version=SUBPILLARS_2D_VERSION)
+    IMPACT = MainTags(id=3004, key='Impact', version=SUBPILLARS_2D_VERSION)
+    PRIORITY_INTERVENTIONS = MainTags(id=3005, key='Priority Interventions', version=SUBPILLARS_2D_VERSION)
+    PRIORITY_NEEDS = MainTags(id=3006, key='Priority Needs', version=SUBPILLARS_2D_VERSION)
 
     # 1D SubPillars
     CONTEXT_ENVIRONMENT = MainTags(id=201, key='Context->Environment', version=SUBPILLARS_1D_VERSION)
@@ -149,6 +178,18 @@ class Tags(Enum):
         ]
 
     @classmethod
+    def pillars_1d_list(cls):
+        return [
+            Tags.CASUALTIES.value._asdict(),
+            Tags.CONTEXT.value._asdict(),
+            Tags.COVID_19.value._asdict(),
+            Tags.DISPLACEMENT.value._asdict(),
+            Tags.HUMANITARIAN_ACCESS.value._asdict(),
+            Tags.INFORMATION_AND_COMMUNICATION.value._asdict(),
+            Tags.SHOCK_EVENT.value._asdict()
+        ]
+
+    @classmethod
     def subpillars_1d_list(cls):
         return [
             Tags.CONTEXT_ENVIRONMENT.value._asdict(),
@@ -184,6 +225,17 @@ class Tags(Enum):
             Tags.COVID_19_RESTRICTION_MEASURES.value._asdict(),
             Tags.COVID_19_TESTING.value._asdict(),
             Tags.COVID_19_VACCINATION.value._asdict()
+        ]
+
+    @classmethod
+    def pillars_2d_list(cls):
+        return [
+            Tags.AT_RISK.value._asdict(),
+            Tags.CAPACITIES_RESPONSE.value._asdict(),
+            Tags.HUMANITARIAN_CONDITIONS.value._asdict(),
+            Tags.IMPACT.value._asdict(),
+            Tags.PRIORITY_INTERVENTIONS.value._asdict(),
+            Tags.PRIORITY_NEEDS.value._asdict()
         ]
 
     @classmethod
@@ -253,11 +305,22 @@ class Tags(Enum):
         ]
 
 
+def map_categories_subpillars():
+    return {
+        'pillars_1d': 'pillars_1d',
+        'pillars_2d': 'pillars_2d',
+        'impact_capresp_humcond': 'subpillars_2d',
+        'need_intervention_risk': 'subpillars_2d',
+        'context_covid': 'subpillars_1d',
+        'displacement_shockevent': 'subpillars_1d',
+        'access_infcom_casualities': 'subpillars_1d'
+    }
+
+
 def get_all_mappings():
-    all_tags = Categories.all_models() + Tags.sector_list() + Tags.subpillars_1d_list() + \
-        Tags.subpillars_2d_list() + Tags.specific_needs_group_list() + Tags.gender_list() + \
+    all_tags = Categories.all_models() + Tags.sector_list() + Tags.pillars_1d_list() + Tags.subpillars_1d_list() + \
+        Tags.subpillars_2d_list() + Tags.pillars_2d_list() + Tags.specific_needs_group_list() + Tags.gender_list() + \
         Tags.age_list() + Tags.severity_list()
     return {
         d['key']: (d['id'], d['version']) for d in all_tags
     }
-
