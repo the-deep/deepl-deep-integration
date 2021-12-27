@@ -7,8 +7,3 @@ variable "signed_url_expiry_secs" {
 
 variable "processed_docs_bucket" {
 }
-
-variable ep_name_model {
-    type = string
-    default = "test-all-models-rsh"
-}

@@ -81,61 +81,6 @@ resource "aws_lambda_event_source_mapping" "sqs_to_extract_lambda_trigger" {
   function_name    = module.extract_docs_fn.lambda_function_arn
 }
 
-module "predict_entry_fn" {
-    source = "terraform-aws-modules/lambda/aws"
-
-    function_name = "entry-prediction-handler-${var.environment}"
-    handler = "app.predict_entry_handler"
-    runtime = "python3.8"
-    timeout =  60
-
-    source_path = [
-    {
-        path = "${path.module}/../../lambda_fns/predict_entry"
-        pip_requirements = "${path.module}/../../lambda_fns/predict_entry/requirements.txt"
-    }
-    ]
-
-    attach_policy_json    = true
-
-    policy_json = jsonencode({
-        "Version": "2012-10-17",
-        "Statement": [
-            {
-                "Effect": "Allow",
-                "Action": [
-                    "lambda:*",
-                    "sagemaker:InvokeEndpoint"
-                ],
-                "Resource": ["*"]
-            }
-        ]
-    })
-
-    layers = ["${aws_lambda_layer_version.lambda_layer.arn}"]
-
-    build_in_docker = true
-    store_on_s3 = true
-    s3_bucket = "${var.processed_docs_bucket}"
-
-    environment_variables = {
-        EP_NAME_MODEL = var.ep_name_model
-    }
-}
-
-#data "archive_file" "mappingfiles" {
-#    type = "zip"
-#    output_path = "${path.module}/../../python.zip"
-#    source_dir = "${path.module}/../../mappings"
-#}
-
-resource "aws_lambda_layer_version" "lambda_layer" {
-  filename   = "${path.module}/../../python.zip"
-  layer_name = "tags_mapping_layer"
-
-  compatible_runtimes = ["python3.8"]
-}
-
 module "extract_docs_fn" {
     source = "terraform-aws-modules/lambda/aws"
 
