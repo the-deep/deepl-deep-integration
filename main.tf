@@ -31,13 +31,20 @@ module "sqs_lambda_module" {
   environment = var.environment
 }
 
+module "sqs_lambda_predict_module" {
+  source = "./modules/sqs_lambda_predict"
+  processed_docs_bucket = "${module.s3_module.te_bucket_name}"
+
+  environment = var.environment
+}
+
 module "apigateway_module" {
   source = "./modules/api_gateway"
 
-  predict_entry_invoke_arn = "${module.sqs_lambda_module.predict_entry_invoke_arn}"
+  predict_entry_invoke_arn = "${module.sqs_lambda_predict_module.entry_input_pred_request_predict_invoke_arn}"
   process_doc_invoke_arn = "${module.sqs_lambda_module.extract_doc_invoke_arn}"
 
-  predict_entry_lambda_fn_name = "${module.sqs_lambda_module.predict_entry_lambda_fn_name}"
+  predict_entry_lambda_fn_name = "${module.sqs_lambda_predict_module.entry_input_pred_request_lambda_fn_name}"
   input_te_lambda_fn_name = "${module.sqs_lambda_module.input_te_lambda_fn_name}"
 
   environment = var.environment
