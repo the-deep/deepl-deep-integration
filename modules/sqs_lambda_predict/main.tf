@@ -83,7 +83,7 @@ resource "aws_lambda_event_source_mapping" "entry_prediction_trigger" {
 module "predict_entry_fn" {
     source = "terraform-aws-modules/lambda/aws"
     function_name = "entry-prediction-handler-${var.environment}"
-    handler = "main.predict_entry_handler"
+    handler = "app.predict_entry_handler"
     runtime = "python3.8"
 
     source_path = [
