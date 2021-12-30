@@ -29,6 +29,11 @@ class UrlTypes(str, Enum):
     MSWORD = 'doc'
 
 
+class ExtractionStatus(Enum):
+    FAILED = 0
+    SUCCESS = 1
+
+
 def extract_path(filepath):
     """
     Extracts bucket and key names from the s3 URI
@@ -62,12 +67,17 @@ def send_message2sqs(
     s3_text_path,
     s3_images_path,
     total_pages,
-    total_words_count
+    total_words_count,
+    extraction_status
 ):
     message_attributes = {}
     message_attributes['url'] = {
         'DataType': 'String',
         'StringValue': url
+    }
+    message_attributes['extraction_status'] = {
+        'DataType': 'String',
+        'StringValue': extraction_status
     }
     if s3_text_path:
         message_attributes['s3_text_path'] = {
@@ -213,49 +223,61 @@ def handle_urls(url, url_type, mock=False):
             file_path,
             f"/tmp/{file_name}"
         )
-        s3_file_path, s3_images_path, total_pages, total_words_count = get_extracted_content_links(
-            file_name, mock
-        )
+        try:
+            s3_file_path, s3_images_path, total_pages, total_words_count = get_extracted_content_links(
+                file_name, mock
+            )
+            extraction_status = ExtractionStatus.SUCCESS.value
+        except Exception:
+            s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
+            extraction_status = ExtractionStatus.FAILED.value
+
     elif url_type == UrlTypes.PDF:  # assume it is http/https pdf weblink
         response = requests.get(url, stream=True)
         file_name = f"{str(uuid.uuid4())}.pdf"
         with open(f"/tmp/{file_name}", 'wb') as fd:
             for chunk in response.iter_content(chunk_size=128):
                 fd.write(chunk)
-        s3_file_path, s3_images_path, total_pages, total_words_count = get_extracted_content_links(
-            file_name, mock
-        )
+        try:
+            s3_file_path, s3_images_path, total_pages, total_words_count = get_extracted_content_links(
+                file_name, mock
+            )
+            extraction_status = ExtractionStatus.SUCCESS.value
+        except Exception:
+            s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
+            extraction_status = ExtractionStatus.FAILED.value
     elif url_type == UrlTypes.HTML:  # assume it is a static webpage
-        s3_file_path, s3_images_path, total_pages, total_words_count = get_extracted_text_web_links(url, mock)
+        try:
+            s3_file_path, s3_images_path, total_pages, total_words_count = get_extracted_text_web_links(url, mock)
+            extraction_status = ExtractionStatus.SUCCESS.value
+        except Exception:
+            s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
+            extraction_status = ExtractionStatus.FAILED.value
     else:
         raise NotImplementedError
 
     print(f"The extracted file path is {s3_file_path}")
     print(f"The extracted image path is {s3_images_path}")
 
-    return s3_file_path, s3_images_path, str(total_pages), str(total_words_count)
+    return s3_file_path, s3_images_path, str(total_pages), str(total_words_count), extraction_status
 
 
 def process_docs(event, context):
     print(f"The event output is {event}")
 
     if event.get('mock', False):
-        urls = event['urls']
-        responses = []
-        for item in urls:
-            url = item['url']
-            client_id = item['client_id']
-            url_type = item['url_content_type']
-            text_path, images_path, total_pages, total_words_count = handle_urls(url, url_type, mock=True)
-            responses.append({
-                'client_id': client_id,
-                'url': url,
-                'text_path': text_path,
-                'images_path': images_path,
-                'total_pages': total_pages,
-                'total_words_count': total_words_count
-            })
-        return responses
+        url = event['url']
+        url_type = event['url_type']
+        text_path, images_path, total_pages, total_words_count, extraction_status = handle_urls(url, url_type, mock=True)
+        return {
+            'client_id': event['client_id'],
+            'url': url,
+            'text_path': text_path,
+            'images_path': images_path,
+            'total_pages': total_pages,
+            'total_words_count': total_words_count,
+            'extraction_status': extraction_status
+        }
     else:
         records = event['Records']
 
@@ -266,7 +288,7 @@ def process_docs(event, context):
             callback_url = record['messageAttributes']['callback_url']['stringValue']
             print(f"Processing {url}")
 
-            s3_text_path, s3_images_path, total_pages, total_words_count = handle_urls(url, url_type)
+            s3_text_path, s3_images_path, total_pages, total_words_count, extraction_status = handle_urls(url, url_type)
 
             sqs_message = {
                 'client_id': client_id,
@@ -275,7 +297,8 @@ def process_docs(event, context):
                 's3_text_path': s3_text_path,
                 's3_images_path': s3_images_path,
                 'total_pages': total_pages,
-                'total_words_count': total_words_count
+                'total_words_count': total_words_count,
+                'extraction_status': extraction_status
             }
             send_message2sqs(**sqs_message)
 
