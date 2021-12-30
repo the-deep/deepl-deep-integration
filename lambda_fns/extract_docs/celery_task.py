@@ -6,7 +6,7 @@ from celery.utils.log import get_task_logger
 
 logger = get_task_logger(__name__)
 
-cel_app = Celery(__name__, broker='redis://localhost:6379/0')
+cel_app = Celery(__name__, broker='redis://redis:6379/3')
 
 cel_app.config_from_object(__name__)
 
@@ -17,10 +17,10 @@ def extract_contents(args):
     logger.info(extraction_response)
     try:
         response = requests.post(
-            args['callback_url'],
-            data=extraction_response,
-            timeout=60
-        )
+                args['callback_url'],
+                data=extraction_response,
+                timeout=60
+            )
         if response.status_code == 200:
             logger.info("Successfully sent the request on call")
         else:
