@@ -27,7 +27,6 @@ def extract_documents():
             'mock': True,
             'url': item['url'],
             'client_id': item['client_id'],
-            'url_type': item['url_content_type'],
             'callback_url': body['callback_url']
         })
 

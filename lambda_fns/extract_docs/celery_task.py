@@ -1,8 +1,8 @@
-from celery import Celery
-from .app import process_docs
 import requests
-
+from celery import Celery
 from celery.utils.log import get_task_logger
+
+from .app import process_docs
 
 logger = get_task_logger(__name__)
 
@@ -14,7 +14,7 @@ cel_app.config_from_object(__name__)
 @cel_app.task()
 def extract_contents(args):
     extraction_response = process_docs(args, None)
-    logger.info(extraction_response)
+
     try:
         response = requests.post(
                 args['callback_url'],

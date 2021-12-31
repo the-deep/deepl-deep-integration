@@ -9,6 +9,8 @@ import boto3
 from deep_parser.parser.base import TextFromFile
 from deep_parser import TextFromWeb
 
+from .content_types import ExtractContentType, UrlTypes
+
 DEFAULT_AWS_REGION = "us-east-1"
 
 aws_region = os.environ.get("AWS_REGION", DEFAULT_AWS_REGION)
@@ -20,13 +22,7 @@ domain_name = os.environ.get("EXTRACTOR_DOMAIN_NAME", "http://extractor:8001")
 s3_client = boto3.client('s3', region_name=aws_region)
 sqs_client = boto3.client('sqs', region_name=aws_region)
 
-
-class UrlTypes(str, Enum):
-    HTML = 'html'
-    PDF = 'pdf'
-    DOCX = 'docx'
-    PPTX = 'pptx'
-    MSWORD = 'doc'
+extract_content_type = ExtractContentType()
 
 
 class ExtractionStatus(Enum):
@@ -213,8 +209,10 @@ def get_extracted_text_web_links(link, mock=False):
         return None, None, -1, -1
 
 
-def handle_urls(url, url_type, mock=False):
+def handle_urls(url, mock=False):
     file_name = None
+
+    content_type = extract_content_type.get_content_type(url)
 
     if url.startswith("s3"):
         bucket_name, file_path, file_name = extract_path(url)
@@ -232,7 +230,7 @@ def handle_urls(url, url_type, mock=False):
             s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
             extraction_status = ExtractionStatus.FAILED.value
 
-    elif url_type == UrlTypes.PDF:  # assume it is http/https pdf weblink
+    elif content_type == UrlTypes.PDF.value:  # assume it is http/https pdf weblink
         response = requests.get(url, stream=True)
         file_name = f"{str(uuid.uuid4())}.pdf"
         with open(f"/tmp/{file_name}", 'wb') as fd:
@@ -246,7 +244,7 @@ def handle_urls(url, url_type, mock=False):
         except Exception:
             s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
             extraction_status = ExtractionStatus.FAILED.value
-    elif url_type == UrlTypes.HTML:  # assume it is a static webpage
+    elif content_type == UrlTypes.HTML.value:  # assume it is a static webpage
         try:
             s3_file_path, s3_images_path, total_pages, total_words_count = get_extracted_text_web_links(url, mock)
             extraction_status = ExtractionStatus.SUCCESS.value
@@ -267,8 +265,7 @@ def process_docs(event, context):
 
     if event.get('mock', False):
         url = event['url']
-        url_type = event['url_type']
-        text_path, images_path, total_pages, total_words_count, extraction_status = handle_urls(url, url_type, mock=True)
+        text_path, images_path, total_pages, total_words_count, extraction_status = handle_urls(url, mock=True)
         return {
             'client_id': event['client_id'],
             'url': url,
@@ -284,11 +281,10 @@ def process_docs(event, context):
         for record in records:
             client_id = record['body']
             url = record['messageAttributes']['url']['stringValue']
-            url_type = record['messageAttributes']['url_content_type']['stringValue']
             callback_url = record['messageAttributes']['callback_url']['stringValue']
             print(f"Processing {url}")
 
-            s3_text_path, s3_images_path, total_pages, total_words_count, extraction_status = handle_urls(url, url_type)
+            s3_text_path, s3_images_path, total_pages, total_words_count, extraction_status = handle_urls(url)
 
             sqs_message = {
                 'client_id': client_id,
