@@ -9,7 +9,10 @@ import boto3
 from deep_parser.parser.base import TextFromFile
 from deep_parser import TextFromWeb
 
-from .content_types import ExtractContentType, UrlTypes
+try:
+    from content_types import ExtractContentType, UrlTypes
+except ImportError:
+    from .content_types import ExtractContentType, UrlTypes
 
 DEFAULT_AWS_REGION = "us-east-1"
 
@@ -72,7 +75,7 @@ def send_message2sqs(
         'StringValue': url
     }
     message_attributes['extraction_status'] = {
-        'DataType': 'String',
+        'DataType': 'Number',
         'StringValue': extraction_status
     }
     if s3_text_path:
@@ -257,7 +260,7 @@ def handle_urls(url, mock=False):
     print(f"The extracted file path is {s3_file_path}")
     print(f"The extracted image path is {s3_images_path}")
 
-    return s3_file_path, s3_images_path, str(total_pages), str(total_words_count), extraction_status
+    return s3_file_path, s3_images_path, str(total_pages), str(total_words_count), str(extraction_status)
 
 
 def process_docs(event, context):

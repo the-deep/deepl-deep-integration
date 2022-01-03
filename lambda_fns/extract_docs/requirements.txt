@@ -1,7 +1,6 @@
 anytree==2.8.0
 certifi==2021.5.30
 charset-normalizer==2.0.4
-deep-parser @ git+https://github.com/the-deep/deepl-pdf-extraction@948279ed8893ba5e5263c12c0963297be744b7f8
 idna==3.2
 numpy==1.21.2
 PyMuPDF==1.18.17
@@ -10,3 +9,4 @@ requests==2.26.0
 six==1.16.0
 urllib3==1.26.6
 Pillow==8.3.2
+lxml==4.7.1
