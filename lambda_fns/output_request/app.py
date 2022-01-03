@@ -69,6 +69,9 @@ def output_request(event, context):
         callback_url = message_attributes['callback_url']['stringValue']
         total_pages = message_attributes['total_pages']['stringValue']
         total_words_count = message_attributes['total_words_count']['stringValue']
+        extraction_status = message_attributes['extraction_status']['stringValue']
+
+        # Preparing the request body on callback url.
 
         request_body['client_id'] = client_id
         request_body['url'] = url
@@ -98,6 +101,7 @@ def output_request(event, context):
 
         request_body['total_pages'] = total_pages
         request_body['total_words_count'] = total_words_count
+        request_body['extraction_status'] = extraction_status
 
         # Sending the request towards Deep
         try:
