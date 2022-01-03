@@ -18,7 +18,7 @@ resource "aws_sqs_queue" "entry_input_processed_queue_predict" {
   receive_wait_time_seconds = 5
   redrive_policy            = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.entry_failed_msgs_dlq_predict.arn
-    maxReceiveCount     = 4
+    maxReceiveCount     = 3
   })
 
   tags = {
@@ -164,15 +164,15 @@ module "entry_predict_output_fn" {
         ]
     })
 
-    layers = ["${aws_lambda_layer_version.lambda_layer.arn}"]
+    layers = ["${aws_lambda_layer_version.lambda_layer_mappings.arn}"]
 
     build_in_docker = true
     store_on_s3 = true
     s3_bucket = "${var.processed_docs_bucket}"
 }
 
-resource "aws_lambda_layer_version" "lambda_layer" {
-  filename   = "${path.module}/../../python.zip"
+resource "aws_lambda_layer_version" "lambda_layer_mappings" {
+  filename   = "${path.module}/../../lambda_layers/mappings/python.zip"
   layer_name = "tags_mapping_layer"
 
   compatible_runtimes = ["python3.8"]
