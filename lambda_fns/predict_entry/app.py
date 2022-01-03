@@ -1,6 +1,8 @@
 import os
 import boto3
+from botocore.exceptions import ClientError
 import json
+from enum import Enum
 
 DEFAULT_AWS_REGION = "us-east-1"
 
@@ -13,16 +15,26 @@ sqs_client = boto3.client('sqs', region_name=AWS_REGION)
 sagemaker_rt = boto3.client("runtime.sagemaker", region_name="us-east-1")  # todo: update the region later.
 
 
+class PredictionStatus(Enum):
+    FAILED = 0
+    SUCCESS = 1
+
+
 def send_message2sqs(
     entry_id,
     entry,
     predictions,
-    callback_url
+    callback_url,
+    prediction_status
 ):
     message_attributes = {}
     message_attributes['entry'] = {
         'DataType': 'String',
         'StringValue': entry
+    }
+    message_attributes['prediction_status'] = {
+        'DataType': 'Number',
+        'StringValue': prediction_status
     }
     if predictions:
         message_attributes['predictions'] = {
@@ -52,14 +64,20 @@ def get_predictions(entry):
         "index": [0],
         "data": [entry]
     }
-    response = sagemaker_rt.invoke_endpoint(
-        EndpointName=ENDPOINT_NAME_MODEL,
-        ContentType="application/json; format=pandas-split",
-        Body=json.dumps(data)
-    )
-    pred_response = json.loads(response["Body"].read().decode("ascii"))
+    try:
+        response = sagemaker_rt.invoke_endpoint(
+            EndpointName=ENDPOINT_NAME_MODEL,
+            ContentType="application/json; format=pandas-split",
+            Body=json.dumps(data)
+        )
+        pred_response = json.loads(response["Body"].read().decode("ascii"))
+        prediction_status = PredictionStatus.SUCCESS.value
+    except ClientError as error:
+        print(f"Error occurred: {error}")
+        pred_response = None
+        prediction_status = PredictionStatus.FAILED.value
 
-    return pred_response
+    return pred_response, str(prediction_status)
 
 
 def predict_entry_handler(event, context):
@@ -71,12 +89,13 @@ def predict_entry_handler(event, context):
         callback_url = record['messageAttributes']['callback_url']['stringValue']
         print(f"Processing entry id {entry_id}")
 
-        predictions = get_predictions(entry)
+        predictions, prediction_status = get_predictions(entry)
 
         sqs_message = {
             'entry_id': entry_id,
             'entry': entry,
             'predictions': predictions,
-            'callback_url': callback_url
+            'callback_url': callback_url,
+            'prediction_status': prediction_status
         }
         send_message2sqs(**sqs_message)
