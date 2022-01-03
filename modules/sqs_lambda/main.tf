@@ -1,7 +1,7 @@
 resource "aws_sqs_queue" "input_queue" {
   name_prefix               = "input-queue-${var.environment}-"
   delay_seconds             = 0
-  max_message_size          = 2048
+  max_message_size          = 262144
   message_retention_seconds = 86400
   receive_wait_time_seconds = 5
 
@@ -13,12 +13,12 @@ resource "aws_sqs_queue" "input_queue" {
 resource "aws_sqs_queue" "processed_queue" {
   name_prefix               = "processed-queue-${var.environment}-"
   delay_seconds             = 0
-  max_message_size          = 2048
+  max_message_size          = 262144
   message_retention_seconds = 86400
   receive_wait_time_seconds = 5
   redrive_policy            = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.failed_msgs_dlq.arn
-    maxReceiveCount     = 4
+    maxReceiveCount     = 3
   })
 
   tags = {
@@ -29,7 +29,7 @@ resource "aws_sqs_queue" "processed_queue" {
 resource "aws_sqs_queue" "failed_msgs_dlq" {
   name_prefix               = "failed-msgs-dlq-${var.environment}-"
   delay_seconds             = 0
-  max_message_size          = 2048
+  max_message_size          = 262144
   message_retention_seconds = 86400
   receive_wait_time_seconds = 5
 
@@ -81,6 +81,12 @@ resource "aws_lambda_event_source_mapping" "sqs_to_extract_lambda_trigger" {
   function_name    = module.extract_docs_fn.lambda_function_arn
 }
 
+resource "aws_s3_bucket_object" "parser" {
+  bucket = "deepl-doc-parser-latest"
+  key    = "python.zip"
+  source = "${path.module}/../../lambda_layers/deepl_parser/python.zip"
+}
+
 module "extract_docs_fn" {
     source = "terraform-aws-modules/lambda/aws"
 
@@ -118,6 +124,8 @@ module "extract_docs_fn" {
         ]
     })
 
+    layers = ["${aws_lambda_layer_version.lambda_layer_parser.arn}"]
+
     build_in_docker = true
     store_on_s3 = true
     s3_bucket = "${var.processed_docs_bucket}"
@@ -127,6 +135,18 @@ module "extract_docs_fn" {
         DEST_S3_BUCKET = "${var.processed_docs_bucket}"
         PROCESSED_QUEUE = aws_sqs_queue.processed_queue.id
     }
+}
+
+resource "aws_lambda_layer_version" "lambda_layer_parser" {
+  s3_bucket = "deepl-doc-parser-latest"
+  s3_key    = "python.zip"
+  layer_name = "deepl_parser"
+
+  compatible_runtimes = ["python3.8"]
+
+  depends_on = [
+    aws_s3_bucket_object.parser
+  ]
 }
 
 module "output_request_fn" {
