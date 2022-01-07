@@ -16,7 +16,8 @@ def send_message2sqs(
     entry,
     predictions,
     callback_url,
-    prediction_status
+    prediction_status,
+    geolocations
 ):
     message_attributes = {}
     message_attributes['entry'] = {
@@ -38,7 +39,10 @@ def send_message2sqs(
         'DataType': 'Number',
         'StringValue': prediction_status
     }
-
+    message_attributes['geolocations'] = {
+        'DataType': 'String',
+        'StringValue': geolocations
+    }
     if PREDICTION_QUEUE_NAME:
         sqs_client.send_message(
             QueueUrl=PREDICTION_QUEUE_NAME,
@@ -59,6 +63,7 @@ def entry_predict_dlq_msgs_handler(event, context):
         predictions = record['messageAttributes']['predictions']['stringValue']
         callback_url = record['messageAttributes']['callback_url']['stringValue']
         prediction_status = record['messageAttributes']['prediction_status']['stringValue']
+        geolocations = record['messageAttributes']['geolocations']['stringValue']
 
         print(f"Sending the entry id {entry_id} message to Processing Queue")
 
@@ -67,7 +72,8 @@ def entry_predict_dlq_msgs_handler(event, context):
             'entry': entry,
             'predictions': predictions,
             'callback_url': callback_url,
-            'prediction_status': prediction_status
+            'prediction_status': prediction_status,
+            'geolocations': geolocations
         }
         send_message2sqs(**sqs_message)
 

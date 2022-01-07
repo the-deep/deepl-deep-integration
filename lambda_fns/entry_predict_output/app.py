@@ -239,11 +239,12 @@ def entry_predict_output_handler(event, context):
         all_predictions = []
         entries = event['entries']
         prediction_status = 1
+        geolocations_mock = ['Nepal', 'Paris']
         for entry in entries:
             pp, pt = get_subpillars_mapping(fake_data)
 
-            final_output = mapping_name_enum(entry['entry_id'], pp, pt, prediction_status)
-            all_predictions.append(final_output)
+            pillars_output = mapping_name_enum(entry['entry_id'], pp, pt, prediction_status)
+            all_predictions.append({'pillars_output': pillars_output, 'geolocations': geolocations_mock})
         return all_predictions
 
     else:
@@ -259,18 +260,19 @@ def entry_predict_output_handler(event, context):
             predictions = record['messageAttributes']['predictions']['stringValue']
             callback_url = record['messageAttributes']['callback_url']['stringValue']
             prediction_status = record['messageAttributes']['prediction_status']['stringValue']
+            geolocations = record['messageAttributes']['geolocations']['stringValue']
 
             preds_lst = json.loads(predictions)
 
             pp, pt = get_subpillars_mapping(preds_lst)
 
-            final_output = mapping_name_enum(entry_id, pp, pt, prediction_status)
+            pillars_output = mapping_name_enum(entry_id, pp, pt, prediction_status)
 
             try:
                 response = requests.post(
                     callback_url,
                     headers=headers,
-                    data=json.dumps(final_output),
+                    data=json.dumps({'pillars_output': pillars_output, 'geolocations': geolocations}),
                     timeout=60
                 )
                 if response.status_code == 200:
