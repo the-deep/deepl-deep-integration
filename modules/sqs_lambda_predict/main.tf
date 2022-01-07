@@ -4,6 +4,7 @@ resource "aws_sqs_queue" "entry_input_queue_predict" {
   max_message_size          = 262144
   message_retention_seconds = 86400
   receive_wait_time_seconds = 5
+  visibility_timeout_seconds = 60
 
   tags = {
     Environment = "${var.environment}"
@@ -85,6 +86,7 @@ module "predict_entry_fn" {
     function_name = "entry-prediction-handler-${var.environment}"
     handler = "app.predict_entry_handler"
     runtime = "python3.8"
+    timeout = 60
 
     source_path = [
     {
@@ -137,6 +139,7 @@ module "entry_predict_output_fn" {
     function_name = "entry-prediction-output-handler-${var.environment}"
     handler = "app.entry_predict_output_handler"
     runtime = "python3.8"
+    timeout = 30
 
     source_path = [
     {
@@ -184,6 +187,7 @@ module "entry_predict_transfer_dlq_msg" {
     function_name = "entry-predict-transfer-dlq-msg-${var.environment}"
     handler = "app.entry_predict_dlq_msgs_handler"
     runtime = "python3.8"
+    timeout = 30
 
     source_path = [
         {

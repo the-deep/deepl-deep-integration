@@ -4,6 +4,7 @@ resource "aws_sqs_queue" "input_queue" {
   max_message_size          = 262144
   message_retention_seconds = 86400
   receive_wait_time_seconds = 5
+  visibility_timeout_seconds = 60
 
   tags = {
     Environment = "${var.environment}"
@@ -93,7 +94,7 @@ module "extract_docs_fn" {
     function_name = "te-extract-docs-func-${var.environment}"
     handler = "app.process_docs"
     runtime = "python3.8"
-    timeout = 30
+    timeout = 60
 
     source_path = [
     {
