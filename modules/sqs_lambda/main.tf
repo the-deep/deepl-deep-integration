@@ -83,7 +83,7 @@ resource "aws_lambda_event_source_mapping" "sqs_to_extract_lambda_trigger" {
 }
 
 resource "aws_s3_bucket_object" "parser" {
-  bucket = "deepl-doc-parser-latest"
+  bucket = "deepl-doc-parser-latest-${var.environment}"  # note: this bucket is created manually
   key    = "python.zip"
   source = "${path.module}/../../lambda_layers/deepl_parser/python.zip"
 }
@@ -139,7 +139,7 @@ module "extract_docs_fn" {
 }
 
 resource "aws_lambda_layer_version" "lambda_layer_parser" {
-  s3_bucket = "deepl-doc-parser-latest"
+  s3_bucket = "deepl-doc-parser-latest-${var.environment}" # note: this bucket is created manually
   s3_key    = "python.zip"
   layer_name = "deepl_parser"
 

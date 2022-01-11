@@ -1,12 +1,9 @@
-variable "aws_region" {
-  default = "eu-west-3"
-}
+variable "aws_region" {}
 
-variable "aws_profile" {
-  default = "default"
-}
+variable "aws_profile" {}
 
+variable "environment" {}
 
-variable "environment" {
-    default = "dev"
-}
+variable "api_gateway_name" {}
+
+variable "vpce_id" {}

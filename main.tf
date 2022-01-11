@@ -4,20 +4,20 @@ terraform {
     bucket         = "terraform-state-deep"
     key            = "deep_deepl_integration/terraform.tfstate"
     region         = "us-east-1"
-    dynamodb_table = "terraform-lock-integration-db"
+#    dynamodb_table = "terraform-lock-integration-db"
     encrypt        = true
   }
 }
 
-resource "aws_dynamodb_table" "terraform_locks" {
-  hash_key       = "LockID"
-  name           = "terraform-lock-integration-db"
-  billing_mode   = "PAY_PER_REQUEST"
-  attribute {
-    name = "LockID"
-    type = "S"
-  }
-}
+#resource "aws_dynamodb_table" "terraform_locks" {
+#  hash_key       = "LockID"
+#  name           = "terraform-lock-integration-db"
+#  billing_mode   = "PAY_PER_REQUEST"
+#  attribute {
+#    name = "LockID"
+#    type = "S"
+#  }
+#}
 
 provider "aws" {
   region = var.aws_region
@@ -40,6 +40,10 @@ module "sqs_lambda_predict_module" {
 
 module "apigateway_module" {
   source = "./modules/api_gateway"
+
+  api_gateway_name = var.api_gateway_name
+
+  vpce_id = var.vpce_id
 
   predict_entry_invoke_arn = "${module.sqs_lambda_predict_module.entry_input_pred_request_predict_invoke_arn}"
   process_doc_invoke_arn = "${module.sqs_lambda_module.extract_doc_invoke_arn}"

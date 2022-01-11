@@ -1,5 +1,5 @@
 resource "aws_api_gateway_rest_api" "api" {
-  name = var.name
+  name = "${var.api_gateway_name}-${var.environment}"
 
   endpoint_configuration {
     types = ["PRIVATE"]

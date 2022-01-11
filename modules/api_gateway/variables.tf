@@ -1,6 +1,6 @@
 variable "environment" {}
 
-variable "name" { default = "rapi" }
+variable "api_gateway_name" {}
 variable "ep_predict_entry" { default = "entry_predict" }
 
 variable "ep_input_te" { default = "extract_docs" }
@@ -12,7 +12,7 @@ variable "ep_input_te" { default = "extract_docs" }
 variable "predict_entry_lambda_fn_name" {}
 variable "input_te_lambda_fn_name" {}
 
-variable "vpce_id" { default = "vpce-053ed1c5a7f24dacf" }
+variable "vpce_id" {}
 
 variable "predict_entry_invoke_arn" {}
 
