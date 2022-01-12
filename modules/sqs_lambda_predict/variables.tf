@@ -1,9 +1,7 @@
 variable environment {}
 
-variable ep_name_model {
-    type = string
-    default = "test-all-models-rsh"
-}
+variable model_endpoint_name {}
 
-variable "processed_docs_bucket" {
-}
+variable geolocation_fn_name {}
+
+variable processed_docs_bucket {}

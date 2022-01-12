@@ -7,3 +7,7 @@ variable "environment" {}
 variable "api_gateway_name" {}
 
 variable "vpce_id" {}
+
+variable "model_endpoint_name" {}
+
+variable "geolocation_fn_name" {}

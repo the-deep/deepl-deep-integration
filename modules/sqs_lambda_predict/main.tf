@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 resource "aws_sqs_queue" "entry_input_queue_predict" {
   name_prefix               = "entry-input-queue-predict-${var.environment}-"
   delay_seconds             = 0
@@ -66,7 +68,7 @@ module "entry_input_pred_request_fn" {
             "sqs:ListQueues",
             "sqs:SendMessageBatch"
         ],
-        "Resource": ["*"]
+        "Resource": [aws_sqs_queue.entry_input_queue_predict.arn]
     }
     ]
     })
@@ -102,7 +104,7 @@ module "predict_entry_fn" {
             {
                 "Effect": "Allow",
                 "Action": [
-                    "lambda:*",
+                    "lambda:InvokeFunction",
                     "sagemaker:InvokeEndpoint",
                     "sqs:SendMessage",
                     "sqs:ReceiveMessage",
@@ -112,14 +114,20 @@ module "predict_entry_fn" {
                     "sqs:ListQueues",
                     "sqs:SendMessageBatch",
                 ],
-                "Resource": ["*"]
+                "Resource": [
+                    aws_sqs_queue.entry_input_queue_predict.arn,
+                    aws_sqs_queue.entry_input_processed_queue_predict.arn,
+                    "arn:aws:sagemaker:us-east-1:${data.aws_caller_identity.current.account_id}:endpoint/${var.model_endpoint_name}",
+                    "arn:aws:lambda:us-east-1:${data.aws_caller_identity.current.account_id}:function:${var.geolocation_fn_name}"
+                ]
             }
         ]
     })
 
     environment_variables = {
         PREDICTION_QUEUE = aws_sqs_queue.entry_input_processed_queue_predict.id
-        EP_NAME_MODEL = var.ep_name_model
+        MODEL_ENDPOINT_NAME = var.model_endpoint_name
+        GEOLOCATION_FN_NAME = var.geolocation_fn_name
     }
 }
 
@@ -162,7 +170,10 @@ module "entry_predict_output_fn" {
                     "sqs:GetQueueUrl",
                     "sqs:ListQueues",
                 ],
-                "Resource": ["*"]
+                "Resource": [
+                    aws_sqs_queue.entry_input_processed_queue_predict.arn,
+                    aws_sqs_queue.entry_failed_msgs_dlq_predict.arn
+                ]
             }
         ]
     })
@@ -208,7 +219,10 @@ module "entry_predict_transfer_dlq_msg" {
                     "sqs:DeleteMessage",
                     "sqs:GetQueueAttributes"
                 ],
-                "Resource": ["*"]
+                "Resource": [
+                    aws_sqs_queue.entry_input_processed_queue_predict.arn,
+                    aws_sqs_queue.entry_failed_msgs_dlq_predict.arn
+                ]
             }
         ]
     })

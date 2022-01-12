@@ -64,10 +64,9 @@ module "input_request_fn" {
             "sqs:SendMessage",
             "sqs:GetQueueUrl",
             "sqs:ListQueues",
-            "sqs:SendMessageBatch",
-            "s3:GetObject"
+            "sqs:SendMessageBatch"
         ],
-        "Resource": ["*"]
+        "Resource": [aws_sqs_queue.input_queue.arn]
     }
     ]
     })
@@ -120,7 +119,12 @@ module "extract_docs_fn" {
                     "sqs:SendMessageBatch",
                     "s3:PutObject"
                 ],
-                "Resource": ["*"]
+                "Resource": [
+                    aws_sqs_queue.input_queue.arn,
+                    aws_sqs_queue.processed_queue.arn,
+                    "${var.processed_docs_bucket_arn}",
+                    "${var.processed_docs_bucket_arn}/*"
+                ]
             }
         ]
     })
@@ -180,7 +184,12 @@ module "output_request_fn" {
                     "s3:GetObject",
                     "s3:ListBucket"
                 ],
-                "Resource": ["*"]
+                "Resource": [
+                    aws_sqs_queue.processed_queue.arn,
+                    aws_sqs_queue.failed_msgs_dlq.arn,
+                    "${var.processed_docs_bucket_arn}",
+                    "${var.processed_docs_bucket_arn}/*"
+                ]
             }
         ]
     })
@@ -226,7 +235,10 @@ module "transfer_dlq_msg" {
                     "sqs:DeleteMessage",
                     "sqs:GetQueueAttributes"
                 ],
-                "Resource": ["*"]
+                "Resource": [
+                    aws_sqs_queue.processed_queue.arn,
+                    aws_sqs_queue.failed_msgs_dlq.arn
+                ]
             }
         ]
     })

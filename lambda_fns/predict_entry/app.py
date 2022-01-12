@@ -9,8 +9,8 @@ DEFAULT_AWS_REGION = "us-east-1"
 
 AWS_REGION = os.environ.get("AWS_REGION", DEFAULT_AWS_REGION)
 PREDICTION_QUEUE_NAME = os.environ.get("PREDICTION_QUEUE")
-ENDPOINT_NAME_MODEL = os.environ.get("EP_NAME_MODEL")
-GEOLOCATION_FN_NAME = os.environ.get("GEOLOCATION_FN_NAME", "geolocations_py")
+MODEL_ENDPOINT_NAME = os.environ.get("MODEL_ENDPOINT_NAME")
+GEOLOCATION_FN_NAME = os.environ.get("GEOLOCATION_FN_NAME")
 
 sqs_client = boto3.client('sqs', region_name=AWS_REGION)
 
@@ -81,13 +81,13 @@ def get_geolocations(entry):
 
 def get_predictions(entry):
     data = {
-        "columns": ["excerpt"],
+        "columns": ["excerpt", "return_type"],
         "index": [0],
-        "data": [entry]
+        "data": [[entry, "all_models"]]
     }
     try:
         response = sagemaker_rt.invoke_endpoint(
-            EndpointName=ENDPOINT_NAME_MODEL,
+            EndpointName=MODEL_ENDPOINT_NAME,
             ContentType="application/json; format=pandas-split",
             Body=json.dumps(data)
         )

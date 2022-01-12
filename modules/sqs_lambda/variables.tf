@@ -5,5 +5,6 @@ variable "signed_url_expiry_secs" {
     default = 3600
 }
 
-variable "processed_docs_bucket" {
-}
+variable "processed_docs_bucket" {}
+
+variable "processed_docs_bucket_arn" {}

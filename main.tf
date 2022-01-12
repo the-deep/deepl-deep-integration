@@ -27,6 +27,7 @@ provider "aws" {
 module "sqs_lambda_module" {
   source = "./modules/sqs_lambda"
   processed_docs_bucket = "${module.s3_module.te_bucket_name}"
+  processed_docs_bucket_arn = "${module.s3_module.te_bucket_arn}"
 
   environment = var.environment
 }
@@ -34,6 +35,9 @@ module "sqs_lambda_module" {
 module "sqs_lambda_predict_module" {
   source = "./modules/sqs_lambda_predict"
   processed_docs_bucket = "${module.s3_module.te_bucket_name}"
+
+  model_endpoint_name = var.model_endpoint_name
+  geolocation_fn_name = var.geolocation_fn_name
 
   environment = var.environment
 }
