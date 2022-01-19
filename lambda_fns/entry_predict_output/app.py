@@ -1,237 +1,220 @@
 import requests
 import json
 
-from mappings.tags_mapping import get_all_mappings, map_categories_subpillars
+from mappings.tags_mapping import get_all_mappings, get_categories, map_categories_subpillars
 
 subpillars_mapping = map_categories_subpillars()
 mappings = get_all_mappings()
+categories = get_categories()
 
-fake_data = [{
-    'sectors': [{
-        'Agriculture': 4.4552652980200946e-05,
-        'Education': 0.0006393258552313507,
-        'Food Security': 0.0007695988866454754,
-        'Health': 2.0288994117658965,
-        'Livelihoods': 0.0027210856585398965,
-        'Logistics': 0.00011781198059287952,
-        'NOT_MAPPED': 0.0001796700113724607,
-        'Nutrition': 0.0012666034308495,
-        'Protection': 0.001404099185169945,
-        'Shelter': 0.000824810834681808,
-        'WASH': 0.0025559339502995663
-    }],
-    'present_prim_tags': [
-        {'sectors': 1.7443921078335156, 'subpillars_1d': 0.27051111062367755, 'subpillars_2d': 1.125618815422058}], 
-    'pillars_2d': [
-        {
-            'At Risk': 0.014071312866040638, 'Capacities & Response': 0.9037117747699512,
-            'Humanitarian Conditions': 0.6109961349031199, 'Impact': 0.08877085832258066, 'NOT_MAPPED': 0.18958856189061724,
-            'Priority Interventions': 0.0019680088813844566, 'Priority Needs': 0.0031425298657268286
-        },
-        {
-            'At Risk': 0.0139712356030941, 'Capacities & Response': 0.5527079981916091,
-            'Humanitarian Conditions': 1.1584259893583215, 'Impact': 0.12869075872004032, 'NOT_MAPPED': 0.1346996615803431,
-            'Priority Interventions': 0.001594731175164516, 'Priority Needs': 0.0026255864650011063
-        }
-    ],
-    'pillars_1d': [
-        {
-            'Casualties': 0.003412537625990808, 'Context': 0.02325245295651257, 'Covid-19': 0.44976268241654577,
-            'Displacement': 0.009790685855680041, 'Humanitarian Access': 0.002306541621995469,
-            'Information And Communication': 0.036622151466352594, 'NOT_MAPPED': 1.0777293394009273,
-            'Shock/Event': 0.16493414613333615
-        },
-        {
-            'Casualties': 0.003208380439900793, 'Context': 0.02115225652232766, 'Covid-19': 0.43925273774275136,
-            'Displacement': 0.022146134740776487, 'Humanitarian Access': 0.0014709733659401536,
-            'Information And Communication': 0.017782342287578752, 'NOT_MAPPED': 0.7329113781452179,
-            'Shock/Event': 0.3287952731956135
-        }
-    ],
-    'impact_capresp_humcond': [
-        {
-            'Capacities & Response->International Response': 0.07528654485940933,
-            'Capacities & Response->Local Response': 0.00020584032297067873,
-            'Capacities & Response->National Response': 2.33131421578897,
-            'Capacities & Response->Number Of People Reached/Response Gaps': 0.03508530895818363,
-            'Humanitarian Conditions->Coping Mechanisms': 0.003846486166973288,
-            'Humanitarian Conditions->Living Standards': 0.25096290358682954,
-            'Humanitarian Conditions->Number Of People In Need': 0.0005299710028339177,
-            'Humanitarian Conditions->Physical And Mental Well Being': 0.08303534984588623,
-            'Impact->Driver/Aggravating Factors': 0.005122622112847037,
-            'Impact->Impact On People': 0.027884856205094944,
-            'Impact->Impact On Systems, Services And Networks': 0.06305176851361297,
-            'Impact->Number Of People Affected': 0.0006419112145926596
-        }
-    ],
-    'need_intervention_risk': [
-        {
-            'At Risk->Number Of People At Risk': 0.00029756879368319345,
-            'At Risk->Risk And Vulnerabilities': 0.09423873963810149,
-            'Priority Interventions->Expressed By Humanitarian Staff': 1.4020784033669365,
-            'Priority Interventions->Expressed By Population': 0.0954590504989028,
-            'Priority Needs->Expressed By Humanitarian Staff': 0.4301432626588004,
-            'Priority Needs->Expressed By Population': 0.08459019785126051
-        },
-        {
-            'At Risk->Number Of People At Risk': 0.00010954293732841809,
-            'At Risk->Risk And Vulnerabilities': 0.04522786253974551,
-            'Priority Interventions->Expressed By Humanitarian Staff': 1.5009298368736548,
-            'Priority Interventions->Expressed By Population': 0.03515536276002725,
-            'Priority Needs->Expressed By Humanitarian Staff': 0.18193615334374563,
-            'Priority Needs->Expressed By Population': 0.13003668282181025
-        }
-    ],
-    'context_covid': [
-        {
-            'Context->Demography': 0.001032184361695097, 'Context->Economy': 0.00699733341620727,
-            'Context->Environment': 0.00041005110168563467, 'Context->Legal & Policy': 0.007072312938463357,
-            'Context->Politics': 0.07354221394601858, 'Context->Security & Stability': 0.008455046022740694,
-            'Context->Socio Cultural': 0.0014313508290797472, 'Covid-19->Cases': 0.011693374677137894,
-            'Covid-19->Contact Tracing': 0.0002544779730769359, 'Covid-19->Deaths': 6.76133053135485e-05,
-            'Covid-19->Hospitalization & Care': 0.00012371650276084742, 'Covid-19->Restriction Measures': 0.07524518917004268,
-            'Covid-19->Testing': 0.9760316075949834, 'Covid-19->Vaccination': 0.000740400601869389
-        }
-    ],
-    'displacement_shockevent': [
-        {
-            'Displacement->Intentions': 0.0004663542919540002, 'Displacement->Local Integration': 0.002901282456076267,
-            'Displacement->Pull Factors': 0.0010130269066920797, 'Displacement->Push Factors': 0.021304991096258163,
-            'Displacement->Type/Numbers/Movements': 0.20951724104713973, 'Shock/Event->Hazard & Threats': 1.2634064312334412,
-            'Shock/Event->Type And Characteristics': 0.01677578275508069,
-            'Shock/Event->Underlying/Aggravating Factors': 0.35870664698236127
-        },
-        {
-            'Displacement->Intentions': 0.0005456410993550284, 'Displacement->Local Integration': 0.004696231145335704,
-            'Displacement->Pull Factors': 0.0011058724148346013, 'Displacement->Push Factors': 0.01964313288529714,
-            'Displacement->Type/Numbers/Movements': 0.593930587433932, 'Shock/Event->Hazard & Threats': 0.7747167790377582,
-            'Shock/Event->Type And Characteristics': 0.013671035660391158,
-            'Shock/Event->Underlying/Aggravating Factors': 0.2826770219732733
-        }],
-    'access_infcom_casualities': [
-        {
-            'Casualties->Dead': 0.25634305442080774, 'Casualties->Injured': 0.051686998146275684,
-            'Casualties->Missing': 0.015421428463675758,
-            'Humanitarian Access->Number Of People Facing Humanitarian Access Constraints/Humanitarian Access Gaps': 0.021052659105728653,
-            'Humanitarian Access->Physical Constraints': 0.28977797112681647, 'Humanitarian Access->Population To Relief': 0.0033493785215823937,
-            'Humanitarian Access->Relief To Population': 0.29718720100142737,
-            'Information And Communication->Communication Means And Preferences': 21.184255679448448,
-            'Information And Communication->Information Challenges And Barriers': 0.0047589408826421604,
-            'Information And Communication->Knowledge And Info Gaps (Hum)': 0.10249406403424789,
-            'Information And Communication->Knowledge And Info Gaps (Pop)': 0.023119417684418813
-        }
-    ]},
-    {
-        'sectors': {
-            'Agriculture': 0.3, 'Education': 0.68, 'Food Security': 0.61, 'Health': 0.49, 'Livelihoods': 0.46,
-            'Logistics': 0.47000000000000003, 'NOT_MAPPED': 0.09, 'Nutrition': 0.48, 'Protection': 0.62,
-            'Shelter': 0.58, 'WASH': 0.55
-        },
-        'present_prim_tags': {
-            'sectors': 0.44, 'subpillars_1d': 0.45, 'subpillars_2d': 0.56},
-        'pillars_2d': {
-            'At Risk': 0.35000000000000003, 'Capacities & Response': 0.68, 'Humanitarian Conditions': 0.46, 'Impact': 0.48,
-            'NOT_MAPPED': 0.63, 'Priority Interventions': 0.74, 'Priority Needs': 0.5
-        },
-        'pillars_1d': {
-            'Casualties': 0.64, 'Context': 0.48, 'Covid-19': 0.67, 'Displacement': 0.45, 'Humanitarian Access': 0.6,
-            'Information And Communication': 0.07, 'NOT_MAPPED': 0.48, 'Shock/Event': 0.44
-        },
-        'impact_capresp_humcond': {
-            'Capacities & Response->International Response': 0.5, 'Capacities & Response->Local Response': 0.07,
-            'Capacities & Response->National Response': 0.37,
-            'Capacities & Response->Number Of People Reached/Response Gaps': 0.22,
-            'Humanitarian Conditions->Coping Mechanisms': 0.48,
-            'Humanitarian Conditions->Living Standards': 0.41000000000000003,
-            'Humanitarian Conditions->Number Of People In Need': 0.6,
+fake_data = {
+    'raw_predictions': {
+        'subpillars': [{
+            'At Risk->Number Of People At Risk': 0.004270137287676334,
+            'At Risk->Risk And Vulnerabilities': 0.07127775529096293,
+            'Capacities & Response->International Response': 1.331607320091941,
+            'Capacities & Response->Local Response': 0.020646801414458377,
+            'Capacities & Response->National Response': 0.4925251007080078,
+            'Capacities & Response->Number Of People Reached/Response Gaps': 0.7790635240838882,
+            'Casualties->Dead': 0.01773698255419731,
+            'Casualties->Injured': 0.005923864185152685,
+            'Casualties->Missing': 0.027860794216394424,
+            'Context->Demography': 0.19150988721266024,
+            'Context->Economy': 0.03239802516451696,
+            'Context->Environment': 0.0266275278502895,
+            'Context->Legal & Policy': 0.02023347094655037,
+            'Context->Politics': 0.025336206068887427,
+            'Context->Security & Stability': 0.03668013150277345,
+            'Context->Socio Cultural': 0.025737904669607386,
+            'Covid-19->Cases': 0.038027222035452724,
+            'Covid-19->Contact Tracing': 0.019042426720261574,
+            'Covid-19->Deaths': 0.024089267527734912,
+            'Covid-19->Hospitalization & Care': 0.055941250608410945,
+            'Covid-19->Restriction Measures': 0.03760255640372634,
+            'Covid-19->Testing': 0.04087602895385814,
+            'Covid-19->Vaccination': 0.03429351405042117,
+            'Displacement->Intentions': 0.0036236922309364913,
+            'Displacement->Local Integration': 0.026188229980028194,
+            'Displacement->Pull Factors': 0.007194649272908768,
+            'Displacement->Push Factors': 0.011826851942504827,
+            'Displacement->Type/Numbers/Movements': 0.09764697816636828,
+            'Humanitarian Access->Number Of People Facing Humanitarian Access Constraints/Humanitarian Access Gaps': 0.04048,
+            'Humanitarian Access->Physical Constraints': 0.020004283370716233,
+            'Humanitarian Access->Population To Relief': 0.02886151778511703,
+            'Humanitarian Access->Relief To Population': 0.08136125979945064,
+            'Humanitarian Conditions->Coping Mechanisms': 0.07366700826779655,
+            'Humanitarian Conditions->Living Standards': 0.08120508459599121,
+            'Humanitarian Conditions->Number Of People In Need': 0.049229882853595835,
+            'Humanitarian Conditions->Physical And Mental Well Being': 0.1497238576412201,
+            'Impact->Driver/Aggravating Factors': 0.05259623184152271,
+            'Impact->Impact On People': 0.048762670856841064,
+            'Impact->Impact On Systems, Services And Networks': 0.07096444411824147,
+            'Impact->Number Of People Affected': 0.0289971218444407,
+            'Information And Communication->Communication Means And Preferences': 0.03272266437609991,
+            'Information And Communication->Information Challenges And Barriers': 0.003942607768944331,
+            'Information And Communication->Knowledge And Info Gaps (Hum)': 0.013623181730508804,
+            'Information And Communication->Knowledge And Info Gaps (Pop)': 0.009105289204707068,
+            'Priority Interventions->Expressed By Humanitarian Staff': 0.04735273108178494,
+            'Priority Interventions->Expressed By Population': 0.022244140313103282,
+            'Priority Needs->Expressed By Humanitarian Staff': 0.02912785443994734,
+            'Priority Needs->Expressed By Population': 0.06317001368318285,
+            'Shock/Event->Hazard & Threats': 0.05274482899241977,
+            'Shock/Event->Type And Characteristics': 0.019818637520074844,
+            'Shock/Event->Underlying/Aggravating Factors': 0.07190693702016557}],
+        'sectors': [{
+            'Agriculture': 0.05120900645852089,
+            'Education': 0.05305534398013895,
+            'Food Security': 0.0618496835231781,
+            'Health': 1.618701742406477,
+            'Livelihoods': 0.1329706003100185,
+            'Logistics': 0.06410405039787292,
+            'Nutrition': 0.07127126057942708,
+            'Protection': 0.14047556157623017,
+            'Shelter': 0.07421194504086788,
+            'WASH': 0.0428224541246891}],
+        'secondary_tags': [{
+            'affected_groups_level_3_kw->Asylum Seekers': 0.0209003354289702,
+            'affected_groups_level_3_kw->Host': 0.024959675612903777,
+            'affected_groups_level_3_kw->IDP': 0.05839878862554376,
+            'affected_groups_level_3_kw->Migrants': 0.01291824979180435,
+            'affected_groups_level_3_kw->Refugees': 0.025602160179513996,
+            'affected_groups_level_3_kw->Returnees': 0.09169663601326491,
+            'age_kw_pred->Adult (18 to 59 years old)': 1.4639190652153709,
+            'age_kw_pred->Children/Youth (5 to 17 years old)': 0.13173515834505595,
+            'age_kw_pred->Infants/Toddlers (<5 years old)': 0.09468458019770108,
+            'age_kw_pred->Older Persons (60+ years old)': 0.04525523943205675,
+            'gender_kw_pred->Female': 1.5787005424499512,
+            'gender_kw_pred->Male': 0.09616524109552647,
+            'severity->Critical': 0.1511390060186386,
+            'severity->Major': 0.15994030982255936,
+            'severity->Minor Problem': 0.10206978768110275,
+            'severity->No problem': 0.2135063045554691,
+            'severity->Of Concern': 0.20366763696074486,
+            'specific_needs_groups->Child Head of Household': 0.08046364630846416,
+            'specific_needs_groups->Chronically Ill': 0.18402323352568076,
+            'specific_needs_groups->Elderly Head of Household': 0.11073422928651175,
+            'specific_needs_groups->Female Head of Household': 0.15970195733731793,
+            'specific_needs_groups->GBV survivors': 0.29262131452560425,
+            'specific_needs_groups->Indigenous people': 0.0469617903805696,
+            'specific_needs_groups->LGBTQI+': 0.020378202933705212,
+            'specific_needs_groups->Minorities': 0.07438406348228455,
+            'specific_needs_groups->Persons with Disability': 0.07348087383434176,
+            'specific_needs_groups->Pregnant or Lactating Women': 1.7958825542813257,
+            'specific_needs_groups->Single Women (including Widows)': 0.3080255351960659,
+            'specific_needs_groups->Unaccompanied or Separated Children': 0.06830143697914623}]},
+    'thresholds': {
+        'subpillars': {
+            'At Risk->Number Of People At Risk': 0.24,
+            'At Risk->Risk And Vulnerabilities': 0.43,
+            'Capacities & Response->International Response': 0.55,
+            'Capacities & Response->Local Response': 0.19,
+            'Capacities & Response->National Response': 0.44,
+            'Capacities & Response->Number Of People Reached/Response Gaps': 0.47000000000000003,
+            'Casualties->Dead': 0.55, 'Casualties->Injured': 0.34,
+            'Casualties->Missing': 0.31,
+            'Context->Demography': 0.41000000000000003,
+            'Context->Economy': 0.41000000000000003,
+            'Context->Environment': 0.31,
+            'Context->Legal & Policy': 0.5,
+            'Context->Politics': 0.34,
+            'Context->Security & Stability': 0.46,
+            'Context->Socio Cultural': 0.34,
+            'Covid-19->Cases': 0.64,
+            'Covid-19->Contact Tracing': 0.46,
+            'Covid-19->Deaths': 0.74,
+            'Covid-19->Hospitalization & Care': 0.43,
+            'Covid-19->Restriction Measures': 0.48,
+            'Covid-19->Testing': 0.53, 'Covid-19->Vaccination': 0.61,
+            'Displacement->Intentions': 0.53, 'Displacement->Local Integration': 0.46,
+            'Displacement->Pull Factors': 0.42, 'Displacement->Push Factors': 0.52,
+            'Displacement->Type/Numbers/Movements': 0.45,
+            'Humanitarian Access->Number Of People Facing Humanitarian Access Constraints/Humanitarian Access Gaps': 0.33,
+            'Humanitarian Access->Physical Constraints': 0.42, 'Humanitarian Access->Population To Relief': 0.24,
+            'Humanitarian Access->Relief To Population': 0.32,
+            'Humanitarian Conditions->Coping Mechanisms': 0.46,
+            'Humanitarian Conditions->Living Standards': 0.46, 'Humanitarian Conditions->Number Of People In Need': 0.38,
             'Humanitarian Conditions->Physical And Mental Well Being': 0.5,
-            'Impact->Driver/Aggravating Factors': 0.36, 'Impact->Impact On People': 0.33,
-            'Impact->Impact On Systems, Services And Networks': 0.43, 'Impact->Number Of People Affected': 0.18
-        },
-        'need_intervention_risk': {
-            'At Risk->Number Of People At Risk': 0.78, 'At Risk->Risk And Vulnerabilities': 0.42,
-            'Priority Interventions->Expressed By Humanitarian Staff': 0.54,
-            'Priority Interventions->Expressed By Population': 0.03,
-            'Priority Needs->Expressed By Humanitarian Staff': 0.35000000000000003,
-            'Priority Needs->Expressed By Population': 0.48
-        },
-        'context_covid': {
-            'Context->Demography': 0.52, 'Context->Economy': 0.66, 'Context->Environment': 0.35000000000000003,
-            'Context->Legal & Policy': 0.72, 'Context->Politics': 0.53, 'Context->Security & Stability': 0.52,
-            'Context->Socio Cultural': 0.45, 'Covid-19->Cases': 0.55, 'Covid-19->Contact Tracing': 0.73,
-            'Covid-19->Deaths': 0.52, 'Covid-19->Hospitalization & Care': 0.6, 'Covid-19->Restriction Measures': 0.6,
-            'Covid-19->Testing': 0.58, 'Covid-19->Vaccination': 0.62
-        },
-        'displacement_shockevent': {
-            'Displacement->Intentions': 0.48, 'Displacement->Local Integration': 0.49, 'Displacement->Pull Factors': 0.19,
-            'Displacement->Push Factors': 0.45, 'Displacement->Type/Numbers/Movements': 0.5700000000000001,
-            'Shock/Event->Hazard & Threats': 0.54, 'Shock/Event->Type And Characteristics': 0.47000000000000003,
-            'Shock/Event->Underlying/Aggravating Factors': 0.34
-        },
-        'access_infcom_casualities': {
-            'Casualties->Dead': 0.68, 'Casualties->Injured': 0.48, 'Casualties->Missing': 0.55,
-            'Humanitarian Access->Number Of People Facing Humanitarian Access Constraints/Humanitarian Access Gaps': 0.34,
-            'Humanitarian Access->Physical Constraints': 0.44, 'Humanitarian Access->Population To Relief': 0.33,
-            'Humanitarian Access->Relief To Population': 0.22,
-            'Information And Communication->Communication Means And Preferences': 0.03,
-            'Information And Communication->Information Challenges And Barriers': 0.44,
-            'Information And Communication->Knowledge And Info Gaps (Hum)': 0.49,
-            'Information And Communication->Knowledge And Info Gaps (Pop)': 0.28
-        }
-    }
-]
+            'Impact->Driver/Aggravating Factors': 0.46,
+            'Impact->Impact On People': 0.47000000000000003,
+            'Impact->Impact On Systems, Services And Networks': 0.48,
+            'Impact->Number Of People Affected': 0.4,
+            'Information And Communication->Communication Means And Preferences': 0.3,
+            'Information And Communication->Information Challenges And Barriers': 0.28,
+            'Information And Communication->Knowledge And Info Gaps (Hum)': 0.45,
+            'Information And Communication->Knowledge And Info Gaps (Pop)': 0.31,
+            'Priority Interventions->Expressed By Humanitarian Staff': 0.51,
+            'Priority Interventions->Expressed By Population': 0.29,
+            'Priority Needs->Expressed By Humanitarian Staff': 0.45,
+            'Priority Needs->Expressed By Population': 0.42,
+            'Shock/Event->Hazard & Threats': 0.45, 'Shock/Event->Type And Characteristics': 0.42,
+            'Shock/Event->Underlying/Aggravating Factors': 0.28},
+        'sectors': {
+            'Agriculture': 0.5,
+            'Education': 0.55,
+            'Food Security': 0.5,
+            'Health': 0.5700000000000001,
+            'Livelihoods': 0.59, 'Logistics': 0.58,
+            'Nutrition': 0.51, 'Protection': 0.56,
+            'Shelter': 0.52, 'WASH': 0.6},
+        'secondary_tags': {
+            'affected_groups_level_3_kw->Asylum Seekers': 0.28,
+            'affected_groups_level_3_kw->Host': 0.63,
+            'affected_groups_level_3_kw->IDP': 0.55,
+            'affected_groups_level_3_kw->Migrants': 0.53,
+            'affected_groups_level_3_kw->Refugees': 0.59,
+            'affected_groups_level_3_kw->Returnees': 0.53,
+            'age_kw_pred->Adult (18 to 59 years old)': 0.66,
+            'age_kw_pred->Children/Youth (5 to 17 years old)': 0.63,
+            'age_kw_pred->Infants/Toddlers (<5 years old)': 0.65,
+            'age_kw_pred->Older Persons (60+ years old)': 0.6,
+            'gender_kw_pred->Female': 0.6,
+            'gender_kw_pred->Male': 0.58,
+            'severity->Critical': 0.5, 'severity->Major': 0.44,
+            'severity->Minor Problem': 0.18, 'severity->No problem': 0.45,
+            'severity->Of Concern': 0.4, 'specific_needs_groups->Child Head of Household': 0.17,
+            'specific_needs_groups->Chronically Ill': 0.33, 'specific_needs_groups->Elderly Head of Household': 0.15,
+            'specific_needs_groups->Female Head of Household': 0.31,
+            'specific_needs_groups->GBV survivors': 0.5,
+            'specific_needs_groups->Indigenous people': 0.52, 'specific_needs_groups->LGBTQI+': 0.33,
+            'specific_needs_groups->Minorities': 0.45, 'specific_needs_groups->Persons with Disability': 0.32,
+            'specific_needs_groups->Pregnant or Lactating Women': 0.42,
+            'specific_needs_groups->Single Women (including Widows)': 0.12,
+            'specific_needs_groups->Unaccompanied or Separated Children': 0.42}}}
 
 
-def get_subpillars_mapping(data):
-    processed_predictions = {}
-    processed_thresholds = {}
-    for k1, v1 in data[0].items():  # predictions
-        if k1 in subpillars_mapping.keys():
-            if subpillars_mapping[k1] not in processed_predictions:
-                processed_predictions[subpillars_mapping[k1]] = v1
-            else:
-                for i, kv in enumerate(processed_predictions[subpillars_mapping[k1]]):
-                    processed_predictions[subpillars_mapping[k1]][i].update(v1[i])
-
-    for k1, v1 in data[1].items():  # thresholds
-        if k1 in subpillars_mapping.keys():
-            if subpillars_mapping[k1] not in processed_thresholds:
-                processed_thresholds[subpillars_mapping[k1]] = v1
-            else:
-                processed_thresholds[subpillars_mapping[k1]].update(v1)
-
-    return processed_predictions, processed_thresholds
-
-
-def mapping_name_enum(entry_id, predictions, thresholds, prediction_status):
-    data = {
+def get_enum_mappings(preds_data):
+    main_model_preds = {
         'predictions': {},
         'thresholds': {},
         'versions': {}
     }
+    for key, val in preds_data['raw_predictions'].items():
+        first_item = val[0]
+        for tag, pred in first_item.items():
+            if key in categories:
+                key_id = categories[key][0]
+            if tag in mappings.keys():
+                tag_id = mappings[tag][0]
+                if key_id not in main_model_preds['predictions']:
+                    main_model_preds['predictions'][key_id] = {}
+                main_model_preds['predictions'][key_id][tag_id] = pred
+            else:
+                print(f"The Tag {tag} is missing.")
 
-    data['entry_id'] = entry_id
-    data['prediction_status'] = prediction_status
-    for k1, v1 in predictions.items():
-        category = mappings[k1][0]
-        tags = {}
-        versions = {}
-        for k2, v2 in v1[0].items():
-            if k2 in mappings:
-                tags[mappings[k2][0]] = v2
-                versions[mappings[k2][0]] = mappings[k2][1]
-        data['predictions'][category] = tags
-        data['versions'][category] = versions
+    for key, tag_threshold in preds_data['thresholds'].items():
+        for tag, threshold in tag_threshold.items():
+            if key in categories:
+                key_id = categories[key][0]
+            if tag in mappings.keys():
+                tag_id = mappings[tag][0]
+                if key_id not in main_model_preds['thresholds']:
+                    main_model_preds['thresholds'][key_id] = {}
+                if key_id not in main_model_preds['versions']:
+                    main_model_preds['versions'][key_id] = {}
+                main_model_preds['thresholds'][key_id][tag_id] = threshold
+                main_model_preds['versions'][key_id][tag_id] = mappings[tag][1]
 
-    for k1, v1 in thresholds.items():
-        category = mappings[k1][0]
-        tags = {}
-        for k2, v2 in v1.items():
-            if k2 in mappings:
-                tags[mappings[k2][0]] = v2
-        data['thresholds'][category] = tags
-
-    return data
+    return main_model_preds
 
 
 def entry_predict_output_handler(event, context):
@@ -241,10 +224,13 @@ def entry_predict_output_handler(event, context):
         prediction_status = 1
         geolocations_mock = ['Nepal', 'Paris']
         for entry in entries:
-            pp, pt = get_subpillars_mapping(fake_data)
+            main_model_preds = get_enum_mappings(fake_data)
+            main_model_preds['prediction_status'] = prediction_status
 
-            pillars_output = mapping_name_enum(entry['entry_id'], pp, pt, prediction_status)
-            all_predictions.append({'pillars_output': pillars_output, 'geolocations': geolocations_mock})
+            all_predictions.append({
+                'main_model_preds': main_model_preds,
+                'geolocations_preds': geolocations_mock
+            })
         return all_predictions
 
     else:
@@ -264,15 +250,14 @@ def entry_predict_output_handler(event, context):
 
             preds_lst = json.loads(predictions)
 
-            pp, pt = get_subpillars_mapping(preds_lst)
-
-            pillars_output = mapping_name_enum(entry_id, pp, pt, prediction_status)
+            main_model_preds = get_enum_mappings(preds_lst)
+            main_model_preds['prediction_status'] = prediction_status
 
             try:
                 response = requests.post(
                     callback_url,
                     headers=headers,
-                    data=json.dumps({'pillars_output': pillars_output, 'geolocations': geolocations}),
+                    data=json.dumps({'main_model_preds': main_model_preds, 'geolocations_preds': geolocations}),
                     timeout=60
                 )
                 if response.status_code == 200:

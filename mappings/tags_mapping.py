@@ -4,12 +4,15 @@ from enum import Enum
 
 from .constants import (
     SECTOR_VERSION,
+    SUBPILLAR_VERSION,
+    SECONDARY_TAGS_VERSION,
     SUBPILLARS_1D_VERSION,
     SUBPILLARS_2D_VERSION,
     AGE_VERSION,
     GENDER_VERSION,
     SPECIFIC_NEEDS_GROUP_VERSION,
-    SEVERITY_VERSION
+    SEVERITY_VERSION,
+    AFFECTED_GRP_VERSION
 )
 
 MainCategories = namedtuple('MainCategories', ['id', 'key', 'version'])
@@ -18,27 +21,15 @@ MainTags = namedtuple('MainTags', ['id', 'key', 'version'])
 
 class Categories(Enum):
     SECTORS = MainCategories(id=1, key='sectors', version=SECTOR_VERSION)
-    ONE_D_PILLAR = MainCategories(id=2, key='pillars_1d', version=SUBPILLARS_1D_VERSION)
-    TWO_D_PILLAR = MainCategories(id=3, key='pillars_2d', version=SUBPILLARS_2D_VERSION)
-    ONE_D_SUBPILLAR = MainCategories(id=4, key='subpillars_1d', version=SUBPILLARS_1D_VERSION)
-    TWO_D_SUBPILLAR = MainCategories(id=5, key='subpillars_2d', version=SUBPILLARS_2D_VERSION)
-    SPECIFIC_NEEDS_GROUPS = MainCategories(id=6, key='specific_needs_groups', version=SPECIFIC_NEEDS_GROUP_VERSION)
-    GENDER = MainCategories(id=7, key='gender', version=GENDER_VERSION)
-    AGE = MainCategories(id=8, key='age', version=AGE_VERSION)
-    SEVERITY = MainCategories(id=9, key='severity', version=SEVERITY_VERSION)
+    SUBPILLARS = MainCategories(id=2, key='subpillars', version=SUBPILLAR_VERSION)
+    SECONDARY_TAGS = MainCategories(id=3, key='secondary_tags', version=SECONDARY_TAGS_VERSION)
 
     @classmethod
     def all_models(cls):
         return [
             Categories.SECTORS.value._asdict(),
-            Categories.ONE_D_PILLAR.value._asdict(),
-            Categories.TWO_D_PILLAR.value._asdict(),
-            Categories.ONE_D_SUBPILLAR.value._asdict(),
-            Categories.TWO_D_SUBPILLAR.value._asdict(),
-            Categories.SPECIFIC_NEEDS_GROUPS.value._asdict(),
-            Categories.GENDER.value._asdict(),
-            Categories.AGE.value._asdict(),
-            Categories.SEVERITY.value._asdict()
+            Categories.SUBPILLARS.value._asdict(),
+            Categories.SECONDARY_TAGS.value._asdict()
         ]
 
 
@@ -131,35 +122,43 @@ class Tags(Enum):
     PRIORITY_NEEDS_EXPRESSED_BY_POPULATION = MainTags(id=318, key='Priority Needs->Expressed By Population', version=SUBPILLARS_2D_VERSION)
 
     # Specific Needs Group
-    CHILD_HEAD_OF_HOUSEHOLD = MainTags(id=401, key='Child Head of Household', version=SPECIFIC_NEEDS_GROUP_VERSION)
-    CHRONICALLY_ILL = MainTags(id=402, key='Chronically Ill', version=SPECIFIC_NEEDS_GROUP_VERSION)
-    ELDERLY_HEAD_OF_HOUSEHOLD = MainTags(id=403, key='Elderly Head of Household', version=SPECIFIC_NEEDS_GROUP_VERSION)
-    FEMALE_HEAD_OF_HOUSEHOLD = MainTags(id=404, key='Female Head of Household', version=SPECIFIC_NEEDS_GROUP_VERSION)
-    GBV_SURVIVORS = MainTags(id=405, key='GBV survivors', version=SPECIFIC_NEEDS_GROUP_VERSION)
-    INDIGENOUS_PEOPLE = MainTags(id=406, key='Indigenous people', version=SPECIFIC_NEEDS_GROUP_VERSION)
-    LGBTQI = MainTags(id=407, key='LGBTQI+', version=SPECIFIC_NEEDS_GROUP_VERSION)
-    MINORITIES = MainTags(id=408, key='Minorities', version=SPECIFIC_NEEDS_GROUP_VERSION)
-    PERSONS_WITH_DISABILITY = MainTags(id=409, key='Persons with Disability', version=SPECIFIC_NEEDS_GROUP_VERSION)
-    PREGNANT_OR_LACTATING_WOMEN = MainTags(id=410, key='Pregnant or Lactating Women', version=SPECIFIC_NEEDS_GROUP_VERSION)
-    SINGLE_WOMEN_INCLUDING_WIDOWS = MainTags(id=411, key='Single Women (including Widows)', version=SPECIFIC_NEEDS_GROUP_VERSION)
-    UNACCOMPANIED_OR_SEPARATED_CHILDREN = MainTags(id=412, key='Unaccompanied or Separated Children', version=SPECIFIC_NEEDS_GROUP_VERSION)
+    CHILD_HEAD_OF_HOUSEHOLD = MainTags(id=401, key='specific_needs_groups->Child Head of Household', version=SPECIFIC_NEEDS_GROUP_VERSION)
+    CHRONICALLY_ILL = MainTags(id=402, key='specific_needs_groups->Chronically Ill', version=SPECIFIC_NEEDS_GROUP_VERSION)
+    ELDERLY_HEAD_OF_HOUSEHOLD = MainTags(id=403, key='specific_needs_groups->Elderly Head of Household', version=SPECIFIC_NEEDS_GROUP_VERSION)
+    FEMALE_HEAD_OF_HOUSEHOLD = MainTags(id=404, key='specific_needs_groups->Female Head of Household', version=SPECIFIC_NEEDS_GROUP_VERSION)
+    GBV_SURVIVORS = MainTags(id=405, key='specific_needs_groups->GBV survivors', version=SPECIFIC_NEEDS_GROUP_VERSION)
+    INDIGENOUS_PEOPLE = MainTags(id=406, key='specific_needs_groups->Indigenous people', version=SPECIFIC_NEEDS_GROUP_VERSION)
+    LGBTQI = MainTags(id=407, key='specific_needs_groups->LGBTQI+', version=SPECIFIC_NEEDS_GROUP_VERSION)
+    MINORITIES = MainTags(id=408, key='specific_needs_groups->Minorities', version=SPECIFIC_NEEDS_GROUP_VERSION)
+    PERSONS_WITH_DISABILITY = MainTags(id=409, key='specific_needs_groups->Persons with Disability', version=SPECIFIC_NEEDS_GROUP_VERSION)
+    PREGNANT_OR_LACTATING_WOMEN = MainTags(id=410, key='specific_needs_groups->Pregnant or Lactating Women', version=SPECIFIC_NEEDS_GROUP_VERSION)
+    SINGLE_WOMEN_INCLUDING_WIDOWS = MainTags(id=411, key='specific_needs_groups->Single Women (including Widows)', version=SPECIFIC_NEEDS_GROUP_VERSION)
+    UNACCOMPANIED_OR_SEPARATED_CHILDREN = MainTags(id=412, key='specific_needs_groups->Unaccompanied or Separated Children', version=SPECIFIC_NEEDS_GROUP_VERSION)
 
     # Gender
-    FEMALE = MainTags(id=501, key='Female', version=GENDER_VERSION)
-    MALE = MainTags(id=502, key='Male', version=GENDER_VERSION)
+    FEMALE = MainTags(id=501, key='gender_kw_pred->Female', version=GENDER_VERSION)
+    MALE = MainTags(id=502, key='gender_kw_pred->Male', version=GENDER_VERSION)
 
     # Age
-    ADULT_18_TO_59_YEARS_OLD = MainTags(id=701, key='Adult (18 to 59 years old)', version=AGE_VERSION)
-    CHILDREN_YOUTH_5_TO_17 = MainTags(id=702, key='Children/Youth (5 to 17 years old)', version=AGE_VERSION)
-    INFANTS_TODDLERS_LESS_THAN_5_YEARS = MainTags(id=703, key='Infants/Toddlers (<5 years old)', version=AGE_VERSION)
-    OLDER_PERSION_60_PLUS = MainTags(id=704, key='Older Persons (60+ years old)', version=AGE_VERSION)
+    ADULT_18_TO_59_YEARS_OLD = MainTags(id=701, key='age_kw_pred->Adult (18 to 59 years old)', version=AGE_VERSION)
+    CHILDREN_YOUTH_5_TO_17 = MainTags(id=702, key='age_kw_pred->Children/Youth (5 to 17 years old)', version=AGE_VERSION)
+    INFANTS_TODDLERS_LESS_THAN_5_YEARS = MainTags(id=703, key='age_kw_pred->Infants/Toddlers (<5 years old)', version=AGE_VERSION)
+    OLDER_PERSION_60_PLUS = MainTags(id=704, key='age_kw_pred->Older Persons (60+ years old)', version=AGE_VERSION)
 
     # Severity
-    CRITICAL = MainTags(id=601, key='Critical', version=SEVERITY_VERSION)
-    MAJOR = MainTags(id=602, key='Major', version=SEVERITY_VERSION)
-    MINOR_PROBLEM = MainTags(id=603, key='Minor Problem', version=SEVERITY_VERSION)
-    NO_PROBLEM = MainTags(id=604, key='No problem', version=SEVERITY_VERSION)
-    OF_CONCERN = MainTags(id=605, key='Of Concern', version=SEVERITY_VERSION)
+    CRITICAL = MainTags(id=601, key='severity->Critical', version=SEVERITY_VERSION)
+    MAJOR = MainTags(id=602, key='severity->Major', version=SEVERITY_VERSION)
+    MINOR_PROBLEM = MainTags(id=603, key='severity->Minor Problem', version=SEVERITY_VERSION)
+    NO_PROBLEM = MainTags(id=604, key='severity->No problem', version=SEVERITY_VERSION)
+    OF_CONCERN = MainTags(id=605, key='severity->Of Concern', version=SEVERITY_VERSION)
+
+    # Affected Groups
+    ASYLUM_SEEKERS = MainTags(id=801, key='affected_groups_level_3_kw->Asylum Seekers', version=AFFECTED_GRP_VERSION)
+    HOST = MainTags(id=802, key='affected_groups_level_3_kw->Host', version=AFFECTED_GRP_VERSION)
+    IDP = MainTags(id=803, key='affected_groups_level_3_kw->IDP', version=AFFECTED_GRP_VERSION)
+    MIGRANTS = MainTags(id=804, key='affected_groups_level_3_kw->Migrants', version=AFFECTED_GRP_VERSION)
+    REFUGEES = MainTags(id=805, key='affected_groups_level_3_kw->Refugees', version=AFFECTED_GRP_VERSION)
+    RETURNEES = MainTags(id=806, key='affected_groups_level_3_kw->Returnees', version=AFFECTED_GRP_VERSION)
 
     @classmethod
     def sector_list(cls):
@@ -304,6 +303,17 @@ class Tags(Enum):
             Tags.OF_CONCERN.value._asdict()
         ]
 
+    @classmethod
+    def affected_group_list(cls):
+        return [
+            Tags.ASYLUM_SEEKERS.value._asdict(),
+            Tags.HOST.value._asdict(),
+            Tags.IDP.value._asdict(),
+            Tags.MIGRANTS.value._asdict(),
+            Tags.REFUGEES.value._asdict(),
+            Tags.RETURNEES.value._asdict()
+        ]
+
 
 def map_categories_subpillars():
     return {
@@ -320,7 +330,14 @@ def map_categories_subpillars():
 def get_all_mappings():
     all_tags = Categories.all_models() + Tags.sector_list() + Tags.pillars_1d_list() + Tags.subpillars_1d_list() + \
         Tags.subpillars_2d_list() + Tags.pillars_2d_list() + Tags.specific_needs_group_list() + Tags.gender_list() + \
-        Tags.age_list() + Tags.severity_list()
+        Tags.age_list() + Tags.severity_list() + Tags.affected_group_list()
     return {
         d['key']: (d['id'], d['version']) for d in all_tags
+    }
+
+
+def get_categories():
+    all_categories = Categories.all_models()
+    return {
+        d['key']: (d['id'], d['version']) for d in all_categories
     }
