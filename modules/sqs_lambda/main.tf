@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current_user" {}
+
 resource "aws_sqs_queue" "input_queue" {
   name_prefix               = "input-queue-${var.environment}-"
   delay_seconds             = 0
@@ -81,26 +83,19 @@ resource "aws_lambda_event_source_mapping" "sqs_to_extract_lambda_trigger" {
   function_name    = module.extract_docs_fn.lambda_function_arn
 }
 
-resource "aws_s3_bucket_object" "parser" {
-  bucket = "deepl-doc-parser-latest-${var.environment}"  # note: this bucket is created manually
-  key    = "python.zip"
-  source = "${path.module}/../../lambda_layers/deepl_parser/python.zip"
-}
-
 module "extract_docs_fn" {
-    source = "terraform-aws-modules/lambda/aws"
+    source  = "terraform-aws-modules/lambda/aws"
 
     function_name = "te-extract-docs-func-${var.environment}"
-    handler = "app.process_docs"
-    runtime = "python3.8"
-    timeout = 60
+    runtime       = "python3.8"
+    timeout       = 60
 
-    source_path = [
-    {
-        path = "${path.module}/../../lambda_fns/extract_docs"
-        pip_requirements = "${path.module}/../../lambda_fns/extract_docs/requirements.txt"
-    }
-    ]
+    image_uri     = "${data.aws_caller_identity.current_user.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.docs_extract_fn_image_name}:latest"
+    package_type  = "Image"
+
+    create_package = false
+
+    memory_size    = 512
 
     attach_policy_json    = true
 
@@ -129,29 +124,11 @@ module "extract_docs_fn" {
         ]
     })
 
-    layers = ["${aws_lambda_layer_version.lambda_layer_parser.arn}"]
-
-    build_in_docker = true
-    store_on_s3 = true
-    s3_bucket = "${var.processed_docs_bucket}"
-
     environment_variables = {
         INPUT_QUEUE = aws_sqs_queue.input_queue.id
         DEST_S3_BUCKET = "${var.processed_docs_bucket}"
         PROCESSED_QUEUE = aws_sqs_queue.processed_queue.id
     }
-}
-
-resource "aws_lambda_layer_version" "lambda_layer_parser" {
-  s3_bucket = "deepl-doc-parser-latest-${var.environment}" # note: this bucket is created manually
-  s3_key    = "python.zip"
-  layer_name = "deepl_parser"
-
-  compatible_runtimes = ["python3.8"]
-
-  depends_on = [
-    aws_s3_bucket_object.parser
-  ]
 }
 
 module "output_request_fn" {

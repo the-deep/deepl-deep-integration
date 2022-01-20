@@ -9,3 +9,6 @@ vpce_id = "vpce-053ed1c5a7f24dacf"
 # models
 model_endpoint_name = "test-all-models-rsh"
 geolocation_fn_name = "geolocations"
+
+# ecr image name
+docs_extract_fn_image_name = "extract-tool"

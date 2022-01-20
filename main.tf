@@ -29,6 +29,9 @@ module "sqs_lambda_module" {
   processed_docs_bucket = "${module.s3_module.te_bucket_name}"
   processed_docs_bucket_arn = "${module.s3_module.te_bucket_arn}"
 
+  docs_extract_fn_image_name = var.docs_extract_fn_image_name
+  aws_region = var.aws_region
+
   environment = var.environment
 }
 
