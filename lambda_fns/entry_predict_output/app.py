@@ -246,7 +246,7 @@ def entry_predict_output_handler(event, context):
             predictions = record['messageAttributes']['predictions']['stringValue']
             callback_url = record['messageAttributes']['callback_url']['stringValue']
             prediction_status = record['messageAttributes']['prediction_status']['stringValue']
-            geolocations = record['messageAttributes']['geolocations']['stringValue']
+            geolocations = json.loads(record['messageAttributes']['geolocations']['stringValue'])
 
             preds_lst = json.loads(predictions)
 
