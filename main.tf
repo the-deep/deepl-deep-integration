@@ -25,7 +25,7 @@ provider "aws" {
 }
 
 module "sqs_lambda_module" {
-  source = "./modules/sqs_lambda"
+  source = "./modules/sqs_lambda_extract_docs"
   processed_docs_bucket = "${module.s3_module.te_bucket_name}"
   processed_docs_bucket_arn = "${module.s3_module.te_bucket_arn}"
 
@@ -36,7 +36,7 @@ module "sqs_lambda_module" {
 }
 
 module "sqs_lambda_predict_module" {
-  source = "./modules/sqs_lambda_predict"
+  source = "./modules/sqs_lambda_entry_predict"
   processed_docs_bucket = "${module.s3_module.te_bucket_name}"
 
   model_endpoint_name = var.model_endpoint_name

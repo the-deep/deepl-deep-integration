@@ -51,7 +51,7 @@ module "entry_input_pred_request_fn" {
 
     source_path = [
     {
-        path = "${path.module}/../../lambda_fns/entry_request_input_pred"
+        path = "${path.module}/../../lambda_fns/entry_predict_input_request"
     }
     ]
 
@@ -92,7 +92,7 @@ module "predict_entry_fn" {
 
     source_path = [
     {
-        path = "${path.module}/../../lambda_fns/predict_entry"
+        path = "${path.module}/../../lambda_fns/entry_predict"
     }
     ]
 
@@ -151,8 +151,8 @@ module "entry_predict_output_fn" {
 
     source_path = [
     {
-        path = "${path.module}/../../lambda_fns/entry_predict_output"
-        pip_requirements = "${path.module}/../../lambda_fns/entry_predict_output/requirements.txt"
+        path = "${path.module}/../../lambda_fns/entry_predict_output_request"
+        pip_requirements = "${path.module}/../../lambda_fns/entry_predict_output_request/requirements.txt"
     }
     ]
 

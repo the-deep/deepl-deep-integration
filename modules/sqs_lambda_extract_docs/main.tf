@@ -51,7 +51,7 @@ module "input_request_fn" {
 
     source_path = [
     {
-        path = "${path.module}/../../lambda_fns/input_request"
+        path = "${path.module}/../../lambda_fns/extract_docs_input_request"
     }
     ]
 
@@ -141,8 +141,8 @@ module "output_request_fn" {
 
     source_path = [
         {
-            path = "${path.module}/../../lambda_fns/output_request"
-            pip_requirements = "${path.module}/../../lambda_fns/output_request/requirements.txt"
+            path = "${path.module}/../../lambda_fns/extract_docs_output_request"
+            pip_requirements = "${path.module}/../../lambda_fns/extract_docs_output_request/requirements.txt"
         }
     ]
 
@@ -195,7 +195,7 @@ module "transfer_dlq_msg" {
 
     source_path = [
         {
-            path = "${path.module}/../../lambda_fns/dlq_msgs"
+            path = "${path.module}/../../lambda_fns/extract_docs_dlq_msgs"
         }
     ]
 
