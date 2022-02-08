@@ -2,9 +2,8 @@
 
 FROM python:3.8-slim-buster
 
-LABEL maintainer="ToggleCorp Dev dev@togglecorp.com"
+LABEL maintainer="Deep Dev dev@thedeep.com"
 
-COPY . /code/
 WORKDIR /code
 
 RUN apt-get update \
@@ -12,7 +11,8 @@ RUN apt-get update \
 
 RUN pip install --upgrade pip setuptools wheel
 
-RUN pip install -r mockserver/requirements.txt
+COPY mockserver/requirements.txt /code
+RUN pip install -r requirements.txt
 
 RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
 
@@ -21,5 +21,7 @@ RUN echo "$SSH_PRV_KEY" > /root/.ssh/id_rsa && \
 
 RUN --mount=type=ssh \
     pip install git+ssh://git@github.com/the-deep/deepl-pdf-extraction.git
+
+COPY . /code/
 
 EXPOSE 8001
