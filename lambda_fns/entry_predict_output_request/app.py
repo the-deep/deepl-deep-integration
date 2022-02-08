@@ -234,40 +234,39 @@ def entry_predict_output_handler(event, context):
             })
         return all_predictions
 
-    else:
-        records = event['Records']
+    records = event['Records']
 
-        headers = {
-            'Content-Type': 'application/json'
-        }
+    headers = {
+        'Content-Type': 'application/json'
+    }
 
-        for record in records:
-            entry_id = record['body']
-            # entry = record['messageAttributes']['entry']['stringValue']
-            predictions = record['messageAttributes']['predictions']['stringValue']
-            callback_url = record['messageAttributes']['callback_url']['stringValue']
-            prediction_status = record['messageAttributes']['prediction_status']['stringValue']
-            geolocations = json.loads(record['messageAttributes']['geolocations']['stringValue'])
+    for record in records:
+        entry_id = record['body']
+        # entry = record['messageAttributes']['entry']['stringValue']
+        predictions = record['messageAttributes']['predictions']['stringValue']
+        callback_url = record['messageAttributes']['callback_url']['stringValue']
+        prediction_status = record['messageAttributes']['prediction_status']['stringValue']
+        geolocations = json.loads(record['messageAttributes']['geolocations']['stringValue'])
 
-            preds_lst = json.loads(predictions)
+        preds_lst = json.loads(predictions)
 
-            main_model_preds = get_enum_mappings(preds_lst)
-            main_model_preds['prediction_status'] = prediction_status
+        main_model_preds = get_enum_mappings(preds_lst)
+        main_model_preds['prediction_status'] = prediction_status
 
-            try:
-                response = requests.post(
-                    callback_url,
-                    headers=headers,
-                    data=json.dumps({'main_model_preds': main_model_preds, 'geolocations_preds': geolocations}),
-                    timeout=60
-                )
-                if response.status_code == 200:
-                    logging.info(f"Successfully sent the request on callback url with entry id {entry_id}")
-                else:
-                    logging.error("Request not sent successfully.")
-            except requests.exceptions.RequestException as e:
-                raise Exception(f"Exception occurred while sending request - {e}")
+        try:
+            response = requests.post(
+                callback_url,
+                headers=headers,
+                data=json.dumps({'main_model_preds': main_model_preds, 'geolocations_preds': geolocations}),
+                timeout=60
+            )
+            if response.status_code == 200:
+                logging.info(f"Successfully sent the request on callback url with entry id {entry_id}")
+            else:
+                logging.error("Request not sent successfully.")
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Exception occurred while sending request - {e}")
 
-        return {
-            'statusCode': 200
-        }
+    return {
+        'statusCode': 200
+    }
