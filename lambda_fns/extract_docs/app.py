@@ -5,6 +5,7 @@ import base64
 from datetime import datetime
 from enum import Enum
 import boto3
+import logging
 
 from deep_parser.parser.base import TextFromFile
 from deep_parser import TextFromWeb
@@ -13,6 +14,8 @@ try:
     from content_types import ExtractContentType, UrlTypes
 except ImportError:
     from .content_types import ExtractContentType, UrlTypes
+
+logging.getLogger().setLevel(logging.INFO)
 
 DEFAULT_AWS_REGION = "us-east-1"
 
@@ -109,7 +112,7 @@ def send_message2sqs(
             MessageAttributes=message_attributes
         )
     else:
-        print("Message not sent to the processed SQS.")
+        logging.error("Message not sent to the processed SQS.")
 
 
 def get_extracted_content_links(file_name, mock):
@@ -208,7 +211,7 @@ def get_extracted_text_web_links(link, mock=False):
 
         return s3_file_path, None, total_pages, total_words_count  # No images extraction (lib doesn't support?)
     except Exception as e:
-        print(f"Extraction from website failed {e}")
+        logging.error(f"Extraction from website failed {e}")
         return None, None, -1, -1
 
 
@@ -257,14 +260,14 @@ def handle_urls(url, mock=False):
     else:
         raise NotImplementedError
 
-    print(f"The extracted file path is {s3_file_path}")
-    print(f"The extracted image path is {s3_images_path}")
+    logging.info(f"The extracted file path is {s3_file_path}")
+    logging.info(f"The extracted image path is {s3_images_path}")
 
     return s3_file_path, s3_images_path, str(total_pages), str(total_words_count), str(extraction_status)
 
 
 def process_docs(event, context):
-    print(f"The event output is {event}")
+    logging.debug(f"The event output is {event}")
 
     if event.get('mock', False):
         url = event['url']
@@ -285,7 +288,7 @@ def process_docs(event, context):
             client_id = record['body']
             url = record['messageAttributes']['url']['stringValue']
             callback_url = record['messageAttributes']['callback_url']['stringValue']
-            print(f"Processing {url}")
+            logging.info(f"Processing {url}")
 
             s3_text_path, s3_images_path, total_pages, total_words_count, extraction_status = handle_urls(url)
 

@@ -3,7 +3,10 @@ import boto3
 from botocore.exceptions import ClientError
 import json
 from enum import Enum
+import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
+logging.getLogger().setLevel(logging.INFO)
 
 DEFAULT_AWS_REGION = "us-east-1"
 
@@ -63,7 +66,7 @@ def send_message2sqs(
             MessageAttributes=message_attributes
         )
     else:
-        print("Message not sent to the processed SQS.")
+        logger.error("Message not sent to the processed SQS.")
 
 
 def get_geolocations(entry):
@@ -75,7 +78,7 @@ def get_geolocations(entry):
         json_response = response['Payload'].read().decode("utf-8")
         return {'locations': json.loads(json_response)['locations']}
     except ClientError as error:
-        print(f"Error occurred while fetching geolocations {error}. Returning empty list.")
+        logging.error(f"Error occurred while fetching geolocations {error}. Returning empty list.")
         return {'locations': []}
 
 
@@ -94,7 +97,7 @@ def get_predictions(entry):
         pred_response = json.loads(response["Body"].read().decode("ascii"))
         prediction_status = PredictionStatus.SUCCESS.value
     except ClientError as error:
-        print(f"Error occurred: {error}")
+        logging.error(f"Error occurred while getting predictions: {error}")
         pred_response = None
         prediction_status = PredictionStatus.FAILED.value
 
@@ -109,7 +112,7 @@ def predict_entry_handler(event, context):
         entry_id = record['body']
         entry = record['messageAttributes']['entry']['stringValue']
         callback_url = record['messageAttributes']['callback_url']['stringValue']
-        print(f"Processing entry id {entry_id}")
+        logging.info(f"Processing entry id {entry_id}")
 
         with ThreadPoolExecutor(max_workers=5) as executor:
             futs = []

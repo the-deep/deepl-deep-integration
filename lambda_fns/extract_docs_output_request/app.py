@@ -1,8 +1,11 @@
 import os
 import requests
+import logging
 import boto3
 from botocore.exceptions import ClientError
 from botocore.client import Config
+
+logging.getLogger().setLevel(logging.INFO)
 
 REQUEST_TIMEOUT = 60
 DEFAULT_AWS_REGION = "us-east-1"
@@ -46,9 +49,9 @@ def generate_signed_url(bucket_name, key_name):
             ExpiresIn=signed_url_expiry_secs
         )
     except ClientError as e:
-        print(f"ClientError: {e}")
+        logging.error(f"ClientError: {e}")
         return None
-    print(f'The generated signed url is {url}')
+    logging.info(f'The generated signed url is {url}')
     return url
 
 
@@ -111,9 +114,9 @@ def output_request(event, context):
                 timeout=60
             )
             if response.status_code == 200:
-                print(f"Successfully sent the request with client_id: {client_id}")
+                logging.info(f"Successfully sent the request with client_id: {client_id}")
             else:
-                print("Request not sent successfully.")
+                logging.error("Request not sent successfully.")
                 raise Exception(f"Exception occurred while sending request: StatusCode {response.status_code}")
         except requests.exceptions.RequestException as e:
             raise Exception(f"Exception occurred while sending request - {e}")

@@ -1,7 +1,9 @@
 import requests
 import json
-
+import logging
 from mappings.tags_mapping import get_all_mappings, get_categories
+
+logging.getLogger().setLevel(logging.INFO)
 
 mappings = get_all_mappings()
 categories = get_categories()
@@ -198,7 +200,7 @@ def get_enum_mappings(preds_data):
                     main_model_preds['predictions'][key_id] = {}
                 main_model_preds['predictions'][key_id][tag_id] = pred
             else:
-                print(f"The Tag {tag} is missing.")
+                logging.warn(f"The Tag {tag} is missing.")
 
     for key, tag_threshold in preds_data['thresholds'].items():
         for tag, threshold in tag_threshold.items():
@@ -260,9 +262,9 @@ def entry_predict_output_handler(event, context):
                     timeout=60
                 )
                 if response.status_code == 200:
-                    print(f"Successfully sent the request on callback url with entry id {entry_id}")
+                    logging.info(f"Successfully sent the request on callback url with entry id {entry_id}")
                 else:
-                    print("Request not sent successfully.")
+                    logging.error("Request not sent successfully.")
             except requests.exceptions.RequestException as e:
                 raise Exception(f"Exception occurred while sending request - {e}")
 

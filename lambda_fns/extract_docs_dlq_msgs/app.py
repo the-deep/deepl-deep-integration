@@ -1,5 +1,8 @@
 import os
 import boto3
+import logging
+
+logging.getLogger().setLevel(logging.INFO)
 
 SQS_MSG_DELAY_SECS = 600
 
@@ -61,7 +64,7 @@ def send_message2sqs(
             MessageAttributes=message_attributes
         )
     else:
-        print("Message not sent to the processed SQS.")
+        logging.error("Message not sent to the processed SQS.")
 
 
 def dlq_msgs_handler(event, context):
@@ -80,7 +83,7 @@ def dlq_msgs_handler(event, context):
         total_words_count = message_attributes['total_words_count']['stringValue']
         extraction_status = message_attributes['extraction_status']['stringValue']
 
-        print(f"Storing message from dlq to processed queue with client id {client_id}")
+        logging.info(f"Storing message from dlq to processed queue with client id {client_id}")
 
         sqs_message = {
             'client_id': client_id,

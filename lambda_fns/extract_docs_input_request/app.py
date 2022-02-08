@@ -1,7 +1,10 @@
 import os
 import json
 import uuid
+import logging
 import boto3
+
+logging.getLogger().setLevel(logging.INFO)
 
 DEFAULT_AWS_REGION = "us-east-1"
 
@@ -48,7 +51,7 @@ def send_msg_sqs(event, context):
                 'body': 'Message Enqueued Successfully'
             }
         except Exception as err:
-            print(err)
+            logging.error(err)
             errormsg = err
 
     return {

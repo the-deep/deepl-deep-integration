@@ -2,6 +2,9 @@ import os
 import json
 import uuid
 import boto3
+import logging
+
+logging.getLogger().setLevel(logging.INFO)
 
 DEFAULT_AWS_REGION = "us-east-1"
 
@@ -44,7 +47,7 @@ def entry_msg_sqs_handler(event, context):
                 'body': 'Entries Enqueued Successfully'
             }
         except Exception as err:
-            print(err)
+            logging.error(err)
             errormsg = err
 
     return {

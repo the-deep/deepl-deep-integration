@@ -1,5 +1,8 @@
 import requests
 from enum import Enum
+import logging
+
+logging.getLogger().setLevel(logging.INFO)
 
 
 class UrlTypes(str, Enum):
@@ -20,7 +23,7 @@ class ExtractContentType:
             response = requests.head(url)
             content_type = response.headers['Content-Type']
 
-            print(f'The content type of {url} is {content_type}')
+            logging.info(f'The content type of {url} is {content_type}')
 
             if url.endswith(".pdf"):
                 return UrlTypes.PDF.value
@@ -29,8 +32,8 @@ class ExtractContentType:
             elif content_type in self.content_types_html:
                 return UrlTypes.HTML.value
             else:
-                print(f'Could not determine the content-type of the {url}')
+                logging.warn(f'Could not determine the content-type of the {url}')
                 return None
         except requests.exceptions.RequestException:
-            print(f'Exception occurred. Could not determine the content-type of the {url}')
+            logging.error(f'Exception occurred. Could not determine the content-type of the {url}')
             return None

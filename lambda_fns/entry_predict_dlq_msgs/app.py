@@ -1,5 +1,8 @@
 import os
 import boto3
+import logging
+
+logging.getLogger().setLevel(logging.INFO)
 
 SQS_MSG_DELAY_SECS = 600
 
@@ -51,7 +54,7 @@ def send_message2sqs(
             MessageAttributes=message_attributes
         )
     else:
-        print("Message not sent to the processed SQS.")
+        logging.error("Message not sent to the processed SQS.")
 
 
 def entry_predict_dlq_msgs_handler(event, context):
@@ -65,7 +68,7 @@ def entry_predict_dlq_msgs_handler(event, context):
         prediction_status = record['messageAttributes']['prediction_status']['stringValue']
         geolocations = record['messageAttributes']['geolocations']['stringValue']
 
-        print(f"Sending the entry id {entry_id} message to Processing Queue")
+        logging.info(f"Sending the entry id {entry_id} message to Processing Queue")
 
         sqs_message = {
             'entry_id': entry_id,

@@ -1,4 +1,5 @@
 import json
+import logging
 from flask.helpers import send_from_directory
 
 import requests
@@ -9,6 +10,7 @@ from lambda_fns.extract_docs.celery_task import extract_contents
 
 from mappings.tags_mapping import Categories, Tags
 
+logging.getLogger().setLevel(logging.INFO)
 
 app = Flask(__name__)
 
@@ -72,9 +74,9 @@ def predict_entry():
                 timeout=60
             )
             if response.status_code == 200:
-                print(f"Successfully sent the request on callback url with entry id {response_body['entry_id']}")
+                logging.info(f"Successfully sent the request on callback url with entry id {response_body['entry_id']}")
             else:
-                print("Request not sent successfully.")
+                logging.error("Request not sent successfully.")
                 raise Exception(f"Exception occurred while sending request: StatusCode {response.status_code}")
         except requests.exceptions.RequestException as e:
             raise Exception(f"Exception occurred while sending request - {e}")
