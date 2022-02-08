@@ -162,169 +162,157 @@ class Tags(Enum):
 
     @classmethod
     def sector_list(cls):
-        return [
-            Tags.AGRICULTURE.value._asdict(),
-            Tags.CROSS.value._asdict(),
-            Tags.EDUCATION.value._asdict(),
-            Tags.FOOD_SECURITY.value._asdict(),
-            Tags.HEALTH.value._asdict(),
-            Tags.LIVELIHOODS.value._asdict(),
-            Tags.LOGISTICS.value._asdict(),
-            Tags.NUTRITION.value._asdict(),
-            Tags.PROTECTION.value._asdict(),
-            Tags.SHELTER.value._asdict(),
-            Tags.WASH.value._asdict()
-        ]
+        return [t.value._asdict() for t in [
+            Tags.AGRICULTURE,
+            Tags.CROSS,
+            Tags.EDUCATION,
+            Tags.FOOD_SECURITY,
+            Tags.HEALTH,
+            Tags.LIVELIHOODS,
+            Tags.LOGISTICS,
+            Tags.NUTRITION,
+            Tags.PROTECTION,
+            Tags.SHELTER,
+            Tags.WASH
+        ]]
 
     @classmethod
     def pillars_1d_list(cls):
-        return [
-            Tags.CASUALTIES.value._asdict(),
-            Tags.CONTEXT.value._asdict(),
-            Tags.COVID_19.value._asdict(),
-            Tags.DISPLACEMENT.value._asdict(),
-            Tags.HUMANITARIAN_ACCESS.value._asdict(),
-            Tags.INFORMATION_AND_COMMUNICATION.value._asdict(),
-            Tags.SHOCK_EVENT.value._asdict()
-        ]
+        return [t.value._asdict() for t in [
+            Tags.CASUALTIES,
+            Tags.CONTEXT,
+            Tags.COVID_19,
+            Tags.DISPLACEMENT,
+            Tags.HUMANITARIAN_ACCESS,
+            Tags.INFORMATION_AND_COMMUNICATION,
+            Tags.SHOCK_EVENT
+        ]]
 
     @classmethod
     def subpillars_1d_list(cls):
-        return [
-            Tags.CONTEXT_ENVIRONMENT.value._asdict(),
-            Tags.CONTEXT_SOCIO_CULTURAL.value._asdict(),
-            Tags.CONTEXT_ECONOMY.value._asdict(),
-            Tags.CONTEXT_DEMOGRAPHY.value._asdict(),
-            Tags.CONTEXT_LEGAL_AND_POLICY.value._asdict(),
-            Tags.CONTEXT_SECURITY_AND_STABILITY.value._asdict(),
-            Tags.CONTEXT_POLITICS.value._asdict(),
-            Tags.SHOCK_EVENT_TYPE_AND_CHARACTERISTICS.value._asdict(),
-            Tags.SHOCK_EVENT_UNDERLYING_AGGRAVATING_FACTORS.value._asdict(),
-            Tags.SHOCK_EVENT_HAZARD_THREATS.value._asdict(),
-            Tags.DISPLACEMENT_TYPE_NUMBERS_MOVEMENTS.value._asdict(),
-            Tags.DISPLACEMENT_PUSH_FACTORS.value._asdict(),
-            Tags.DISPLACEMENT_PULL_FACTORS.value._asdict(),
-            Tags.DISPLACEMENT_INTENTIONS.value._asdict(),
-            Tags.DISPLACEMENT_LOCAL_INTEGRATION.value._asdict(),
-            Tags.CASUALTIES_INJURED.value._asdict(),
-            Tags.CASUALTIES_MISSING.value._asdict(),
-            Tags.CASUALTIES_DEAD.value._asdict(),
-            Tags.HUMANITARIAN_ACCESS_RELIEF_TO_POPULATION.value._asdict(),
-            Tags.HUMANITARIAN_ACCESS_POPULATION_TO_RELIEF.value._asdict(),
-            Tags.HUMANITARIAN_ACCESS_PHYSICAL_CONSTRAINTS.value._asdict(),
-            Tags.HUMANITARIAN_ACCESS_GAPS.value._asdict(),
-            Tags.INFORMATION_AND_COMMUNICATION_MEANS_AND_PREFERENCES.value._asdict(),
-            Tags.INFORMATION_AND_COMMUNICATION_INFO_CHALLENGES_AND_BARRIERS.value._asdict(),
-            Tags.INFORMATION_AND_COMMUNICATION_KNOWLEDGE_AND_INFO_GAPS_POP.value._asdict(),
-            Tags.INFORMATION_AND_COMMUNICATION_KNOWLEDGE_AND_INFO_GAPS_HUM.value._asdict(),
-            Tags.COVID_19_CASES.value._asdict(),
-            Tags.COVID_19_CONTACT_CASES.value._asdict(),
-            Tags.COVID_19_DEATHS.value._asdict(),
-            Tags.COVID_19_HOSPITALIZATION_AND_CARE.value._asdict(),
-            Tags.COVID_19_RESTRICTION_MEASURES.value._asdict(),
-            Tags.COVID_19_TESTING.value._asdict(),
-            Tags.COVID_19_VACCINATION.value._asdict()
-        ]
+        return [t.value._asdict() for t in [
+            Tags.CONTEXT_ENVIRONMENT,
+            Tags.CONTEXT_SOCIO_CULTURAL,
+            Tags.CONTEXT_ECONOMY,
+            Tags.CONTEXT_DEMOGRAPHY,
+            Tags.CONTEXT_LEGAL_AND_POLICY,
+            Tags.CONTEXT_SECURITY_AND_STABILITY,
+            Tags.CONTEXT_POLITICS,
+            Tags.SHOCK_EVENT_TYPE_AND_CHARACTERISTICS,
+            Tags.SHOCK_EVENT_UNDERLYING_AGGRAVATING_FACTORS,
+            Tags.SHOCK_EVENT_HAZARD_THREATS,
+            Tags.DISPLACEMENT_TYPE_NUMBERS_MOVEMENTS,
+            Tags.DISPLACEMENT_PUSH_FACTORS,
+            Tags.DISPLACEMENT_PULL_FACTORS,
+            Tags.DISPLACEMENT_INTENTIONS,
+            Tags.DISPLACEMENT_LOCAL_INTEGRATION,
+            Tags.CASUALTIES_INJURED,
+            Tags.CASUALTIES_MISSING,
+            Tags.CASUALTIES_DEAD,
+            Tags.HUMANITARIAN_ACCESS_RELIEF_TO_POPULATION,
+            Tags.HUMANITARIAN_ACCESS_POPULATION_TO_RELIEF,
+            Tags.HUMANITARIAN_ACCESS_PHYSICAL_CONSTRAINTS,
+            Tags.HUMANITARIAN_ACCESS_GAPS,
+            Tags.INFORMATION_AND_COMMUNICATION_MEANS_AND_PREFERENCES,
+            Tags.INFORMATION_AND_COMMUNICATION_INFO_CHALLENGES_AND_BARRIERS,
+            Tags.INFORMATION_AND_COMMUNICATION_KNOWLEDGE_AND_INFO_GAPS_POP,
+            Tags.INFORMATION_AND_COMMUNICATION_KNOWLEDGE_AND_INFO_GAPS_HUM,
+            Tags.COVID_19_CASES,
+            Tags.COVID_19_CONTACT_CASES,
+            Tags.COVID_19_DEATHS,
+            Tags.COVID_19_HOSPITALIZATION_AND_CARE,
+            Tags.COVID_19_RESTRICTION_MEASURES,
+            Tags.COVID_19_TESTING,
+            Tags.COVID_19_VACCINATION
+        ]]
 
     @classmethod
     def pillars_2d_list(cls):
-        return [
-            Tags.AT_RISK.value._asdict(),
-            Tags.CAPACITIES_RESPONSE.value._asdict(),
-            Tags.HUMANITARIAN_CONDITIONS.value._asdict(),
-            Tags.IMPACT.value._asdict(),
-            Tags.PRIORITY_INTERVENTIONS.value._asdict(),
-            Tags.PRIORITY_NEEDS.value._asdict()
-        ]
+        return [t.value._asdict() for t in [
+            Tags.AT_RISK,
+            Tags.CAPACITIES_RESPONSE,
+            Tags.HUMANITARIAN_CONDITIONS,
+            Tags.IMPACT,
+            Tags.PRIORITY_INTERVENTIONS,
+            Tags.PRIORITY_NEEDS
+        ]]
 
     @classmethod
     def subpillars_2d_list(cls):
-        return [
-            Tags.AT_RISK_NUMBER_OF_PEOPLE.value._asdict(),
-            Tags.AT_RISK_VULNERABILITIES.value._asdict(),
-            Tags.CAPACITIES_RESPONSE_INTERNATIONAL.value._asdict(),
-            Tags.CAPACITIES_RESPONSE_LOCAL.value._asdict(),
-            Tags.CAPACITIES_RESPONSE_NATIONAL.value._asdict(),
-            Tags.CAPACITIES_RESPONSE_NUM_PEOPLE_REACHED.value._asdict(),
-            Tags.HUMANITARIAN_CONDITIONS_COPING_MECHANISMS.value._asdict(),
-            Tags.HUMANITARIAN_CONDITIONS_LIVING_STANDARDS.value._asdict(),
-            Tags.HUMANITARIAN_CONDITIONS_NUM_PEOPLE_IN_NEED.value._asdict(),
-            Tags.HUMANITARIAN_CONDITIONS_PHY_MENTAL_WELL_BEING.value._asdict(),
-            Tags.IMPACT_DRIVER_AGGRAVATING_FACTORS.value._asdict(),
-            Tags.IMPACT_ON_PEOPLE.value._asdict(),
-            Tags.IMPACT_ON_SYSTEMS_SRV_NET.value._asdict(),
-            Tags.IMPACT_NUM_OF_PEOPLE_AFFECTED.value._asdict(),
-            Tags.PRIORITY_INTERVENTIONS_HUMANITARIAN_STAFF.value._asdict(),
-            Tags.PRIORITY_INTERVENTIONS_EXPRESSED_BY_POPULATION.value._asdict(),
-            Tags.PRIORITY_NEEDS_EXPRESSED_BY_HUMANITARIAN_STAFF.value._asdict(),
-            Tags.PRIORITY_NEEDS_EXPRESSED_BY_POPULATION.value._asdict()
-        ]
+        return [t.value._asdict() for t in [
+            Tags.AT_RISK_NUMBER_OF_PEOPLE,
+            Tags.AT_RISK_VULNERABILITIES,
+            Tags.CAPACITIES_RESPONSE_INTERNATIONAL,
+            Tags.CAPACITIES_RESPONSE_LOCAL,
+            Tags.CAPACITIES_RESPONSE_NATIONAL,
+            Tags.CAPACITIES_RESPONSE_NUM_PEOPLE_REACHED,
+            Tags.HUMANITARIAN_CONDITIONS_COPING_MECHANISMS,
+            Tags.HUMANITARIAN_CONDITIONS_LIVING_STANDARDS,
+            Tags.HUMANITARIAN_CONDITIONS_NUM_PEOPLE_IN_NEED,
+            Tags.HUMANITARIAN_CONDITIONS_PHY_MENTAL_WELL_BEING,
+            Tags.IMPACT_DRIVER_AGGRAVATING_FACTORS,
+            Tags.IMPACT_ON_PEOPLE,
+            Tags.IMPACT_ON_SYSTEMS_SRV_NET,
+            Tags.IMPACT_NUM_OF_PEOPLE_AFFECTED,
+            Tags.PRIORITY_INTERVENTIONS_HUMANITARIAN_STAFF,
+            Tags.PRIORITY_INTERVENTIONS_EXPRESSED_BY_POPULATION,
+            Tags.PRIORITY_NEEDS_EXPRESSED_BY_HUMANITARIAN_STAFF,
+            Tags.PRIORITY_NEEDS_EXPRESSED_BY_POPULATION
+        ]]
 
     @classmethod
     def specific_needs_group_list(cls):
-        return [
-            Tags.CHILD_HEAD_OF_HOUSEHOLD.value._asdict(),
-            Tags.CHRONICALLY_ILL.value._asdict(),
-            Tags.ELDERLY_HEAD_OF_HOUSEHOLD.value._asdict(),
-            Tags.FEMALE_HEAD_OF_HOUSEHOLD.value._asdict(),
-            Tags.GBV_SURVIVORS.value._asdict(),
-            Tags.INDIGENOUS_PEOPLE.value._asdict(),
-            Tags.LGBTQI.value._asdict(),
-            Tags.MINORITIES.value._asdict(),
-            Tags.PERSONS_WITH_DISABILITY.value._asdict(),
-            Tags.PREGNANT_OR_LACTATING_WOMEN.value._asdict(),
-            Tags.SINGLE_WOMEN_INCLUDING_WIDOWS.value._asdict(),
-            Tags.UNACCOMPANIED_OR_SEPARATED_CHILDREN.value._asdict()
-        ]
+        return [t.value._asdict() for t in [
+            Tags.CHILD_HEAD_OF_HOUSEHOLD,
+            Tags.CHRONICALLY_ILL,
+            Tags.ELDERLY_HEAD_OF_HOUSEHOLD,
+            Tags.FEMALE_HEAD_OF_HOUSEHOLD,
+            Tags.GBV_SURVIVORS,
+            Tags.INDIGENOUS_PEOPLE,
+            Tags.LGBTQI,
+            Tags.MINORITIES,
+            Tags.PERSONS_WITH_DISABILITY,
+            Tags.PREGNANT_OR_LACTATING_WOMEN,
+            Tags.SINGLE_WOMEN_INCLUDING_WIDOWS,
+            Tags.UNACCOMPANIED_OR_SEPARATED_CHILDREN
+        ]]
 
     @classmethod
     def gender_list(cls):
-        return [
-            Tags.FEMALE.value._asdict(),
-            Tags.MALE.value._asdict()
-        ]
+        return [t.value._asdict() for t in [
+            Tags.FEMALE,
+            Tags.MALE
+        ]]
 
     @classmethod
     def age_list(cls):
-        return [
-            Tags.ADULT_18_TO_59_YEARS_OLD.value._asdict(),
-            Tags.CHILDREN_YOUTH_5_TO_17.value._asdict(),
-            Tags.INFANTS_TODDLERS_LESS_THAN_5_YEARS.value._asdict(),
-            Tags.OLDER_PERSION_60_PLUS.value._asdict()
-        ]
+        return [t.value._asdict() for t in [
+            Tags.ADULT_18_TO_59_YEARS_OLD,
+            Tags.CHILDREN_YOUTH_5_TO_17,
+            Tags.INFANTS_TODDLERS_LESS_THAN_5_YEARS,
+            Tags.OLDER_PERSION_60_PLUS
+        ]]
 
     @classmethod
     def severity_list(cls):
-        return [
-            Tags.CRITICAL.value._asdict(),
-            Tags.MAJOR.value._asdict(),
-            Tags.MINOR_PROBLEM.value._asdict(),
-            Tags.NO_PROBLEM.value._asdict(),
-            Tags.OF_CONCERN.value._asdict()
-        ]
+        return [t.value._asdict() for t in [
+            Tags.CRITICAL,
+            Tags.MAJOR,
+            Tags.MINOR_PROBLEM,
+            Tags.NO_PROBLEM,
+            Tags.OF_CONCERN
+        ]]
 
     @classmethod
     def affected_group_list(cls):
-        return [
-            Tags.ASYLUM_SEEKERS.value._asdict(),
-            Tags.HOST.value._asdict(),
-            Tags.IDP.value._asdict(),
-            Tags.MIGRANTS.value._asdict(),
-            Tags.REFUGEES.value._asdict(),
-            Tags.RETURNEES.value._asdict()
-        ]
-
-
-def map_categories_subpillars():
-    return {
-        'pillars_1d': 'pillars_1d',
-        'pillars_2d': 'pillars_2d',
-        'impact_capresp_humcond': 'subpillars_2d',
-        'need_intervention_risk': 'subpillars_2d',
-        'context_covid': 'subpillars_1d',
-        'displacement_shockevent': 'subpillars_1d',
-        'access_infcom_casualities': 'subpillars_1d'
-    }
+        return [t.value._asdict() for t in [
+            Tags.ASYLUM_SEEKERS,
+            Tags.HOST,
+            Tags.IDP,
+            Tags.MIGRANTS,
+            Tags.REFUGEES,
+            Tags.RETURNEES
+        ]]
 
 
 def get_all_mappings():

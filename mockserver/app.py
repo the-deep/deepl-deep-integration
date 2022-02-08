@@ -4,7 +4,7 @@ from flask.helpers import send_from_directory
 import requests
 from flask import Flask, request
 
-from lambda_fns.entry_predict_output.app import entry_predict_output_handler
+from lambda_fns.entry_predict_output_request.app import entry_predict_output_handler
 from lambda_fns.extract_docs.celery_task import extract_contents
 
 from mappings.tags_mapping import Categories, Tags

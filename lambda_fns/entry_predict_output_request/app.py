@@ -1,9 +1,8 @@
 import requests
 import json
 
-from mappings.tags_mapping import get_all_mappings, get_categories, map_categories_subpillars
+from mappings.tags_mapping import get_all_mappings, get_categories
 
-subpillars_mapping = map_categories_subpillars()
 mappings = get_all_mappings()
 categories = get_categories()
 
