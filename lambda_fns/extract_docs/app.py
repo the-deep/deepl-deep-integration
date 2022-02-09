@@ -2,10 +2,12 @@ import os
 import requests
 import uuid
 import base64
+import logging
+import re
+import pathlib
 from datetime import datetime
 from enum import Enum
 import boto3
-import logging
 
 from deep_parser.parser.base import TextFromFile
 from deep_parser import TextFromWeb
@@ -41,12 +43,11 @@ def extract_path(filepath):
     Extracts bucket and key names from the s3 URI
     """
     if filepath is not None:
-        bucket_and_key = filepath.split("//")[-1]
-        bucket_key_split = bucket_and_key.split("/")
-        bucket_name = bucket_key_split[0]
-        file_path = '/'.join(bucket_key_split[1:])
-        file_name = bucket_key_split[-1]
-        return bucket_name, file_path, file_name
+        filepath_split = pathlib.Path(filepath).parts
+        bucket_name = filepath_split[1]
+        file_key_path = str(pathlib.Path(*filepath_split[2:]))
+        file_name = filepath_split[-1]
+        return bucket_name, file_key_path, file_name
     return None, None, None
 
 
@@ -59,7 +60,11 @@ def store_text_s3(data, bucket_name, key):
 
 
 def get_words_count(text):
-    return len(text.split()) if text else 0
+    if text:
+        w = re.sub(r'[^\w\s]', '', text)
+        w = re.sub(r'_', '', w)
+        return len(w.split())
+    return 0
 
 
 def send_message2sqs(
@@ -133,33 +138,33 @@ def get_extracted_content_links(file_name, mock):
     processed_file_name = ''.join(file_name.split('.')[:-1])
     dir_name = "-".join(processed_file_name.split())
 
-    s3_path_prefix = f"{date_today}/{dir_name}"
+    s3_path_prefix = pathlib.Path(date_today, dir_name)
     if mock:
-        dir_path = f'/tmp/{s3_path_prefix}'
-        os.makedirs(f'{dir_path}/images')
-        with open(f'{dir_path}/{processed_file_name}.txt', 'w') as f:
+        dir_path = pathlib.Path('/tmp') / s3_path_prefix
+        dir_path.mkdir(parents=True) if not dir_path.exists() else None
+        with open(dir_path / f'{processed_file_name}.txt', 'w') as f:
             f.write(extracted_text)
 
-        images.save_images(directory_path=f'{dir_path}/images')
+        images.save_images(directory_path=dir_path / images)
 
-        s3_file_path = f'{domain_name}{dir_path}/{processed_file_name}.txt'
-        s3_images_path_prefix = f'{dir_path}/images'
+        s3_file_path = f'{domain_name}{str(dir_path)}/{processed_file_name}.txt'
+        s3_images_path_prefix = dir_path / 'images'
         s3_images_path = []
         for subdir, dirs, files in os.walk(s3_images_path_prefix):
             for f in files:
                 full_path = os.path.join(subdir, f)
                 with open(full_path, 'rb') as data:
-                    s3_images_path.append(f"{domain_name}{s3_images_path_prefix}/{f}")
+                    s3_images_path.append(f"{domain_name}{str(s3_images_path_prefix)}/{f}")
         return s3_file_path, s3_images_path, total_pages, total_words_count
     else:
         store_text_s3(
             extracted_text,
             dest_bucket_name,
-            f"{s3_path_prefix}/{processed_file_name}.txt"
+            f"{str(s3_path_prefix)}/{processed_file_name}.txt"
         )
 
-        local_temp_directory = f"/tmp/{processed_file_name}"
-        os.mkdir(local_temp_directory)
+        local_temp_directory = pathlib.Path('/tmp', processed_file_name)
+        local_temp_directory.mkdir(parents=True) if not local_temp_directory.exists() else None
         images.save_images(directory_path=local_temp_directory)
 
         for subdir, dirs, files in os.walk(local_temp_directory):
@@ -169,11 +174,11 @@ def get_extracted_content_links(file_name, mock):
                     store_text_s3(
                         data,
                         dest_bucket_name,
-                        f"{s3_path_prefix}/images/{f}"
+                        f"{str(s3_path_prefix)}/images/{f}"
                     )
 
-        s3_file_path = f"s3://{dest_bucket_name}/{s3_path_prefix}/{processed_file_name}.txt"
-        s3_images_path = f"s3://{dest_bucket_name}/{s3_path_prefix}/images"
+        s3_file_path = f"s3://{dest_bucket_name}/{str(s3_path_prefix)}/{processed_file_name}.txt"
+        s3_images_path = f"s3://{dest_bucket_name}/{str(s3_path_prefix)}/images"
 
     return s3_file_path, s3_images_path, total_pages, total_words_count
 
@@ -194,21 +199,21 @@ def get_extracted_text_web_links(link, mock=False):
         processed_file_name = uuid.uuid4().hex
         dir_name = uuid.uuid4().hex
 
-        s3_path_prefix = f"{date_today}/{dir_name}"
+        s3_path_prefix = pathlib.Path(date_today, dir_name)
         if mock:
-            dir_path = f'/tmp/{s3_path_prefix}'
-            os.makedirs(f'{dir_path}/images')
-            with open(f'{dir_path}/{processed_file_name}.txt', 'w') as f:
+            dir_path = pathlib.Path('/tmp') / s3_path_prefix
+            dir_path.mkdir(parents=True) if not dir_path.exists() else None
+            # os.makedirs(f'{dir_path}/images')
+            with open(dir_path / f'{processed_file_name}.txt', 'w') as f:
                 f.write(extracted_text)
-            s3_file_path = f'{domain_name}{dir_path}/{processed_file_name}.txt'
+            s3_file_path = f'{domain_name}{str(dir_path)}/{processed_file_name}.txt'
         else:
             store_text_s3(
                 extracted_text,
                 dest_bucket_name,
-                f"{s3_path_prefix}/{processed_file_name}.txt"
+                f"{str(s3_path_prefix)}/{processed_file_name}.txt"
             )
-            s3_file_path = f"s3://{dest_bucket_name}/{s3_path_prefix}/{processed_file_name}.txt"
-
+            s3_file_path = f"s3://{dest_bucket_name}/{str(s3_path_prefix)}/{processed_file_name}.txt"
         return s3_file_path, None, total_pages, total_words_count  # No images extraction (lib doesn't support?)
     except Exception as e:
         logging.error(f"Extraction from website failed {e}")
@@ -239,7 +244,7 @@ def handle_urls(url, mock=False):
     elif content_type == UrlTypes.PDF.value:  # assume it is http/https pdf weblink
         response = requests.get(url, stream=True)
         file_name = f"{str(uuid.uuid4())}.pdf"
-        with open(f"/tmp/{file_name}", 'wb') as fd:
+        with open(pathlib.Path("/tmp", file_name), 'wb') as fd:
             for chunk in response.iter_content(chunk_size=128):
                 fd.write(chunk)
         try:
@@ -305,6 +310,6 @@ def process_docs(event, context):
             send_message2sqs(**sqs_message)
 
     return {
-        'StatusCode': 200,
-        'Body': 'Message processed successfully.'
+        'statusCode': 200,
+        'body': 'Message processed successfully.'
     }
