@@ -8,6 +8,7 @@ import pathlib
 from datetime import datetime
 from enum import Enum
 import boto3
+import tempfile
 
 from deep_parser.parser.base import TextFromFile
 from deep_parser import TextFromWeb
@@ -19,6 +20,7 @@ except ImportError:
 
 logging.getLogger().setLevel(logging.INFO)
 
+EXTRACTED_FILE_NAME = "extract_text.txt"
 DEFAULT_AWS_REGION = "us-east-1"
 
 aws_region = os.environ.get("AWS_REGION", DEFAULT_AWS_REGION)
@@ -120,12 +122,16 @@ def send_message2sqs(
         logging.error("Message not sent to the processed SQS.")
 
 
-def get_extracted_content_links(file_name, mock):
-    with open(os.path.join("/tmp", file_name), "rb") as f:
-        binary = base64.b64encode(f.read())
+def get_extracted_content_links(file_path, file_name, mock):
+    try:
+        with open(pathlib.Path(file_path), "rb") as f:
+            binary = base64.b64encode(f.read())
 
-    document = TextFromFile(stream=binary, ext="pdf")
-    entries, images = document.extract_text(output_format="list")
+        document = TextFromFile(stream=binary, ext="pdf")
+        entries, images = document.extract_text(output_format="list")
+    except Exception as e:
+        logging.error(f"Extraction failed: {e}")
+        return None, None, -1, -1
 
     entries_list = [item for sublist in entries for item in sublist]
     extracted_text = "\n".join(entries_list)
@@ -135,35 +141,36 @@ def get_extracted_content_links(file_name, mock):
 
     date_today = str(datetime.now().date())
 
-    processed_file_name = ''.join(file_name.split('.')[:-1])
-    dir_name = "-".join(processed_file_name.split())
+    dir_name = str(uuid.uuid4())
 
     s3_path_prefix = pathlib.Path(date_today, dir_name)
     if mock:
         dir_path = pathlib.Path('/tmp') / s3_path_prefix
         dir_path.mkdir(parents=True) if not dir_path.exists() else None
-        with open(dir_path / f'{processed_file_name}.txt', 'w') as f:
+        with open(dir_path / file_name, 'w') as f:
             f.write(extracted_text)
 
-        images.save_images(directory_path=dir_path / images)
+        dir_images_path = dir_path / 'images'
+        dir_images_path.mkdir() if not dir_images_path.exists() else None
+        images.save_images(directory_path=dir_images_path)
 
-        s3_file_path = f'{domain_name}{str(dir_path)}/{processed_file_name}.txt'
-        s3_images_path_prefix = dir_path / 'images'
+        s3_file_path = f'{domain_name}{str(dir_path)}/{file_name}'
+
         s3_images_path = []
-        for subdir, dirs, files in os.walk(s3_images_path_prefix):
+        for subdir, dirs, files in os.walk(dir_images_path):
             for f in files:
                 full_path = os.path.join(subdir, f)
                 with open(full_path, 'rb') as data:
-                    s3_images_path.append(f"{domain_name}{str(s3_images_path_prefix)}/{f}")
+                    s3_images_path.append(f"{domain_name}{str(dir_images_path)}/{f}")
         return s3_file_path, s3_images_path, total_pages, total_words_count
     else:
         store_text_s3(
             extracted_text,
             dest_bucket_name,
-            f"{str(s3_path_prefix)}/{processed_file_name}.txt"
+            f"{str(s3_path_prefix)}/{file_name}"
         )
 
-        local_temp_directory = pathlib.Path('/tmp', processed_file_name)
+        local_temp_directory = pathlib.Path('/tmp', file_name)
         local_temp_directory.mkdir(parents=True) if not local_temp_directory.exists() else None
         images.save_images(directory_path=local_temp_directory)
 
@@ -177,47 +184,46 @@ def get_extracted_content_links(file_name, mock):
                         f"{str(s3_path_prefix)}/images/{f}"
                     )
 
-        s3_file_path = f"s3://{dest_bucket_name}/{str(s3_path_prefix)}/{processed_file_name}.txt"
+        s3_file_path = f"s3://{dest_bucket_name}/{str(s3_path_prefix)}/{file_name}"
         s3_images_path = f"s3://{dest_bucket_name}/{str(s3_path_prefix)}/images"
 
     return s3_file_path, s3_images_path, total_pages, total_words_count
 
 
-def get_extracted_text_web_links(link, mock=False):
+def get_extracted_text_web_links(link, file_name, mock=False):
     try:
         web_text = TextFromWeb(url=link)
         entries = web_text.extract_text(output_format="list")
-
-        entries_list = [item for sublist in entries for item in sublist]
-        extracted_text = "\n".join(entries_list)
-
-        total_pages = -1
-        total_words_count = get_words_count(extracted_text)
-
-        date_today = str(datetime.now().date())
-
-        processed_file_name = uuid.uuid4().hex
-        dir_name = uuid.uuid4().hex
-
-        s3_path_prefix = pathlib.Path(date_today, dir_name)
-        if mock:
-            dir_path = pathlib.Path('/tmp') / s3_path_prefix
-            dir_path.mkdir(parents=True) if not dir_path.exists() else None
-            # os.makedirs(f'{dir_path}/images')
-            with open(dir_path / f'{processed_file_name}.txt', 'w') as f:
-                f.write(extracted_text)
-            s3_file_path = f'{domain_name}{str(dir_path)}/{processed_file_name}.txt'
-        else:
-            store_text_s3(
-                extracted_text,
-                dest_bucket_name,
-                f"{str(s3_path_prefix)}/{processed_file_name}.txt"
-            )
-            s3_file_path = f"s3://{dest_bucket_name}/{str(s3_path_prefix)}/{processed_file_name}.txt"
-        return s3_file_path, None, total_pages, total_words_count  # No images extraction (lib doesn't support?)
     except Exception as e:
         logging.error(f"Extraction from website failed {e}")
         return None, None, -1, -1
+
+    entries_list = [item for sublist in entries for item in sublist]
+    extracted_text = "\n".join(entries_list)
+
+    total_pages = -1
+    total_words_count = get_words_count(extracted_text)
+
+    date_today = str(datetime.now().date())
+
+    dir_name = uuid.uuid4().hex
+
+    s3_path_prefix = pathlib.Path(date_today, dir_name)
+    if mock:
+        dir_path = pathlib.Path('/tmp') / s3_path_prefix
+        dir_path.mkdir(parents=True) if not dir_path.exists() else None
+        # os.makedirs(f'{dir_path}/images')
+        with open(dir_path / file_name, 'w') as f:
+            f.write(extracted_text)
+        s3_file_path = f'{domain_name}{str(dir_path)}/{file_name}'
+    else:
+        store_text_s3(
+            extracted_text,
+            dest_bucket_name,
+            f"{str(s3_path_prefix)}/{file_name}"
+        )
+        s3_file_path = f"s3://{dest_bucket_name}/{str(s3_path_prefix)}/{file_name}"
+    return s3_file_path, None, total_pages, total_words_count  # No images extraction (lib doesn't support?)
 
 
 def handle_urls(url, mock=False):
@@ -225,16 +231,19 @@ def handle_urls(url, mock=False):
 
     content_type = extract_content_type.get_content_type(url)
 
+    file_name = EXTRACTED_FILE_NAME
+
     if url.startswith("s3"):
         bucket_name, file_path, file_name = extract_path(url)
+        local_file_path = f"/tmp/{file_name}"
         s3_client.download_file(
             bucket_name,
             file_path,
-            f"/tmp/{file_name}"
+            local_file_path
         )
         try:
             s3_file_path, s3_images_path, total_pages, total_words_count = get_extracted_content_links(
-                file_name, mock
+                local_file_path, file_name, mock
             )
             extraction_status = ExtractionStatus.SUCCESS.value
         except Exception:
@@ -242,22 +251,27 @@ def handle_urls(url, mock=False):
             extraction_status = ExtractionStatus.FAILED.value
 
     elif content_type == UrlTypes.PDF.value:  # assume it is http/https pdf weblink
+        s3_file_path = None
+        s3_images_path = None
+
         response = requests.get(url, stream=True)
-        file_name = f"{str(uuid.uuid4())}.pdf"
-        with open(pathlib.Path("/tmp", file_name), 'wb') as fd:
+        with tempfile.NamedTemporaryFile(mode='w+b') as temp:
             for chunk in response.iter_content(chunk_size=128):
-                fd.write(chunk)
-        try:
-            s3_file_path, s3_images_path, total_pages, total_words_count = get_extracted_content_links(
-                file_name, mock
-            )
-            extraction_status = ExtractionStatus.SUCCESS.value
-        except Exception:
-            s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
-            extraction_status = ExtractionStatus.FAILED.value
+                temp.write(chunk)
+            temp.seek(0)
+            try:
+                s3_file_path, s3_images_path, total_pages, total_words_count = get_extracted_content_links(
+                    temp.name, file_name, mock
+                )
+                extraction_status = ExtractionStatus.SUCCESS.value
+            except Exception:
+                s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
+                extraction_status = ExtractionStatus.FAILED.value
     elif content_type == UrlTypes.HTML.value:  # assume it is a static webpage
         try:
-            s3_file_path, s3_images_path, total_pages, total_words_count = get_extracted_text_web_links(url, mock)
+            s3_file_path, s3_images_path, total_pages, total_words_count = get_extracted_text_web_links(
+                url, file_name, mock
+            )
             extraction_status = ExtractionStatus.SUCCESS.value
         except Exception:
             s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
