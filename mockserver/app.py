@@ -17,7 +17,9 @@ app = Flask(__name__)
 
 @app.route('/')
 def homepage():
-    return "Welcome to mock server"
+    return json.dumps({
+        "status": "Welcome to mock server"
+    })
 
 
 @app.route('/extract_docs', methods=['POST'])
@@ -32,7 +34,9 @@ def extract_documents():
             'callback_url': body['callback_url']
         })
 
-    return "Requests are enqueued successfully"
+    return json.dumps({
+        "status": "Requests are enqueued successfully"
+    })
 
 
 @app.route('/tmp/<path:filename>', methods=['GET'])
@@ -81,7 +85,9 @@ def predict_entry():
         except requests.exceptions.RequestException as e:
             raise Exception(f"Exception occurred while sending request - {e}")
 
-    return "Response handled successfully"
+    return json.dumps({
+        "status": "Response handled successfully"
+    })
 
 
 if __name__ == '__main__':
