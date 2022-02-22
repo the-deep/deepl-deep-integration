@@ -1,27 +1,26 @@
 # syntax=docker/dockerfile:1.2
 
-FROM python:3.8-slim-buster
+FROM python:3.10-slim-buster
 
 LABEL maintainer="Deep Dev dev@thedeep.com"
 
 WORKDIR /code
 
-RUN apt-get update \
-    && apt-get -y install git gcc curl openssh-client
+COPY ./mockserver/pyproject.toml ./mockserver/poetry.lock /code/mockserver/
 
-RUN pip install --upgrade pip setuptools wheel
-
-COPY mockserver/requirements.txt /code
-RUN pip install -r requirements.txt
-
-RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
-
-RUN echo "$SSH_PRV_KEY" > /root/.ssh/id_rsa && \
-    chmod 700 /root/.ssh/id_rsa
-
-RUN --mount=type=ssh \
-    pip install git+ssh://git@github.com/the-deep/deepl-pdf-extraction.git
-
-COPY . /code/
-
-EXPOSE 8001
+RUN apt-get update -y \
+    && apt-get install -y --no-install-recommends \
+        # Build required packages
+        git gcc curl \
+    # Upgrade pip and install python packages for code
+    && cd /code/mockserver/ \
+    && pip install --upgrade --no-cache-dir pip poetry \
+    && poetry --version \
+    # Configure to use system instead of virtualenvs
+    && poetry config virtualenvs.create false \
+    && poetry install --no-root \
+    # Clean-up
+    && pip uninstall -y poetry virtualenv-clone virtualenv \
+    && apt-get remove -y gcc \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
