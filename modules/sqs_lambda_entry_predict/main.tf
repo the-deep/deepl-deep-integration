@@ -181,8 +181,8 @@ module "entry_predict_output_fn" {
     layers = ["${aws_lambda_layer_version.lambda_layer_mappings.arn}"]
 
     build_in_docker = true
-    store_on_s3 = true
-    s3_bucket = "${var.processed_docs_bucket}"
+    #store_on_s3 = true
+    #s3_bucket = "${var.processed_docs_bucket}"
 }
 
 resource "aws_lambda_layer_version" "lambda_layer_mappings" {

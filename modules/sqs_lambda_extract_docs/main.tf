@@ -172,8 +172,8 @@ module "output_request_fn" {
     })
 
     build_in_docker = true
-    store_on_s3 = true
-    s3_bucket = "${var.processed_docs_bucket}"
+    #store_on_s3 = true
+    #s3_bucket = "${var.processed_docs_bucket}"
 
     environment_variables = {
         SIGNED_URL_EXPIRY_SECS = "${var.signed_url_expiry_secs}"
