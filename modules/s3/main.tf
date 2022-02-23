@@ -1,12 +1,13 @@
 resource "aws_s3_bucket" "processed_bucket" {
     bucket_prefix = "${var.text_extraction_bucket}-${var.environment}-"
     force_destroy = true
+    acl           = "private"
 }
 
-resource "aws_s3_bucket_acl" "processed_bucket_acl" {
-    bucket = aws_s3_bucket.processed_bucket.id
-    acl    = "private"
-}
+# resource "aws_s3_bucket_acl" "processed_bucket_acl" {
+#     bucket = aws_s3_bucket.processed_bucket.id
+#     acl    = "private"
+# }
 
 resource "aws_s3_bucket_policy" "processed_bucket_policy" {
     bucket = aws_s3_bucket.processed_bucket.id
