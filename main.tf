@@ -1,4 +1,10 @@
 terraform {
+  required_providers {
+    aws = {
+      source = "hashicorp/aws",
+      version = "3.7.1"
+    }
+  }
   required_version = "1.1.2"
   backend "s3" {
     bucket         = "terraform-state-deep"
