@@ -17,6 +17,8 @@ sqs_client = boto3.client("sqs", region_name=aws_region)
 def entry_msg_sqs_handler(event, context):
     request_body = json.loads(event['body'])
     entries_lst = request_body['entries']
+    publishing_organization = request_body['publishing_organization']
+    authoring_organization = request_body['authoring_organization'] or ' '
     callback_url = request_body['callback_url']
 
     entries = [{
@@ -27,6 +29,14 @@ def entry_msg_sqs_handler(event, context):
             'entry': {
                 'DataType': 'String',
                 'StringValue': item['entry']
+            },
+            'publishing_organization': {
+                'DataType': 'String',
+                'StringValue': publishing_organization
+            },
+            'authoring_organization': {
+                'DataType': 'String',
+                'StringValue': authoring_organization if authoring_organization.strip() else " "
             },
             'callback_url': {
                 'DataType': 'String',

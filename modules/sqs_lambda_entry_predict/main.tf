@@ -118,7 +118,8 @@ module "predict_entry_fn" {
                     aws_sqs_queue.entry_input_queue_predict.arn,
                     aws_sqs_queue.entry_input_processed_queue_predict.arn,
                     "arn:aws:sagemaker:us-east-1:${data.aws_caller_identity.current.account_id}:endpoint/${var.model_endpoint_name}",
-                    "arn:aws:lambda:us-east-1:${data.aws_caller_identity.current.account_id}:function:${var.geolocation_fn_name}"
+                    "arn:aws:lambda:us-east-1:${data.aws_caller_identity.current.account_id}:function:${var.geolocation_fn_name}",
+                    "arn:aws:lambda:us-east-1:${data.aws_caller_identity.current.account_id}:function:${var.reliability_fn_name}"
                 ]
             }
         ]
@@ -128,6 +129,7 @@ module "predict_entry_fn" {
         PREDICTION_QUEUE = aws_sqs_queue.entry_input_processed_queue_predict.id
         MODEL_ENDPOINT_NAME = var.model_endpoint_name
         GEOLOCATION_FN_NAME = var.geolocation_fn_name
+        RELIABILITY_FN_NAME = var.reliability_fn_name
     }
 }
 

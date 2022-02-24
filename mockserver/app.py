@@ -8,7 +8,7 @@ from flask import Flask, request
 from lambda_fns.entry_predict_output_request.app import entry_predict_output_handler
 from lambda_fns.extract_docs.celery_task import extract_contents
 
-from mappings.tags_mapping import Categories, Tags
+from mappings.tags_mapping import get_all_mappings
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -46,11 +46,7 @@ def get_file(filename):
 
 @app.route('/vf_tags', methods=['GET'])
 def get_vf_tags():
-    response = Categories.all_models() + Tags.sector_list() + Tags.subpillars_1d_list() + \
-        Tags.subpillars_2d_list() + Tags.specific_needs_group_list() + Tags.gender_list() + \
-        Tags.age_list() + Tags.severity_list()
-
-    return json.dumps(response)
+    return json.dumps(get_all_mappings())
 
 
 @app.route('/entry_predict', methods=['POST'])
@@ -60,6 +56,9 @@ def predict_entry():
     event = {}
     event['mock'] = True
     event['entries'] = body['entries']
+    event['publishing_organization'] = body['publishing_organization']
+    event['authoring_organization'] = body['authoring_organization']\
+        if 'authoring_organization' in body else None
 
     callback_url = body['callback_url']
 

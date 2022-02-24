@@ -1,4 +1,5 @@
 import os
+import json
 import boto3
 import logging
 
@@ -17,20 +18,33 @@ sqs_client = boto3.client('sqs', region_name=AWS_REGION)
 def send_message2sqs(
     entry_id,
     entry,
-    predictions,
+    pred_tags,
+    pred_thresholds,
+    tags_selected,
     callback_url,
     prediction_status,
-    geolocations
+    geolocations,
+    reliability_score
 ):
     message_attributes = {}
     message_attributes['entry'] = {
         'DataType': 'String',
         'StringValue': entry
     }
-    if predictions:
-        message_attributes['predictions'] = {
+    if pred_tags:
+        message_attributes['pred_tags'] = {
             'DataType': 'String',
-            'StringValue': predictions  # already serialized.
+            'StringValue': pred_tags  # already serialized
+        }
+    if pred_thresholds:
+        message_attributes['pred_thresholds'] = {
+            'DataType': 'String',
+            'StringValue': pred_thresholds  # already serialized
+        }
+    if tags_selected:
+        message_attributes['tags_selected'] = {
+            'DataType': 'String',
+            'StringValue': tags_selected  # already serialized
         }
     if callback_url:
         message_attributes['callback_url'] = {
@@ -45,6 +59,10 @@ def send_message2sqs(
     message_attributes['geolocations'] = {
         'DataType': 'String',
         'StringValue': geolocations
+    }
+    message_attributes['reliability_score'] = {
+        'DataType': 'String',
+        'StringValue': reliability_score if reliability_score.strip() else " "
     }
     if PREDICTION_QUEUE_NAME:
         sqs_client.send_message(
@@ -63,20 +81,26 @@ def entry_predict_dlq_msgs_handler(event, context):
     for record in records:
         entry_id = record['body']
         entry = record['messageAttributes']['entry']['stringValue']
-        predictions = record['messageAttributes']['predictions']['stringValue']
+        pred_tags = record['messageAttributes']['pred_tags']['stringValue']
+        pred_thresholds = record['messageAttributes']['pred_thresholds']['stringValue']
+        tags_selected = record['messageAttributes']['tags_selected']['stringValue']
         callback_url = record['messageAttributes']['callback_url']['stringValue']
         prediction_status = record['messageAttributes']['prediction_status']['stringValue']
         geolocations = record['messageAttributes']['geolocations']['stringValue']
+        reliability_score = record['messageAttributes']['reliability_score']['stringValue']
 
         logging.info(f"Sending the entry id {entry_id} message to Processing Queue")
 
         sqs_message = {
             'entry_id': entry_id,
             'entry': entry,
-            'predictions': predictions,
+            'pred_tags': pred_tags,
+            'pred_thresholds': pred_thresholds,
+            'tags_selected': tags_selected,
             'callback_url': callback_url,
             'prediction_status': prediction_status,
-            'geolocations': geolocations
+            'geolocations': geolocations,
+            'reliability_score': reliability_score
         }
         send_message2sqs(**sqs_message)
 

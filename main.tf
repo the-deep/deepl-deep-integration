@@ -47,6 +47,7 @@ module "sqs_lambda_predict_module" {
 
   model_endpoint_name = var.model_endpoint_name
   geolocation_fn_name = var.geolocation_fn_name
+  reliability_fn_name = var.reliability_fn_name
 
   environment = var.environment
 }
