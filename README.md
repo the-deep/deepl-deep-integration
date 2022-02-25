@@ -48,7 +48,7 @@ NOTE: **extraction status** -> 0 = Falied, 1 = Success
     }
   ],
   "publishing_organization": "name of publishing org",
-  "authoring_organization": "name of authoring org(optional field)",
+  "authoring_organization": "names of authoring org (list)",
   "callback_url": "callback url where the result should be sent"
 }
 ```
@@ -307,7 +307,6 @@ NOTE: **extraction status** -> 0 = Falied, 1 = Success
         "name": "reliability",
         "version": "1.0.0"
     }
-}
 }
 ```
 
