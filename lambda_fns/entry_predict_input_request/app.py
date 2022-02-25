@@ -18,7 +18,7 @@ def entry_msg_sqs_handler(event, context):
     request_body = json.loads(event['body'])
     entries_lst = request_body['entries']
     publishing_organization = request_body['publishing_organization']
-    authoring_organization = request_body['authoring_organization'] or ' '
+    authoring_organization = request_body['authoring_organization']
     callback_url = request_body['callback_url']
 
     entries = [{
@@ -36,7 +36,7 @@ def entry_msg_sqs_handler(event, context):
             },
             'authoring_organization': {
                 'DataType': 'String',
-                'StringValue': authoring_organization if authoring_organization.strip() else " "
+                'StringValue': json.dumps(authoring_organization) if authoring_organization else json.dumps([])
             },
             'callback_url': {
                 'DataType': 'String',

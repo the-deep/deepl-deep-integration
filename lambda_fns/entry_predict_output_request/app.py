@@ -207,13 +207,17 @@ fake_selected_tags = {
     ]
 }
 
-model_info = {
+model_info_mock = {
     "main_model": {
         "name": "all_tags_model",
         "version": "1.0.0"
     },
     "geolocation": {
         "name": "geolocation",
+        "version": "1.0.0"
+    },
+    "reliability": {
+        "name": "reliability",
         "version": "1.0.0"
     }
 }
@@ -287,7 +291,8 @@ def entry_predict_output_handler(event, context):
                 "entry_id": entry["entry_id"],
                 "model_preds": main_model_preds,
                 "geolocations_preds": geolocations_mock,
-                "reliability_pred": reliability_mock
+                "reliability_pred": reliability_mock,
+                "model_info": model_info_mock
             })
         return all_predictions
 

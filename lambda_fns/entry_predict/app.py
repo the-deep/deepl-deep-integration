@@ -154,7 +154,7 @@ def predict_entry_handler(event, context):
         entry_id = record['body']
         entry = record['messageAttributes']['entry']['stringValue']
         publishing_organization = record['messageAttributes']['publishing_organization']['stringValue']
-        authoring_organization = record['messageAttributes']['authoring_organization']['stringValue']
+        authoring_organization = json.loads(record['messageAttributes']['authoring_organization']['stringValue'])
         callback_url = record['messageAttributes']['callback_url']['stringValue']
         logging.info(f"Processing entry id {entry_id}")
 
