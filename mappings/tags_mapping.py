@@ -28,7 +28,7 @@ class Categories(Enum):
     AGE = MainCategories(id="6", key="age", version=AGE_VERSION)
     SEVERITY = MainCategories(id="7", key="severity", version=SEVERITY_VERSION)
     AFFECTED_GROUPS = MainCategories(id="8", key="affected_groups", version=SECTOR_VERSION)
-    DEMOGRAPHIC_GROUP = MainCategories(id="9", key="demographic_group", version="1")
+    DEMOGRAPHIC_GROUP = MainCategories(id="9", key="demographic_group", version=DEMOGRAPHIC_GROUP_VERSION)
 
     @classmethod
     def all_models(cls):
