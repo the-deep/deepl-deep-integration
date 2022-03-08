@@ -56,257 +56,511 @@ NOTE: **extraction status** -> 0 = Falied, 1 = Success
 ##### Response: POST on callback url for each entry result
 ```json
 {
-    "entry_id": "entry id value",
-    "model_preds": {
-        "predictions": {
-            "1": {
-                "101": 0.0011651739818839036,
-                "103": 0.015535588254747183,
-                "104": 0.005824137285041313,
-                "105": 1.793482568528917,
-                "106": 0.01099251798893276,
-                "107": 0.0032105192076414824,
-                "108": 0.0124868813293929,
-                "109": 0.02668164670467377,
-                "110": 0.005009377353070748,
-                "111": 0.009972890311816952
+    "entry_id": "1881",
+    "model_preds": [
+        {
+            "tags": {
+                "1": {
+                    "101": {
+                        "prediction": 0.0009809271432459354,
+                        "threshold": 0.41000000000000003,
+                        "is_selected": false
+                    },
+                    "103": {
+                        "prediction": 0.002870741857053793,
+                        "threshold": 0.46,
+                        "is_selected": false
+                    },
+                    "104": {
+                        "prediction": 0.0025155357434414327,
+                        "threshold": 0.48,
+                        "is_selected": false
+                    },
+                    "105": {
+                        "prediction": 2.648323608769311,
+                        "threshold": 0.36,
+                        "is_selected": true
+                    },
+                    "106": {
+                        "prediction": 0.017231033722821035,
+                        "threshold": 0.38,
+                        "is_selected": false
+                    },
+                    "107": {
+                        "prediction": 0.0033341911621391773,
+                        "threshold": 0.5,
+                        "is_selected": false
+                    },
+                    "108": {
+                        "prediction": 0.003857407196215829,
+                        "threshold": 0.49,
+                        "is_selected": false
+                    },
+                    "109": {
+                        "prediction": 0.024287596923010104,
+                        "threshold": 0.58,
+                        "is_selected": false
+                    },
+                    "110": {
+                        "prediction": 0.0030457485644590286,
+                        "threshold": 0.42,
+                        "is_selected": false
+                    },
+                    "111": {
+                        "prediction": 0.009205310939336723,
+                        "threshold": 0.53,
+                        "is_selected": false
+                    }
+                },
+                "2": {
+                    "201": {
+                        "prediction": 0.003244201223807115,
+                        "threshold": 0.38,
+                        "is_selected": false
+                    },
+                    "202": {
+                        "prediction": 0.0028143073637586303,
+                        "threshold": 0.17,
+                        "is_selected": false
+                    },
+                    "203": {
+                        "prediction": 0.0023983575108392934,
+                        "threshold": 0.41000000000000003,
+                        "is_selected": false
+                    },
+                    "204": {
+                        "prediction": 0.03473917592544945,
+                        "threshold": 0.49,
+                        "is_selected": false
+                    },
+                    "205": {
+                        "prediction": 0.002362836159825806,
+                        "threshold": 0.31,
+                        "is_selected": false
+                    },
+                    "206": {
+                        "prediction": 0.0027625678657469425,
+                        "threshold": 0.44,
+                        "is_selected": false
+                    },
+                    "207": {
+                        "prediction": 0.00310999535334607,
+                        "threshold": 0.3,
+                        "is_selected": false
+                    },
+                    "208": {
+                        "prediction": 0.0062938983319327235,
+                        "threshold": 0.2,
+                        "is_selected": false
+                    },
+                    "209": {
+                        "prediction": 0.013584146440467413,
+                        "threshold": 0.17,
+                        "is_selected": false
+                    },
+                    "210": {
+                        "prediction": 0.03200973505559175,
+                        "threshold": 0.23,
+                        "is_selected": false
+                    },
+                    "212": {
+                        "prediction": 0.009840355548811587,
+                        "threshold": 0.38,
+                        "is_selected": false
+                    },
+                    "213": {
+                        "prediction": 0.0001934542622719262,
+                        "threshold": 0.37,
+                        "is_selected": false
+                    },
+                    "214": {
+                        "prediction": 0.00012094086710492086,
+                        "threshold": 0.29,
+                        "is_selected": false
+                    },
+                    "215": {
+                        "prediction": 0.00023344017742936942,
+                        "threshold": 0.38,
+                        "is_selected": false
+                    },
+                    "216": {
+                        "prediction": 0.004564649425446987,
+                        "threshold": 0.25,
+                        "is_selected": false
+                    },
+                    "217": {
+                        "prediction": 0.000980646291282028,
+                        "threshold": 0.13,
+                        "is_selected": false
+                    },
+                    "218": {
+                        "prediction": 0.0008387683640019251,
+                        "threshold": 0.13,
+                        "is_selected": false
+                    },
+                    "219": {
+                        "prediction": 0.0022046211857481724,
+                        "threshold": 0.28,
+                        "is_selected": false
+                    },
+                    "220": {
+                        "prediction": 0.0072525300342461164,
+                        "threshold": 0.29,
+                        "is_selected": false
+                    },
+                    "221": {
+                        "prediction": 0.0014619975301780198,
+                        "threshold": 0.19,
+                        "is_selected": false
+                    },
+                    "222": {
+                        "prediction": 0.0023239071500332407,
+                        "threshold": 0.48,
+                        "is_selected": false
+                    },
+                    "223": {
+                        "prediction": 0.0010538867308183552,
+                        "threshold": 0.47000000000000003,
+                        "is_selected": false
+                    },
+                    "224": {
+                        "prediction": 0.014774697566671031,
+                        "threshold": 0.21,
+                        "is_selected": false
+                    },
+                    "225": {
+                        "prediction": 0.0006417883560061455,
+                        "threshold": 0.15,
+                        "is_selected": false
+                    },
+                    "226": {
+                        "prediction": 0.0012694694709757136,
+                        "threshold": 0.18,
+                        "is_selected": false
+                    },
+                    "227": {
+                        "prediction": 0.002328895950793392,
+                        "threshold": 0.18,
+                        "is_selected": false
+                    },
+                    "228": {
+                        "prediction": 0.0026775070000439882,
+                        "threshold": 0.8,
+                        "is_selected": false
+                    },
+                    "229": {
+                        "prediction": 0.0001924166169304114,
+                        "threshold": 0.39,
+                        "is_selected": false
+                    },
+                    "230": {
+                        "prediction": 0.0013101000890687658,
+                        "threshold": 0.81,
+                        "is_selected": false
+                    },
+                    "231": {
+                        "prediction": 0.0018647602168706857,
+                        "threshold": 0.41000000000000003,
+                        "is_selected": false
+                    },
+                    "232": {
+                        "prediction": 0.006384604974933292,
+                        "threshold": 0.46,
+                        "is_selected": false
+                    },
+                    "233": {
+                        "prediction": 0.0009332533006238032,
+                        "threshold": 0.79,
+                        "is_selected": false
+                    },
+                    "234": {
+                        "prediction": 0.0013843739267300676,
+                        "threshold": 0.54,
+                        "is_selected": false
+                    }
+                },
+                "3": {
+                    "301": {
+                        "prediction": 0.00023012808014755137,
+                        "threshold": 0.12,
+                        "is_selected": false
+                    },
+                    "302": {
+                        "prediction": 0.016112014560437784,
+                        "threshold": 0.41000000000000003,
+                        "is_selected": false
+                    },
+                    "303": {
+                        "prediction": 1.528833854583002,
+                        "threshold": 0.62,
+                        "is_selected": true
+                    },
+                    "304": {
+                        "prediction": 0.0023799765040166676,
+                        "threshold": 0.1,
+                        "is_selected": false
+                    },
+                    "305": {
+                        "prediction": 0.4667431809181391,
+                        "threshold": 0.43,
+                        "is_selected": false
+                    },
+                    "306": {
+                        "prediction": 0.09864356596859133,
+                        "threshold": 0.49,
+                        "is_selected": false
+                    },
+                    "307": {
+                        "prediction": 0.01058419196245571,
+                        "threshold": 0.36,
+                        "is_selected": false
+                    },
+                    "308": {
+                        "prediction": 0.019500859909587435,
+                        "threshold": 0.45,
+                        "is_selected": false
+                    },
+                    "309": {
+                        "prediction": 0.004097318366890953,
+                        "threshold": 0.31,
+                        "is_selected": false
+                    },
+                    "310": {
+                        "prediction": 0.03721689941679559,
+                        "threshold": 0.41000000000000003,
+                        "is_selected": false
+                    },
+                    "311": {
+                        "prediction": 0.008000135054125598,
+                        "threshold": 0.38,
+                        "is_selected": false
+                    },
+                    "312": {
+                        "prediction": 0.005017997781661424,
+                        "threshold": 0.33,
+                        "is_selected": false
+                    },
+                    "313": {
+                        "prediction": 0.014817145549588732,
+                        "threshold": 0.45,
+                        "is_selected": false
+                    },
+                    "314": {
+                        "prediction": 0.0042566549382172525,
+                        "threshold": 0.24,
+                        "is_selected": false
+                    },
+                    "315": {
+                        "prediction": 0.006351343102075836,
+                        "threshold": 0.55,
+                        "is_selected": false
+                    },
+                    "316": {
+                        "prediction": 0.0017733968949566286,
+                        "threshold": 0.15,
+                        "is_selected": false
+                    },
+                    "317": {
+                        "prediction": 0.0020504186007504663,
+                        "threshold": 0.3,
+                        "is_selected": false
+                    },
+                    "318": {
+                        "prediction": 0.008379371836781502,
+                        "threshold": 0.25,
+                        "is_selected": false
+                    }
+                },
+                "4": {
+                    "401": {
+                        "prediction": 0.0002582040324341506,
+                        "threshold": 0.25,
+                        "is_selected": false
+                    },
+                    "402": {
+                        "prediction": 0.002513411213997109,
+                        "threshold": 0.58,
+                        "is_selected": false
+                    },
+                    "403": {
+                        "prediction": 0.0029885374325593662,
+                        "threshold": 0.14,
+                        "is_selected": false
+                    },
+                    "404": {
+                        "prediction": 0.002463895119338607,
+                        "threshold": 0.48,
+                        "is_selected": false
+                    },
+                    "405": {
+                        "prediction": 0.021848065826373223,
+                        "threshold": 0.78,
+                        "is_selected": false
+                    },
+                    "406": {
+                        "prediction": 0.002455976433478869,
+                        "threshold": 0.13,
+                        "is_selected": false
+                    },
+                    "407": {
+                        "prediction": 0.00023902353061158662,
+                        "threshold": 0.41000000000000003,
+                        "is_selected": false
+                    },
+                    "408": {
+                        "prediction": 0.011608299751908092,
+                        "threshold": 0.59,
+                        "is_selected": false
+                    },
+                    "409": {
+                        "prediction": 0.0007886766979936509,
+                        "threshold": 0.56,
+                        "is_selected": false
+                    },
+                    "410": {
+                        "prediction": 2.0394893325105006,
+                        "threshold": 0.49,
+                        "is_selected": true
+                    },
+                    "411": {
+                        "prediction": 0.0110106251668185,
+                        "threshold": 0.2,
+                        "is_selected": false
+                    },
+                    "412": {
+                        "prediction": 0.00020141856415042034,
+                        "threshold": 0.6,
+                        "is_selected": false
+                    }
+                },
+                "5": {
+                    "501": {
+                        "prediction": 1.4041466612211415,
+                        "threshold": 0.71,
+                        "is_selected": true
+                    },
+                    "502": {
+                        "prediction": 0.010200739118524572,
+                        "threshold": 0.44,
+                        "is_selected": false
+                    }
+                },
+                "6": {
+                    "601": {
+                        "prediction": 0.05603748528907697,
+                        "threshold": 0.48,
+                        "is_selected": false
+                    },
+                    "602": {
+                        "prediction": 0.026138677177104084,
+                        "threshold": 0.44,
+                        "is_selected": false
+                    },
+                    "603": {
+                        "prediction": 0.04484661389142275,
+                        "threshold": 0.4,
+                        "is_selected": false
+                    },
+                    "604": {
+                        "prediction": 0.00565023672934927,
+                        "threshold": 0.61,
+                        "is_selected": false
+                    }
+                },
+                "8": {
+                    "801": {
+                        "prediction": 0.00020663861156607123,
+                        "threshold": 0.73,
+                        "is_selected": false
+                    },
+                    "802": {
+                        "prediction": 0.008624091067097403,
+                        "threshold": 0.55,
+                        "is_selected": false
+                    },
+                    "803": {
+                        "prediction": 0.004657054903791911,
+                        "threshold": 0.67,
+                        "is_selected": false
+                    },
+                    "804": {
+                        "prediction": 0.0004473439184948802,
+                        "threshold": 0.75,
+                        "is_selected": false
+                    },
+                    "805": {
+                        "prediction": 0.00035789134926744737,
+                        "threshold": 0.64,
+                        "is_selected": false
+                    },
+                    "806": {
+                        "prediction": 0.009627632339889149,
+                        "threshold": 0.53,
+                        "is_selected": false
+                    }
+                },
+                "9": {
+                    "902": {
+                        "prediction": 0.5,
+                        "threshold": 0.5,
+                        "is_selected": false
+                    },
+                    "903": {
+                        "prediction": 0.5,
+                        "threshold": 0.5,
+                        "is_selected": false
+                    },
+                    "904": {
+                        "prediction": 0.5,
+                        "threshold": 0.5,
+                        "is_selected": false
+                    },
+                    "905": {
+                        "prediction": 0.5,
+                        "threshold": 0.5,
+                        "is_selected": false
+                    },
+                    "906": {
+                        "prediction": 0.5,
+                        "threshold": 0.5,
+                        "is_selected": false
+                    },
+                    "907": {
+                        "prediction": 0.5,
+                        "threshold": 0.5,
+                        "is_selected": false
+                    }
+                }
             },
-            "2": {
-                "201": 0.0012622659836013458,
-                "202": 0.02306136576568379,
-                "203": 0.005644642770653817,
-                "204": 0.0034247187669483982,
-                "205": 0.012004651850269686,
-                "206": 0.003777112314392897,
-                "207": 0.006988294577846925,
-                "208": 0.004434663860592991,
-                "209": 0.010090794496457365,
-                "210": 0.03726671490332355,
-                "212": 0.0032292920973544057,
-                "213": 0.0006074654536221076,
-                "214": 0.0003304164395025321,
-                "215": 0.00018383467058332537,
-                "216": 0.0055785649456083775,
-                "217": 0.0007600567746871653,
-                "218": 0.001205129620547478,
-                "219": 0.0014695160124184828,
-                "220": 0.002951633008518096,
-                "221": 0.0035551005949903476,
-                "222": 0.0012103682820452377,
-                "223": 0.0019022544717138751,
-                "224": 0.08337817021778653,
-                "225": 0.03830634678403537,
-                "226": 0.034376099291774966,
-                "227": 0.07387536784840955,
-                "228": 0.0012126606452511624,
-                "229": 0.004611896852461191,
-                "230": 0.0009712083322674403,
-                "231": 0.010670439862623447,
-                "232": 0.01832416443073231,
-                "233": 0.11516693460790417,
-                "234": 0.0053614584936036
-            },
-            "3": {
-                "301": 0.0002837441267426281,
-                "302": 0.009622176109654147,
-                "303": 0.04561438916190978,
-                "304": 0.005028768791817129,
-                "305": 0.9964677483536476,
-                "306": 0.06108326571328299,
-                "307": 0.010084001890694102,
-                "308": 0.2781538168589274,
-                "309": 0.0020901766425419238,
-                "310": 0.01726081572109606,
-                "311": 0.012977353885377707,
-                "312": 0.009677161914155338,
-                "313": 0.070230257180002,
-                "314": 0.0016847220346486818,
-                "315": 0.00868615863675421,
-                "316": 0.00596371750968198,
-                "317": 0.00492362305521965,
-                "318": 0.012582738883793354
-            },
-            "4": {
-                "401": 0.0037905480712652206,
-                "402": 0.0007412575008668776,
-                "403": 0.0057904648461512154,
-                "404": 0.0025663503038231283,
-                "405": 0.0010304296245941748,
-                "406": 0.0020969748640289674,
-                "407": 0.018655198694365778,
-                "408": 0.023670646093659483,
-                "409": 0.003865474718622863,
-                "410": 0.001413615691304511,
-                "411": 0.004206338198855519,
-                "412": 0.0004054372160074612
-            },
-            "5": {
-                "501": 0.002500954949834817,
-                "502": 0.005071992795406418
-            },
-            "6": {
-                "601": 0.0047307801044856514,
-                "602": 0.009723861744119362,
-                "603": 0.02891216892749071,
-                "604": 0.002321415412865701
-            },
-            "8": {
-                "801": 0.00033179544827786005,
-                "802": 0.002489823805676265,
-                "803": 0.004687755535454002,
-                "804": 0.000245133259644111,
-                "805": 0.0010722849765443243,
-                "806": 0.09103546024493452
-            },
-            "9": {
-                "902": 0.5,
-                "903": 0.5,
-                "904": 0.5,
-                "905": 0.5,
-                "906": 0.5,
-                "907": 0.5
+            "prediction_status": "1",
+            "model_info": {
+                "id": "all_tags_model",
+                "version": "1.0.0"
             }
         },
-        "thresholds": {
-            "1": {
-                "101": 0.41000000000000003,
-                "103": 0.46,
-                "104": 0.48,
-                "105": 0.36,
-                "106": 0.38,
-                "107": 0.5,
-                "108": 0.49,
-                "109": 0.58,
-                "110": 0.42,
-                "111": 0.53
+        {
+            "model_info": {
+                "id": "geolocation",
+                "version": "1.0.0"
             },
-            "2": {
-                "201": 0.38,
-                "202": 0.17,
-                "203": 0.41000000000000003,
-                "204": 0.49,
-                "205": 0.31,
-                "206": 0.44,
-                "207": 0.3,
-                "208": 0.2,
-                "209": 0.17,
-                "210": 0.23,
-                "212": 0.38,
-                "213": 0.37,
-                "214": 0.29,
-                "215": 0.38,
-                "216": 0.25,
-                "217": 0.13,
-                "218": 0.13,
-                "219": 0.28,
-                "220": 0.29,
-                "221": 0.19,
-                "222": 0.48,
-                "223": 0.47000000000000003,
-                "224": 0.21,
-                "225": 0.15,
-                "226": 0.18,
-                "227": 0.18,
-                "228": 0.8,
-                "229": 0.39,
-                "230": 0.81,
-                "231": 0.41000000000000003,
-                "232": 0.46,
-                "233": 0.79,
-                "234": 0.54
-            },
-            "3": {
-                "301": 0.12,
-                "302": 0.41000000000000003,
-                "303": 0.62,
-                "304": 0.1,
-                "305": 0.43,
-                "306": 0.49,
-                "307": 0.36,
-                "308": 0.45,
-                "309": 0.31,
-                "310": 0.41000000000000003,
-                "311": 0.38,
-                "312": 0.33,
-                "313": 0.45,
-                "314": 0.24,
-                "315": 0.55,
-                "316": 0.15,
-                "317": 0.3,
-                "318": 0.25
-            },
-            "4": {
-                "401": 0.25,
-                "402": 0.58,
-                "403": 0.14,
-                "404": 0.48,
-                "405": 0.78,
-                "406": 0.13,
-                "407": 0.41000000000000003,
-                "408": 0.59,
-                "409": 0.56,
-                "410": 0.49,
-                "411": 0.2,
-                "412": 0.6
-            },
-            "5": {
-                "501": 0.71,
-                "502": 0.44
-            },
-            "6": {
-                "601": 0.48,
-                "602": 0.44,
-                "603": 0.4,
-                "604": 0.61
-            },
-            "8": {
-                "801": 0.73,
-                "802": 0.55,
-                "803": 0.67,
-                "804": 0.75,
-                "805": 0.64,
-                "806": 0.53
-            },
-            "9": {
-                "902": 0.5,
-                "903": 0.5,
-                "904": 0.5,
-                "905": 0.5,
-                "906": 0.5,
-                "907": 0.5
-            }
+            "values": ["Nepal"],
+            "prediction_status": 1
         },
-        "selected_tags": {
-            "1": [
-                "105"
-            ],
-            "2": [],
-            "3": [
-                "305"
-            ],
-            "4": [],
-            "5": [],
-            "6": [],
-            "7": [],
-            "8": [],
-            "9": []
-        },
-        "prediction_status": "1"
-    },
-    "geolocations_preds": [],
-    "reliability_pred": "Usually reliable",
-    "main_model": {
-        "name": "all_tags_model",
-        "version": "1.0.0"
-    },
-    "geolocation": {
-        "name": "geolocation",
-        "version": "1.0.0"
-    },
-    "reliability": {
-        "name": "reliability",
-        "version": "1.0.0"
-    }
+        {
+            "model_info": {
+                "id": "reliability",
+                "version": "1.0.0"
+            },
+            "tags": {
+                "10": {
+                    "1002": {
+                        "is_selected": true
+                    }
+                }
+            },
+            "prediction_status": 1
+        }
+    ]
 }
 ```
 
@@ -315,110 +569,453 @@ NOTE: **extraction status** -> 0 = Falied, 1 = Success
 ##### Response: GET `/vf_tags`
 ```json
 {
-  "sectors": ["1", "1.0.0"],
-  "subpillars_1d": ["2", "1.0.0"],
-  "subpillars_2d": ["3", "1.0.0"],
-  "age": ["6", "1.0.0"], "gender": ["5", "1.0.0"],
-  "demographic_group": ["9", "1.0.0"],
-  "affected_groups": ["8", "1.0.0"],
-  "specific_needs_groups": ["4", "1.0.0"],
-  "severity": ["7", "1.0.0"],
-  "Agriculture": ["101", "1.0.0"],
-  "Cross": ["102", "1.0.0"],
-  "Education": ["103", "1.0.0"],
-  "Food Security": ["104", "1.0.0"],
-  "Health": ["105", "1.0.0"],
-  "Livelihoods": ["106", "1.0.0"],
-  "Logistics": ["107", "1.0.0"],
-  "Nutrition": ["108", "1.0.0"],
-  "Protection": ["109", "1.0.0"],
-  "Shelter": ["110", "1.0.0"],
-  "WASH": ["111", "1.0.0"],
-  "Context->Environment": ["201", "1.0.0"],
-  "Context->Socio Cultural": ["202", "1.0.0"],
-  "Context->Economy": ["203", "1.0.0"],
-  "Context->Demography": ["204", "1.0.0"],
-  "Context->Legal & Policy": ["205", "1.0.0"],
-  "Context->Security & Stability": ["206", "1.0.0"],
-  "Context->Politics": ["207", "1.0.0"],
-  "Shock/Event->Type And Characteristics": ["208", "1.0.0"],
-  "Shock/Event->Underlying/Aggravating Factors": ["209", "1.0.0"],
-  "Shock/Event->Hazard & Threats": ["210", "1.0.0"],
-  "Displacement->Type/Numbers/Movements": ["212", "1.0.0"],
-  "Displacement->Push Factors": ["213", "1.0.0"],
-  "Displacement->Pull Factors": ["214", "1.0.0"],
-  "Displacement->Intentions": ["215", "1.0.0"],
-  "Displacement->Local Integration": ["216", "1.0.0"],
-  "Casualties->Injured": ["217", "1.0.0"],
-  "Casualties->Missing": ["218", "1.0.0"],
-  "Casualties->Dead": ["219", "1.0.0"],
-  "Humanitarian Access->Relief To Population": ["220", "1.0.0"],
-  "Humanitarian Access->Population To Relief": ["221", "1.0.0"],
-  "Humanitarian Access->Physical Constraints": ["222", "1.0.0"],
-  "Humanitarian Access->Number Of People Facing Humanitarian Access Constraints/Humanitarian Access Gaps": ["223", "1.0.0"],
-  "Information And Communication->Communication Means And Preferences": ["224", "1.0.0"],
-  "Information And Communication->Information Challenges And Barriers": ["225", "1.0.0"],
-  "Information And Communication->Knowledge And Info Gaps (Pop)": ["226", "1.0.0"],
-  "Information And Communication->Knowledge And Info Gaps (Hum)": ["227", "1.0.0"],
-  "Covid-19->Cases": ["228", "1.0.0"],
-  "Covid-19->Contact Tracing": ["229", "1.0.0"],
-  "Covid-19->Deaths": ["230", "1.0.0"],
-  "Covid-19->Hospitalization & Care": ["231", "1.0.0"],
-  "Covid-19->Restriction Measures": ["232", "1.0.0"],
-  "Covid-19->Testing": ["233", "1.0.0"],
-  "Covid-19->Vaccination": ["234", "1.0.0"],
-  "At Risk->Number Of People At Risk": ["301", "1.0.0"],
-  "At Risk->Risk And Vulnerabilities": ["302", "1.0.0"],
-  "Capacities & Response->International Response": ["303", "1.0.0"],
-  "Capacities & Response->Local Response": ["304", "1.0.0"],
-  "Capacities & Response->National Response": ["305", "1.0.0"],
-  "Capacities & Response->Number Of People Reached/Response Gaps": ["306", "1.0.0"],
-  "Humanitarian Conditions->Coping Mechanisms": ["307", "1.0.0"],
-  "Humanitarian Conditions->Living Standards": ["308", "1.0.0"],
-  "Humanitarian Conditions->Number Of People In Need": ["309", "1.0.0"],
-  "Humanitarian Conditions->Physical And Mental Well Being": ["310", "1.0.0"],
-  "Impact->Driver/Aggravating Factors": ["311", "1.0.0"], "Impact->Impact On People": ["312", "1.0.0"],
-  "Impact->Impact On Systems, Services And Networks": ["313", "1.0.0"],
-  "Impact->Number Of People Affected": ["314", "1.0.0"],
-  "Priority Interventions->Expressed By Humanitarian Staff": ["315", "1.0.0"],
-  "Priority Interventions->Expressed By Population": ["316", "1.0.0"],
-  "Priority Needs->Expressed By Humanitarian Staff": ["317", "1.0.0"],
-  "Priority Needs->Expressed By Population": ["318", "1.0.0"],
-  "Child Head of Household": ["401", "1.0.0"],
-  "Chronically Ill": ["402", "1.0.0"],
-  "Elderly Head of Household": ["403", "1.0.0"],
-  "Female Head of Household": ["404", "1.0.0"],
-  "GBV survivors": ["405", "1.0.0"],
-  "Indigenous people": ["406", "1.0.0"],
-  "LGBTQI+": ["407", "1.0.0"],
-  "Minorities": ["408", "1.0.0"],
-  "Persons with Disability": ["409", "1.0.0"],
-  "Pregnant or Lactating Women": ["410", "1.0.0"],
-  "Single Women (including Widows)": ["411", "1.0.0"],
-  "Unaccompanied or Separated Children": ["412", "1.0.0"],
-  "Female": ["501", "1.0.0"],
-  "Male": ["502", "1.0.0"],
-  "Adult (18 to 59 years old)": ["601", "1.0.0"],
-  "Children/Youth (5 to 17 years old)": ["602", "1.0.0"],
-  "Infants/Toddlers (<5 years old)": ["603", "1.0.0"],
-  "Older Persons (60+ years old)" : ["604", "1.0.0"],
-  "Infants/Toddlers (<5 years old) " : ["901", "1.0.0"],
-  "Female Children/Youth (5 to 17 years old)" : ["902", "1.0.0"],
-  "Male Children/Youth (5 to 17 years old)" : ["903", "1.0.0"],
-  "Female Adult (18 to 59 years old)" : ["904", "1.0.0"],
-  "Male Adult (18 to 59 years old)" : ["905", "1.0.0" ],
-  "Female Older Persons (60+ years old)" : ["906", "1.0.0"],
-  "Male Older Persons (60+ years old)" : ["907", "1.0.0"],
-  "Critical" : ["701", "1.0.0"],
-  "Major" : ["702", "1.0.0"],
-  "Minor Problem" : ["703", "1.0.0"],
-  "No problem" : ["704", "1.0.0" ],
-  "Of Concern" : ["705", "1.0.0"],
-  "Asylum Seekers" : ["801", "1.0.0"],
-  "Host" : ["802", "1.0.0"],
-  "IDP" : ["803", "1.0.0" ],
-  "Migrants" : ["804", "1.0.0"],
-  "Refugees" : ["805", "1.0.0"],
-  "Returnees" : ["806", "1.0.0"]
+   "101": {
+      "label": "Agriculture",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "102":{
+      "label": "Cross",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "103": {
+      "label": "Education",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "104": {
+      "label": "Food Security",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "105": {
+      "label": "Health",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "106": {
+      "label": "Livelihoods",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "107": {
+      "label": "Logistics",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "108": {
+      "label": "Nutrition",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "109": {
+      "label": "Protection",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "110": {
+      "label": "Shelter",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "111": {
+      "label": "WASH",
+      "hide_in_analysis_framework_mapping":false
+   },
+   "201": {
+      "label": "Context->Environment",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "202": {
+      "label": "Context->Socio Cultural",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "203": {
+      "label": "Context->Economy",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "204": {
+      "label": "Context->Demography",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "205": {
+      "label": "Context->Legal & Policy",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "206": {
+      "label": "Context->Security & Stability",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "207": {
+      "label": "Context->Politics",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "208": {
+      "label": "Shock/Event->Type And Characteristics",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "209": {
+      "label": "Shock/Event->Underlying/Aggravating Factors",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "210": {
+      "label": "Shock/Event->Hazard & Threats",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "212": {
+      "label": "Displacement->Type/Numbers/Movements",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "213": {
+      "label": "Displacement->Push Factors",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "214": {
+      "label": "Displacement->Pull Factors",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "215": {
+      "label": "Displacement->Intentions",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "216": {
+      "label": "Displacement->Local Integration",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "217": {
+      "label": "Casualties->Injured",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "218":{
+      "label": "Casualties->Missing",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "219":{
+      "label": "Casualties->Dead",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "220": {
+      "label": "Humanitarian Access->Relief To Population",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "221": {
+      "label": "Humanitarian Access->Population To Relief",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "222": {
+      "label": "Humanitarian Access->Physical Constraints",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "223": {
+      "label": "Humanitarian Access->Number Of People Facing Humanitarian Access Constraints/Humanitarian Access Gaps",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "224": {
+      "label": "Information And Communication->Communication Means And Preferences",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "225": {
+      "label": "Information And Communication->Information Challenges And Barriers",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "226": {
+      "label":"Information And Communication->Knowledge And Info Gaps (Pop)",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "227": {
+      "label": "Information And Communication->Knowledge And Info Gaps (Hum)",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "228": {
+      "label": "Covid-19->Cases",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "229": {
+      "label": "Covid-19->Contact Tracing",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "230": {
+      "label": "Covid-19->Deaths",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "231": {
+      "label":"Covid-19->Hospitalization & Care",
+      "hide_in_analysis_framework_mapping":false
+   },
+   "232": {
+      "label": "Covid-19->Restriction Measures",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "233": {
+      "label": "Covid-19->Testing",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "234": {
+      "label": "Covid-19->Vaccination",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "301": {
+      "label": "At Risk->Number Of People At Risk",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "302": {
+      "label": "At Risk->Risk And Vulnerabilities",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "303": {
+      "label": "Capacities & Response->International Response",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "304": {
+      "label": "Capacities & Response->Local Response",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "305": {
+      "label": "Capacities & Response->National Response",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "306": {
+      "label": "Capacities & Response->Number Of People Reached/Response Gaps",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "307": {
+      "label": "Humanitarian Conditions->Coping Mechanisms",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "308": {
+      "label": "Humanitarian Conditions->Living Standards",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "309":{
+      "label": "Humanitarian Conditions->Number Of People In Need",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "310": {
+      "label": "Humanitarian Conditions->Physical And Mental Well Being",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "311": {
+      "label": "Impact->Driver/Aggravating Factors",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "312": {
+      "label": "Impact->Impact On People",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "313":{
+      "label": "Impact->Impact On Systems, Services And Networks",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "314": {
+      "label": "Impact->Number Of People Affected",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "315": {
+      "label": "Priority Interventions->Expressed By Humanitarian Staff",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "316": {
+      "label": "Priority Interventions->Expressed By Population",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "317": {
+      "label": "Priority Needs->Expressed By Humanitarian Staff",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "318": {
+      "label": "Priority Needs->Expressed By Population",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "401": {
+      "label":"Child Head of Household",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "402": {
+      "label": "Chronically Ill",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "403": {
+      "label": "Elderly Head of Household",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "404": {
+      "label": "Female Head of Household",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "405": {
+      "label": "GBV survivors",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "406": {
+      "label": "Indigenous people",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "407": {
+      "label": "LGBTQI+",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "408": {
+      "label": "Minorities",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "409":{
+      "label": "Persons with Disability",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "410": {
+      "label": "Pregnant or Lactating Women",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "411":{
+      "label": "Single Women (including Widows)",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "412": {
+      "label": "Unaccompanied or Separated Children",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "901": {
+      "label": "Infants/Toddlers (<5 years old) ",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "902": {
+      "label": "Female Children/Youth (5 to 17 years old)",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "903": {
+      "label": "Male Children/Youth (5 to 17 years old)",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "904": {
+      "label": "Female Adult (18 to 59 years old)",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "905": {
+      "label": "Male Adult (18 to 59 years old)",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "906": {
+      "label": "Female Older Persons (60+ years old)",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "907":{
+      "label": "Male Older Persons (60+ years old)",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "701": {
+      "label": "Critical",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "702": {
+      "label": "Major",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "703":{
+      "label": "Minor Problem",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "704": {
+      "label": "No problem",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "705": {
+      "label": "Of Concern",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "801": {
+      "label": "Asylum Seekers",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "802": {
+      "label": "Host",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "803": {
+      "label": "IDP",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "804": {
+      "label": "Migrants",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "805": {
+      "label": "Refugees",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "806": {
+      "label": "Returnees",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "1001": {
+      "label": "Completely reliable",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "1002": {
+      "label": "Usually reliable",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "1003": {
+      "label": "Fairly Reliable",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "1004": {
+      "label": "Unreliable",
+      "hide_in_analysis_framework_mapping": false
+   },
+   "1": {
+      "label":"sectors",
+      "hide_in_analysis_framework_mapping": true
+   },
+   "2":{
+      "label": "subpillars_1d",
+      "hide_in_analysis_framework_mapping": true
+   },
+   "3": {
+      "label":"subpillars_2d",
+      "hide_in_analysis_framework_mapping": true
+   },
+   "6": {
+      "label":"age",
+      "hide_in_analysis_framework_mapping": true
+   },
+   "5":{
+      "label":"gender",
+      "hide_in_analysis_framework_mapping":true
+   },
+   "9": {
+      "label": "demographic_group",
+      "hide_in_analysis_framework_mapping": true
+   },
+   "8": {
+      "label": "affected_groups",
+      "hide_in_analysis_framework_mapping": true
+   },
+   "4": {
+      "label": "specific_needs_groups",
+      "hide_in_analysis_framework_mapping": true
+   },
+   "7": {
+      "label": "severity",
+      "hide_in_analysis_framework_mapping": true
+   },
+   "10": {
+      "label": "reliability",
+      "hide_in_analysis_framework_mapping": true
+   },
+   "501": {
+      "label": "Female",
+      "hide_in_analysis_framework_mapping": true
+   },
+   "502": {
+      "label": "Male",
+      "hide_in_analysis_framework_mapping": true
+   },
+   "601": {
+      "label": "Adult (18 to 59 years old)",
+      "hide_in_analysis_framework_mapping": true
+   },
+   "602": {
+      "label": "Children/Youth (5 to 17 years old)",
+      "hide_in_analysis_framework_mapping": true
+   },
+   "603": {
+      "label": "Infants/Toddlers (<5 years old)",
+      "hide_in_analysis_framework_mapping": true
+   },
+   "604": {
+      "label": "Older Persons (60+ years old)",
+      "hide_in_analysis_framework_mapping": true
+   }
 }
 ```
