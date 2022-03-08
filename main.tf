@@ -65,6 +65,9 @@ module "apigateway_module" {
   predict_entry_lambda_fn_name = "${module.sqs_lambda_predict_module.entry_input_pred_request_lambda_fn_name}"
   input_te_lambda_fn_name = "${module.sqs_lambda_module.input_te_lambda_fn_name}"
 
+  vf_tags_invoke_arn = "${module.sqs_lambda_predict_module.vf_tags_invoke_arn}"
+  vf_tags_fn_name = "${module.sqs_lambda_predict_module.vf_tags_fn_name}"
+
   environment = var.environment
 }
 

@@ -238,3 +238,21 @@ resource "aws_lambda_event_source_mapping" "transfer_dlq_msgs_lambda_trigger" {
   event_source_arn = aws_sqs_queue.entry_failed_msgs_dlq_predict.arn
   function_name    = module.entry_predict_transfer_dlq_msg.lambda_function_arn
 }
+
+module "vf_tags_fn" {
+    source = "terraform-aws-modules/lambda/aws"
+    function_name = "vf-tags-${var.environment}"
+    handler = "app.lambda_handler"
+    runtime = "python3.8"
+    timeout = 30
+
+    source_path = [
+    {
+        path = "${path.module}/../../lambda_fns/vf_tags"
+    }
+    ]
+
+    build_in_docker = true
+
+    layers = ["${aws_lambda_layer_version.lambda_layer_mappings.arn}"]
+}
