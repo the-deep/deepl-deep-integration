@@ -8,7 +8,7 @@ from flask import Flask, request
 from lambda_fns.entry_predict_output_request.app import entry_predict_output_handler
 from lambda_fns.extract_docs.celery_task import extract_contents
 
-from mappings.tags_mapping import get_all_mappings
+from mappings.tags_mapping import get_vf_list
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -46,7 +46,7 @@ def get_file(filename):
 
 @app.route('/vf_tags', methods=['GET'])
 def get_vf_tags():
-    return json.dumps(get_all_mappings())
+    return json.dumps(get_vf_list())
 
 
 @app.route('/entry_predict', methods=['POST'])

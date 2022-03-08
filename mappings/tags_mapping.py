@@ -12,7 +12,8 @@ from .constants import (
     SPECIFIC_NEEDS_GROUP_VERSION,
     SEVERITY_VERSION,
     AFFECTED_GRP_VERSION,
-    DEMOGRAPHIC_GROUP_VERSION
+    DEMOGRAPHIC_GROUP_VERSION,
+    RELIABILITY_VERSION
 )
 
 MainCategories = namedtuple('MainCategories', ['id', 'key', 'version'])
@@ -29,6 +30,7 @@ class Categories(Enum):
     SEVERITY = MainCategories(id="7", key="severity", version=SEVERITY_VERSION)
     AFFECTED_GROUPS = MainCategories(id="8", key="affected_groups", version=SECTOR_VERSION)
     DEMOGRAPHIC_GROUP = MainCategories(id="9", key="demographic_group", version=DEMOGRAPHIC_GROUP_VERSION)
+    RELIABILITY = MainCategories(id="10", key="reliability", version=RELIABILITY_VERSION)
 
     @classmethod
     def all_models(cls):
@@ -41,7 +43,8 @@ class Categories(Enum):
             Categories.DEMOGRAPHIC_GROUP,
             Categories.AFFECTED_GROUPS,
             Categories.SPECIFIC_NEEDS_GROUP,
-            Categories.SEVERITY
+            Categories.SEVERITY,
+            Categories.RELIABILITY
         ]]
 
 
@@ -163,6 +166,12 @@ class Tags(Enum):
     MIGRANTS = MainTags(id="804", key="Migrants", version=AFFECTED_GRP_VERSION)
     REFUGEES = MainTags(id="805", key="Refugees", version=AFFECTED_GRP_VERSION)
     RETURNEES = MainTags(id="806", key="Returnees", version=AFFECTED_GRP_VERSION)
+
+    # Reliability
+    COMPLETELY_RELIABLE = MainTags(id="1001", key="Completely reliable", version=RELIABILITY_VERSION)
+    USUALLY_RELIABLE = MainTags(id="1002", key="Usually reliable", version=RELIABILITY_VERSION)
+    FAIRLY_RELIABLE = MainTags(id="1003", key="Fairly Reliable", version=RELIABILITY_VERSION)
+    UNRELIABLE = MainTags(id="1004", key="Unreliable", version=RELIABILITY_VERSION)
 
     @classmethod
     def sector_list(cls):
@@ -307,11 +316,21 @@ class Tags(Enum):
             Tags.RETURNEES
         ]]
 
+    @classmethod
+    def reliablity_list(cls):
+        return [t.value._asdict() for t in [
+            Tags.COMPLETELY_RELIABLE,
+            Tags.USUALLY_RELIABLE,
+            Tags.FAIRLY_RELIABLE,
+            Tags.UNRELIABLE
+        ]]
+
 
 def get_all_mappings():
     all_tags = Categories.all_models() + Tags.sector_list() + Tags.subpillars_1d_list() + \
         Tags.subpillars_2d_list() + Tags.specific_needs_group_list() + Tags.gender_list() + \
-        Tags.age_list() + Tags.demographic_group_list() + Tags.severity_list() + Tags.affected_group_list()
+        Tags.age_list() + Tags.demographic_group_list() + Tags.severity_list() + Tags.affected_group_list() + \
+        Tags.reliablity_list()
     return {
         d['key']: (d['id'], d['version']) for d in all_tags
     }
@@ -322,3 +341,24 @@ def get_categories():
     return {
         d['key']: (d['id'], d['version']) for d in all_categories
     }
+
+
+def get_vf_list():
+    vf_tags = {}
+    show_tags = Tags.sector_list() + Tags.subpillars_1d_list() + \
+        Tags.subpillars_2d_list() + Tags.specific_needs_group_list() + Tags.demographic_group_list() + Tags.severity_list() + Tags.affected_group_list() + \
+        Tags.reliablity_list()
+    vf_tags.update({
+        d["id"]: {
+            "label": d['key'],
+            "hide_in_analysis_framework_mapping": False
+        } for d in show_tags
+    })
+    hide_tags = Categories.all_models() + Tags.gender_list() + Tags.age_list()
+    vf_tags.update({
+        d["id"]: {
+            "label": d['key'],
+            "hide_in_analysis_framework_mapping": True
+        } for d in hide_tags
+    })
+    return vf_tags

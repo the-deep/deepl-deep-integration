@@ -209,71 +209,89 @@ fake_selected_tags = {
 
 model_info_mock = {
     "main_model": {
-        "name": "all_tags_model",
+        "id": "all_tags_model",
         "version": "1.0.0"
     },
     "geolocation": {
-        "name": "geolocation",
+        "id": "geolocation",
         "version": "1.0.0"
     },
     "reliability": {
-        "name": "reliability",
+        "id": "reliability",
         "version": "1.0.0"
     }
 }
 
 
-def get_enum_mappings(pred_data, thresholds, selected_tags):
-    model_output = {
-        "predictions": {},
-        "thresholds": {},
-        "selected_tags": {}
-    }
+def get_model_enum_mappings(pred_data, thresholds, selected_tags):
+    def get_threshold_primary_value(pt_key, t_key):
+        return thresholds['primary_tags'][pt_key][t_key]
 
-    for prim_tags_key, prim_key_val in pred_data['primary_tags'].items():
+    def get_threshold_secondary_value(st_key, t_key):
+        return thresholds['secondary_tags'][st_key][t_key]
+
+    def check_selected_tag(category, tag):
+        return True if tag in selected_tags[category][0] else False
+
+    def check_demo_grp_selected_tag(gender, age):
+        return True if gender in selected_tags["gender"][0] and age in selected_tags["age"][0] else False
+
+    all_tags_pred = {}
+    for prim_tags_key, prim_key_val in pred_data["primary_tags"].items():
+        tags = {}
         if prim_tags_key in categories:
-            model_output['predictions'][categories[prim_tags_key][0]] = {}
+            category = categories[prim_tags_key][0]
+            tags[category] = {}
+
             for tag_key, tag_val in prim_key_val[0].items():
-                model_output['predictions'][categories[prim_tags_key][0]][mappings[tag_key][0]] = tag_val
+                tag = mappings[tag_key][0]
+                tags[category][tag] = {}
+                tags[category][tag]["prediction"] = tag_val
+                tags[category][tag]["threshold"] = get_threshold_primary_value(prim_tags_key, tag_key)
+                tags[category][tag]["is_selected"] = check_selected_tag(prim_tags_key, tag_key)
+        all_tags_pred.update(tags)
 
-    for sec_tags_key, sec_tags_val in pred_data['secondary_tags'].items():
+    for sec_tags_key, sec_tags_val in pred_data["secondary_tags"].items():
+        tags = {}
         if sec_tags_key in categories:
-            model_output['predictions'][categories[sec_tags_key][0]] = {}
+            category = categories[sec_tags_key][0]
+            tags[category] = {}
+
             for tag_key, tag_val in sec_tags_val[0].items():
-                model_output['predictions'][categories[sec_tags_key][0]][mappings[tag_key][0]] = tag_val
+                tag = mappings[tag_key][0]
+                tags[category][tag] = {}
+                tags[category][tag]["prediction"] = tag_val
+                tags[category][tag]["threshold"] = get_threshold_secondary_value(sec_tags_key, tag_key)
+                tags[category][tag]["is_selected"] = check_selected_tag(sec_tags_key, tag_key)
+        all_tags_pred.update(tags)
 
-    model_output['predictions'][categories['demographic_group'][0]] = {
-        mappings[f"{gender} {age}"][0]: 0.5 for gender in pred_data['secondary_tags']['gender'][0]
-        for age in pred_data['secondary_tags']['age'][0] if f"{gender} {age}" in mappings
-    }
+    demographic_grp_id = categories['demographic_group'][0]
+    tags = {}
+    tags[demographic_grp_id] = {}
+    for age_key, age_val in pred_data["secondary_tags"]["age"][0].items():
+        for gender_key, gender_val in pred_data["secondary_tags"]["gender"][0].items():
+            demographic_key = f"{gender_key} {age_key}"
 
-    for prim_tags_key, prim_key_val in thresholds['primary_tags'].items():
-        if prim_tags_key in categories:
-            model_output['thresholds'][categories[prim_tags_key][0]] = {}
-            for tag_key, tag_val in prim_key_val.items():
-                model_output['thresholds'][categories[prim_tags_key][0]][mappings[tag_key][0]] = tag_val
+            if demographic_key in mappings:
+                tag = mappings[demographic_key][0]
+                tags[demographic_grp_id][tag] = {}
+                tags[demographic_grp_id][tag]["prediction"] = 0.5
+                tags[demographic_grp_id][tag]["threshold"] = 0.5
+                tags[demographic_grp_id][tag]["is_selected"] = check_demo_grp_selected_tag(gender_key, age_key)
+    all_tags_pred.update(tags)
 
-    for sec_tags_key, sec_tags_val in thresholds['secondary_tags'].items():
-        if sec_tags_key in categories:
-            model_output['thresholds'][categories[sec_tags_key][0]] = {}
-            for tag_key, tag_val in sec_tags_val.items():
-                model_output['thresholds'][categories[sec_tags_key][0]][mappings[tag_key][0]] = tag_val
+    return all_tags_pred
 
-    model_output['thresholds'][categories['demographic_group'][0]] = {
-        mappings[f"{gender} {age}"][0]: 0.5 for gender in pred_data['secondary_tags']['gender'][0]
-        for age in pred_data['secondary_tags']['age'][0] if f"{gender} {age}" in mappings
-    }
 
-    for key, val in selected_tags.items():
-        if key in categories:
-            model_output['selected_tags'][categories[key][0]] = [mappings[t][0] for t in val[0]]
-
-    model_output['selected_tags'][categories['demographic_group'][0]] = [
-        mappings[f"{gender} {age}"][0] for gender in selected_tags['gender'][0]
-        for age in selected_tags['age'][0] if f"{gender} {age}" in mappings
-    ]
-
-    return model_output
+def get_reliability_enum_mappings(reliability_score):
+    reliability_tag = {}
+    if reliability_score and reliability_score.strip():
+        reliability_tag[categories["reliability"][0]] = {
+            mappings[reliability_score][0]: {
+                "is_selected": True
+            }
+        }
+    return reliability_tag
 
 
 def entry_predict_output_handler(event, context):
@@ -283,16 +301,31 @@ def entry_predict_output_handler(event, context):
         prediction_status = 1
         geolocations_mock = ['Nepal', 'Paris']
         reliability_mock = "Usually reliable"
+
         for entry in entries:
-            main_model_preds = get_enum_mappings(fake_data, fake_data_thresholds, fake_selected_tags)
-            main_model_preds['prediction_status'] = prediction_status
+            all_models = []
+            main_model_preds = {}
+            main_model_preds["tags"] = get_model_enum_mappings(fake_data, fake_data_thresholds, fake_selected_tags)
+            main_model_preds["prediction_status"] = prediction_status
+            main_model_preds["model_info"] = model_info_mock["main_model"]
+
+            geolocation_preds = {}
+            geolocation_preds["model_info"] = model_info_mock["geolocation"]
+            geolocation_preds["values"] = geolocations_mock
+            geolocation_preds["prediction_status"] = 1
+
+            reliability_preds = {}
+            reliability_preds["model_info"] = model_info_mock["reliability"]
+            reliability_preds["tags"] = get_reliability_enum_mappings(reliability_mock)
+            reliability_preds["prediction_status"] = 1
+
+            all_models.append(main_model_preds)
+            all_models.append(geolocation_preds)
+            all_models.append(reliability_preds)
 
             all_predictions.append({
                 "entry_id": entry["entry_id"],
-                "model_preds": main_model_preds,
-                "geolocations_preds": geolocations_mock,
-                "reliability_pred": reliability_mock,
-                "model_info": model_info_mock
+                "model_preds": all_models
             })
         return all_predictions
 
@@ -313,24 +346,37 @@ def entry_predict_output_handler(event, context):
         geolocations = json.loads(record['messageAttributes']['geolocations']['stringValue'])
         reliability_score = record['messageAttributes']['reliability_score']['stringValue']
 
-        model_preds = get_enum_mappings(pred_tags, pred_thresholds, tags_selected)
-        model_preds['prediction_status'] = prediction_status
+        all_models = []
+        main_model_preds = {}
+        main_model_preds["tags"] = get_model_enum_mappings(pred_tags, pred_thresholds, tags_selected)
+        main_model_preds["prediction_status"] = prediction_status
+        main_model_preds["model_info"] = model_info_mock["main_model"]
+
+        geolocation_preds = {}
+        geolocation_preds["model_info"] = model_info_mock["geolocation"]
+        geolocation_preds["values"] = geolocations
+        geolocation_preds["prediction_status"] = 1
+
+        reliability_preds = {}
+        reliability_preds["model_info"] = model_info_mock["reliability"]
+        reliability_preds["tags"] = get_reliability_enum_mappings(reliability_score)
+        reliability_preds["prediction_status"] = 1 if reliability_score.strip() else 0
+
+        all_models.append(main_model_preds)
+        all_models.append(geolocation_preds)
+        all_models.append(reliability_preds)
 
         try:
             logging.info(json.dumps({
                 'entry_id': entry_id,
-                'model_preds': model_preds,
-                'geolocations_preds': geolocations,
-                'reliability_pred': reliability_score
+                'model_preds': all_models
             }))
             response = requests.post(
                 callback_url,
                 headers=headers,
                 data=json.dumps({
                     'entry_id': entry_id,
-                    'model_preds': model_preds,
-                    'geolocations_preds': geolocations,
-                    'reliability_pred': reliability_score
+                    'model_preds': all_models
                 }),
                 timeout=60
             )
