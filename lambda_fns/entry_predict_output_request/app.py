@@ -246,8 +246,8 @@ def get_model_enum_mappings(pred_data, thresholds, selected_tags):
             for tag_key, tag_val in prim_key_val[0].items():
                 tag = mappings[tag_key][0]
                 tags[category][tag] = {}
-                tags[category][tag]["prediction"] = tag_val
-                tags[category][tag]["threshold"] = get_threshold_primary_value(prim_tags_key, tag_key)
+                tags[category][tag]["prediction"] = round(tag_val, 15)
+                tags[category][tag]["threshold"] = round(get_threshold_primary_value(prim_tags_key, tag_key), 15)
                 tags[category][tag]["is_selected"] = check_selected_tag(prim_tags_key, tag_key)
         all_tags_pred.update(tags)
 
@@ -260,8 +260,8 @@ def get_model_enum_mappings(pred_data, thresholds, selected_tags):
             for tag_key, tag_val in sec_tags_val[0].items():
                 tag = mappings[tag_key][0]
                 tags[category][tag] = {}
-                tags[category][tag]["prediction"] = tag_val
-                tags[category][tag]["threshold"] = get_threshold_secondary_value(sec_tags_key, tag_key)
+                tags[category][tag]["prediction"] = round(tag_val, 15)
+                tags[category][tag]["threshold"] = round(get_threshold_secondary_value(sec_tags_key, tag_key), 15)
                 tags[category][tag]["is_selected"] = check_selected_tag(sec_tags_key, tag_key)
         all_tags_pred.update(tags)
 
