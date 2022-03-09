@@ -256,3 +256,19 @@ module "vf_tags_fn" {
 
     layers = ["${aws_lambda_layer_version.lambda_layer_mappings.arn}"]
 }
+
+module "model_info_fn" {
+    source = "terraform-aws-modules/lambda/aws"
+    function_name = "model-info-${var.environment}"
+    handler = "app.lambda_handler"
+    runtime = "python3.8"
+    timeout = 30
+
+    source_path = [
+    {
+        path = "${path.module}/../../lambda_fns/model_info"
+    }
+    ]
+
+    build_in_docker = true
+}

@@ -26,6 +26,12 @@ resource "aws_api_gateway_resource" "vf_tags_resource" {
   rest_api_id = aws_api_gateway_rest_api.api.id
 }
 
+resource "aws_api_gateway_resource" "model_info_resource" {
+  path_part = var.model_info
+  parent_id = aws_api_gateway_rest_api.api.root_resource_id
+  rest_api_id = aws_api_gateway_rest_api.api.id
+}
+
 # How the gateway will be interacted from clientt
 resource "aws_api_gateway_method" "predict_entry_method" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
@@ -44,6 +50,13 @@ resource "aws_api_gateway_method" "process_doc_method" {
 resource "aws_api_gateway_method" "vf_tags_method" {
   rest_api_id = aws_api_gateway_rest_api.api.id
   resource_id = aws_api_gateway_resource.vf_tags_resource.id
+  http_method = "ANY"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_method" "model_info_method" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.model_info_resource.id
   http_method = "ANY"
   authorization = "NONE"
 }
@@ -78,6 +91,15 @@ resource "aws_api_gateway_integration" "gateway_integration_3" {
   uri = var.vf_tags_invoke_arn
 }
 
+resource "aws_api_gateway_integration" "gateway_integration_4" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.model_info_resource.id
+  http_method = aws_api_gateway_method.model_info_method.http_method
+  integration_http_method = "POST"
+  type = "AWS_PROXY"
+  uri = var.model_info_invoke_arn
+}
+
 # Define lambda permissions to grant API gateway, source arn is not needed
 resource "aws_lambda_permission" "allow_api_gateway" {
   action        = "lambda:InvokeFunction"
@@ -94,6 +116,12 @@ resource "aws_lambda_permission" "allow_api_gateway2" {
 resource "aws_lambda_permission" "allow_api_gateway3" {
   action = "lambda:InvokeFunction"
   function_name = var.vf_tags_fn_name
+  principal = "apigateway.amazonaws.com"
+}
+
+resource "aws_lambda_permission" "allow_api_gateway4" {
+  action = "lambda:InvokeFunction"
+  function_name = var.model_info_fn_name
   principal = "apigateway.amazonaws.com"
 }
 

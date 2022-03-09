@@ -7,6 +7,8 @@ variable "ep_input_te" { default = "extract_docs" }
 
 variable "vf_tags" { default = "vf_tags" }
 
+variable "model_info" { default = "model_info" }
+
 #variable "lambda_name" { default = "entry-prediction-handler-dev"}
 
 #variable "process_doc_lambda_name" { default = "te-input-func-dev"}
@@ -22,3 +24,6 @@ variable "process_doc_invoke_arn" {}
 
 variable "vf_tags_invoke_arn" {}
 variable "vf_tags_fn_name" {}
+
+variable "model_info_invoke_arn" {}
+variable "model_info_fn_name" {}
