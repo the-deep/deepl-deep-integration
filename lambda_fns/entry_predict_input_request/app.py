@@ -23,7 +23,7 @@ def entry_msg_sqs_handler(event, context):
 
     entries = [{
         'Id': str(uuid.uuid4()),
-        'MessageBody': item['entry_id'],
+        'MessageBody': item['client_id'],
         'DelaySeconds': 0,
         'MessageAttributes': {
             'entry': {

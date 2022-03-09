@@ -324,7 +324,7 @@ def entry_predict_output_handler(event, context):
             all_models.append(reliability_preds)
 
             all_predictions.append({
-                "client_id": entry["entry_id"],
+                "client_id": entry["client_id"],
                 "model_preds": all_models
             })
         return all_predictions
