@@ -324,7 +324,7 @@ def entry_predict_output_handler(event, context):
             all_models.append(reliability_preds)
 
             all_predictions.append({
-                "entry_id": entry["entry_id"],
+                "client_id": entry["entry_id"],
                 "model_preds": all_models
             })
         return all_predictions
@@ -368,14 +368,14 @@ def entry_predict_output_handler(event, context):
 
         try:
             logging.info(json.dumps({
-                'entry_id': entry_id,
+                'client_id': entry_id,
                 'model_preds': all_models
             }))
             response = requests.post(
                 callback_url,
                 headers=headers,
                 data=json.dumps({
-                    'entry_id': entry_id,
+                    'client_id': entry_id,
                     'model_preds': all_models
                 }),
                 timeout=60
