@@ -1,3 +1,4 @@
+import json
 import os
 import requests
 import logging
@@ -85,7 +86,7 @@ def output_request(event, context):
                 doc_bucket_name, doc_key_name
             )
             if s3_file_signed_url:
-                request_body['s3_file_signed_url'] = s3_file_signed_url
+                request_body['text_path'] = s3_file_signed_url
 
         images_bucket_name, images_key_name = extract_path(s3_images_path)
         if images_bucket_name and images_key_name:
@@ -100,13 +101,14 @@ def output_request(event, context):
                 if s3_image_signed_url:
                     image_urls.append(s3_image_signed_url)
             if image_urls:
-                request_body['s3_images_signed_urls'] = image_urls
+                request_body['images_path'] = image_urls
 
         request_body['total_pages'] = total_pages
         request_body['total_words_count'] = total_words_count
         request_body['extraction_status'] = extraction_status
 
         # Sending the request towards Deep
+        logging.info(f"The request body is {json.dumps(request_body)}")
         try:
             response = requests.post(
                 callback_url,
