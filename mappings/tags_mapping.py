@@ -16,7 +16,7 @@ from .constants import (
     RELIABILITY_VERSION
 )
 
-MainCategories = namedtuple('MainCategories', ['id', 'key', 'version', 'is_category'])
+MainCategories = namedtuple('MainCategories', ['id', 'key', 'version', 'is_category', 'alias'])
 MainTags = namedtuple('MainTags', ['id', 'key', 'version', 'is_category', 'category_id'])
 
 
@@ -24,43 +24,53 @@ class Categories(Enum):
     SECTORS = MainCategories(id="1",
                              key="sectors",
                              version=SECTOR_VERSION,
-                             is_category=True)
+                             is_category=True,
+                             alias="Sectors")
     SUBPILLARS_1D = MainCategories(id="2",
                                    key="subpillars_1d",
                                    version=SUBPILLAR_VERSION,
-                                   is_category=True)
+                                   is_category=True,
+                                   alias="Subpillars 1D")
     SUBPILLARS_2D = MainCategories(id="3",
                                    key="subpillars_2d",
                                    version=SUBPILLAR_VERSION,
-                                   is_category=True)
+                                   is_category=True,
+                                   alias="Subpillars 2D")
     SPECIFIC_NEEDS_GROUP = MainCategories(id="4",
                                           key="specific_needs_groups",
                                           version=AFFECTED_GRP_VERSION,
-                                          is_category=True)
+                                          is_category=True,
+                                          alias="Specific Needs Group")
     GENDER = MainCategories(id="5",
                             key="gender",
                             version=GENDER_VERSION,
-                            is_category=True)
+                            is_category=True,
+                            alias="Gender")
     AGE = MainCategories(id="6",
                          key="age",
                          version=AGE_VERSION,
-                         is_category=True)
+                         is_category=True,
+                         alias="Age")
     SEVERITY = MainCategories(id="7",
                               key="severity",
                               version=SEVERITY_VERSION,
-                              is_category=True)
+                              is_category=True,
+                              alias="Severity")
     AFFECTED_GROUPS = MainCategories(id="8",
                                      key="affected_groups",
                                      version=SECTOR_VERSION,
-                                     is_category=True)
+                                     is_category=True,
+                                     alias="Affected Groups")
     DEMOGRAPHIC_GROUP = MainCategories(id="9",
                                        key="demographic_group",
                                        version=DEMOGRAPHIC_GROUP_VERSION,
-                                       is_category=True)
+                                       is_category=True,
+                                       alias="Demographic Groups")
     RELIABILITY = MainCategories(id="10",
                                  key="reliability",
                                  version=RELIABILITY_VERSION,
-                                 is_category=True)
+                                 is_category=True,
+                                 alias="Reliability")
 
     @classmethod
     def all_models(cls):
@@ -780,35 +790,52 @@ def get_categories():
     }
 
 
+def id_to_alias_categories():
+    all_categories = Categories.all_models()
+    return {
+        d['id']: d['alias'] for d in all_categories
+    }
+
+
 def get_vf_list():
-    vf_tags = {}
     show_tags = Tags.sector_list() + Tags.subpillars_1d_list() + \
         Tags.subpillars_2d_list() + Tags.specific_needs_group_list() + Tags.demographic_group_list() + Tags.severity_list() + Tags.affected_group_list() + \
         Tags.reliablity_list()
 
-    vf_tags.update({
-        d["id"]: {
-            "label": d["key"],
-            "is_category": True,
-            "hide_in_analysis_framework_mapping": False
-        } if d["is_category"] else {
-            "label": d["key"],
-            "is_category": False,
-            "parent_id": d["category_id"],
-            "hide_in_analysis_framework_mapping": False
-        } for d in show_tags
-    })
-    hide_tags = Categories.all_models() + Tags.gender_list() + Tags.age_list()
-    vf_tags.update({
-        d["id"]: {
-            "label": d["key"],
-            "is_category": True,
-            "hide_in_analysis_framework_mapping": True
-        } if d["is_category"] else {
-            "label": d["key"],
-            "is_category": False,
-            "parent_id": d["category_id"],
-            "hide_in_analysis_framework_mapping": True
-        } for d in hide_tags
-    })
-    return vf_tags
+    id_to_alias = id_to_alias_categories()
+
+    def handle_mapping(tags):
+        vf_tags_temp = {}
+        for d in tags:
+            temp = {}
+            if "->" in d["key"]:
+                int_id = d["id"]
+                temp[int_id] = {}
+                temp[int_id]["label"] = d["key"].split("->")[1]
+                temp[int_id]["group"] = d["key"].split("->")[0]
+                temp[int_id]["hide_in_analysis_framework_mapping"] = False
+                if d["is_category"]:
+                    temp[int_id]["is_category"] = True
+                else:
+                    temp[int_id]["is_category"] = False
+                    temp[int_id]["parent_id"] = d["category_id"]
+            else:
+                int_id = d["id"]
+                temp[int_id] = {}
+                temp[int_id]["label"] = d["key"]
+                temp[int_id]["group"] = id_to_alias[d["category_id"]] if "category_id" in d else d["alias"]
+                temp[int_id]["hide_in_analysis_framework_mapping"] = False
+                if d["is_category"]:
+                    temp[int_id]["is_category"] = True
+                else:
+                    temp[int_id]["is_category"] = False
+                    temp[int_id]["parent_id"] = d["category_id"]
+
+            vf_tags_temp.update(temp)
+        return vf_tags_temp
+
+    hide_tags = Tags.gender_list() + Tags.age_list()
+    final_vf_tags = handle_mapping(show_tags)
+    final_vf_tags.update(handle_mapping(hide_tags))
+
+    return final_vf_tags
