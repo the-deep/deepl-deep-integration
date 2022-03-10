@@ -7,6 +7,7 @@ from flask import Flask, request
 
 from lambda_fns.entry_predict_output_request.app import entry_predict_output_handler
 from lambda_fns.extract_docs.celery_task import extract_contents
+from lambda_fns.model_info.app import lambda_handler
 
 from mappings.tags_mapping import get_vf_list
 
@@ -87,6 +88,13 @@ def predict_entry():
     return json.dumps({
         "status": "Response handled successfully"
     })
+
+
+@app.route('/model_info', methods=['GET'])
+def model_info():
+    event = {}
+    event["mock"] = True
+    return lambda_handler(event, None)
 
 
 if __name__ == '__main__':
