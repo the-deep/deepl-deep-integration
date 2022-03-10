@@ -569,719 +569,719 @@ NOTE: **extraction status** -> 0 = Falied, 1 = Success
 ##### Response: GET `/vf_tags`
 ```json
 {
-   " 101" :{
-      " label" :" Agriculture" ,
-      " group" :" Sectors" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 1" 
-   },
-   " 102" :{
-      " label" :" Cross" ,
-      " group" :" Sectors" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 1" 
-   },
-   " 103" :{
-      " label" :" Education" ,
-      " group" :" Sectors" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 1" 
-   },
-   " 104" :{
-      " label" :" Food Security" ,
-      " group" :" Sectors" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 1" 
-   },
-   " 105" :{
-      " label" :" Health" ,
-      " group" :" Sectors" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 1" 
-   },
-   " 106" :{
-      " label" :" Livelihoods" ,
-      " group" :" Sectors" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 1" 
-   },
-   " 107" :{
-      " label" :" Logistics" ,
-      " group" :" Sectors" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 1" 
-   },
-   " 108" :{
-      " label" :" Nutrition" ,
-      " group" :" Sectors" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 1" 
-   },
-   " 109" :{
-      " label" :" Protection" ,
-      " group" :" Sectors" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 1" 
-   },
-   " 110" :{
-      " label" :" Shelter" ,
-      " group" :" Sectors" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 1" 
-   },
-   " 111" :{
-      " label" :" WASH" ,
-      " group" :" Sectors" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 1" 
-   },
-   " 201" :{
-      " label" :" Environment" ,
-      " group" :" Context" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 202" :{
-      " label" :" Socio Cultural" ,
-      " group" :" Context" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 203" :{
-      " label" :" Economy" ,
-      " group" :" Context" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 204" :{
-      " label" :" Demography" ,
-      " group" :" Context" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 205" :{
-      " label" :" Legal & Policy" ,
-      " group" :" Context" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 206" :{
-      " label" :" Security & Stability" ,
-      " group" :" Context" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 207" :{
-      " label" :" Politics" ,
-      " group" :" Context" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 208" :{
-      " label" :" Type And Characteristics" ,
-      " group" :" Shock/Event" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 209" :{
-      " label" :" Underlying/Aggravating Factors" ,
-      " group" :" Shock/Event" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 210" :{
-      " label" :" Hazard & Threats" ,
-      " group" :" Shock/Event" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 212" :{
-      " label" :" Type/Numbers/Movements" ,
-      " group" :" Displacement" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 213" :{
-      " label" :" Push Factors" ,
-      " group" :" Displacement" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 214" :{
-      " label" :" Pull Factors" ,
-      " group" :" Displacement" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 215" :{
-      " label" :" Intentions" ,
-      " group" :" Displacement" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 216" :{
-      " label" :" Local Integration" ,
-      " group" :" Displacement" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 217" :{
-      " label" :" Injured" ,
-      " group" :" Casualties" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 218" :{
-      " label" :" Missing" ,
-      " group" :" Casualties" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 219" :{
-      " label" :" Dead" ,
-      " group" :" Casualties" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 220" :{
-      " label" :" Relief To Population" ,
-      " group" :" Humanitarian Access" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 221" :{
-      " label" :" Population To Relief" ,
-      " group" :" Humanitarian Access" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 222" :{
-      " label" :" Physical Constraints" ,
-      " group" :" Humanitarian Access" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 223" :{
-      " label" :" Number Of People Facing Humanitarian Access Constraints/Humanitarian Access Gaps" ,
-      " group" :" Humanitarian Access" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 224" :{
-      " label" :" Communication Means And Preferences" ,
-      " group" :" Information And Communication" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 225" :{
-      " label" :" Information Challenges And Barriers" ,
-      " group" :" Information And Communication" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 226" :{
-      " label" :" Knowledge And Info Gaps (Pop)" ,
-      " group" :" Information And Communication" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 227" :{
-      " label" :" Knowledge And Info Gaps (Hum)" ,
-      " group" :" Information And Communication" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 228" :{
-      " label" :" Cases" ,
-      " group" :" Covid-19" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 229" :{
-      " label" :" Contact Tracing" ,
-      " group" :" Covid-19" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 230" :{
-      " label" :" Deaths" ,
-      " group" :" Covid-19" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 231" :{
-      " label" :" Hospitalization & Care" ,
-      " group" :" Covid-19" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 232" :{
-      " label" :" Restriction Measures" ,
-      " group" :" Covid-19" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 233" :{
-      " label" :" Testing" ,
-      " group" :" Covid-19" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 234" :{
-      " label" :" Vaccination" ,
-      " group" :" Covid-19" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 2" 
-   },
-   " 301" :{
-      " label" :" Number Of People At Risk" ,
-      " group" :" At Risk" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 3" 
-   },
-   " 302" :{
-      " label" :" Risk And Vulnerabilities" ,
-      " group" :" At Risk" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 3" 
-   },
-   " 303" :{
-      " label" :" International Response" ,
-      " group" :" Capacities & Response" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 3" 
-   },
-   " 304" :{
-      " label" :" Local Response" ,
-      " group" :" Capacities & Response" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 3" 
-   },
-   " 305" :{
-      " label" :" National Response" ,
-      " group" :" Capacities & Response" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 3" 
-   },
-   " 306" :{
-      " label" :" Number Of People Reached/Response Gaps" ,
-      " group" :" Capacities & Response" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 3" 
-   },
-   " 307" :{
-      " label" :" Coping Mechanisms" ,
-      " group" :" Humanitarian Conditions" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 3" 
-   },
-   " 308" :{
-      " label" :" Living Standards" ,
-      " group" :" Humanitarian Conditions" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 3" 
-   },
-   " 309" :{
-      " label" :" Number Of People In Need" ,
-      " group" :" Humanitarian Conditions" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 3" 
-   },
-   " 310" :{
-      " label" :" Physical And Mental Well Being" ,
-      " group" :" Humanitarian Conditions" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 3" 
-   },
-   " 311" :{
-      " label" :" Driver/Aggravating Factors" ,
-      " group" :" Impact" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 3" 
-   },
-   " 312" :{
-      " label" :" Impact On People" ,
-      " group" :" Impact" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 3" 
-   },
-   " 313" :{
-      " label" :" Impact On Systems, Services And Networks" ,
-      " group" :" Impact" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 3" 
-   },
-   " 314" :{
-      " label" :" Number Of People Affected" ,
-      " group" :" Impact" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 3" 
-   },
-   " 315" :{
-      " label" :" Expressed By Humanitarian Staff" ,
-      " group" :" Priority Interventions" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 3" 
-   },
-   " 316" :{
-      " label" :" Expressed By Population" ,
-      " group" :" Priority Interventions" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 3" 
-   },
-   " 317" :{
-      " label" :" Expressed By Humanitarian Staff" ,
-      " group" :" Priority Needs" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 3" 
-   },
-   " 318" :{
-      " label" :" Expressed By Population" ,
-      " group" :" Priority Needs" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 3" 
-   },
-   " 401" :{
-      " label" :" Child Head of Household" ,
-      " group" :" Specific Needs Group" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 4" 
-   },
-   " 402" :{
-      " label" :" Chronically Ill" ,
-      " group" :" Specific Needs Group" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 4" 
-   },
-   " 403" :{
-      " label" :" Elderly Head of Household" ,
-      " group" :" Specific Needs Group" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 4" 
-   },
-   " 404" :{
-      " label" :" Female Head of Household" ,
-      " group" :" Specific Needs Group" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 4" 
-   },
-   " 405" :{
-      " label" :" GBV survivors" ,
-      " group" :" Specific Needs Group" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 4" 
-   },
-   " 406" :{
-      " label" :" Indigenous people" ,
-      " group" :" Specific Needs Group" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 4" 
-   },
-   " 407" :{
-      " label" :" LGBTQI+" ,
-      " group" :" Specific Needs Group" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 4" 
-   },
-   " 408" :{
-      " label" :" Minorities" ,
-      " group" :" Specific Needs Group" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 4" 
-   },
-   " 409" :{
-      " label" :" Persons with Disability" ,
-      " group" :" Specific Needs Group" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 4" 
-   },
-   " 410" :{
-      " label" :" Pregnant or Lactating Women" ,
-      " group" :" Specific Needs Group" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 4" 
-   },
-   " 411" :{
-      " label" :" Single Women (including Widows)" ,
-      " group" :" Specific Needs Group" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 4" 
-   },
-   " 412" :{
-      " label" :" Unaccompanied or Separated Children" ,
-      " group" :" Specific Needs Group" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 4" 
-   },
-   " 901" :{
-      " label" :" Infants/Toddlers (<5 years old) " ,
-      " group" :" Demographic Groups" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 9" 
-   },
-   " 902" :{
-      " label" :" Female Children/Youth (5 to 17 years old)" ,
-      " group" :" Demographic Groups" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 9" 
-   },
-   " 903" :{
-      " label" :" Male Children/Youth (5 to 17 years old)" ,
-      " group" :" Demographic Groups" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 9" 
-   },
-   " 904" :{
-      " label" :" Female Adult (18 to 59 years old)" ,
-      " group" :" Demographic Groups" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 9" 
-   },
-   " 905" :{
-      " label" :" Male Adult (18 to 59 years old)" ,
-      " group" :" Demographic Groups" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 9" 
-   },
-   " 906" :{
-      " label" :" Female Older Persons (60+ years old)" ,
-      " group" :" Demographic Groups" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 9" 
-   },
-   " 907" :{
-      " label" :" Male Older Persons (60+ years old)" ,
-      " group" :" Demographic Groups" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 9" 
-   },
-   " 701" :{
-      " label" :" Critical" ,
-      " group" :" Severity" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 7" 
-   },
-   " 702" :{
-      " label" :" Major" ,
-      " group" :" Severity" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 7" 
-   },
-   " 703" :{
-      " label" :" Minor Problem" ,
-      " group" :" Severity" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 7" 
-   },
-   " 704" :{
-      " label" :" No problem" ,
-      " group" :" Severity" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 7" 
-   },
-   " 705" :{
-      " label" :" Of Concern" ,
-      " group" :" Severity" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 7" 
-   },
-   " 801" :{
-      " label" :" Asylum Seekers" ,
-      " group" :" Affected Groups" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 8" 
-   },
-   " 802" :{
-      " label" :" Host" ,
-      " group" :" Affected Groups" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 8" 
-   },
-   " 803" :{
-      " label" :" IDP" ,
-      " group" :" Affected Groups" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 8" 
-   },
-   " 804" :{
-      " label" :" Migrants" ,
-      " group" :" Affected Groups" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 8" 
-   },
-   " 805" :{
-      " label" :" Refugees" ,
-      " group" :" Affected Groups" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 8" 
-   },
-   " 806" :{
-      " label" :" Returnees" ,
-      " group" :" Affected Groups" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 8" 
-   },
-   " 1001" :{
-      " label" :" Completely reliable" ,
-      " group" :" Reliability" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 10" 
-   },
-   " 1002" :{
-      " label" :" Usually reliable" ,
-      " group" :" Reliability" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 10" 
-   },
-   " 1003" :{
-      " label" :" Fairly Reliable" ,
-      " group" :" Reliability" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 10" 
-   },
-   " 1004" :{
-      " label" :" Unreliable" ,
-      " group" :" Reliability" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 10" 
-   },
-   " 501" :{
-      " label" :" Female" ,
-      " group" :" Gender" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 5" 
-   },
-   " 502" :{
-      " label" :" Male" ,
-      " group" :" Gender" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 5" 
-   },
-   " 601" :{
-      " label" :" Adult (18 to 59 years old)" ,
-      " group" :" Age" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 6" 
-   },
-   " 602" :{
-      " label" :" Children/Youth (5 to 17 years old)" ,
-      " group" :" Age" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 6" 
-   },
-   " 603" :{
-      " label" :" Infants/Toddlers (<5 years old)" ,
-      " group" :" Age" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 6" 
-   },
-   " 604" :{
-      " label" :" Older Persons (60+ years old)" ,
-      " group" :" Age" ,
-      " hide_in_analysis_framework_mapping" :false,
-      " is_category" :false,
-      " parent_id" :" 6" 
+   "101":  {
+      "label":  "Agriculture",
+      "group":  "Sectors",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "1"
+   },
+   "102":  {
+      "label":  "Cross",
+      "group":  "Sectors",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "1"
+   },
+   "103":  {
+      "label":  "Education",
+      "group":  "Sectors",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "1"
+   },
+   "104":  {
+      "label":  "Food Security",
+      "group":  "Sectors",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "1"
+   },
+   "105":  {
+      "label":  "Health",
+      "group":  "Sectors",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "1"
+   },
+   "106":  {
+      "label":  "Livelihoods",
+      "group":  "Sectors",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "1"
+   },
+   "107":  {
+      "label":  "Logistics",
+      "group":  "Sectors",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "1"
+   },
+   "108":  {
+      "label":  "Nutrition",
+      "group":  "Sectors",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "1"
+   },
+   "109":  {
+      "label":  "Protection",
+      "group":  "Sectors",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "1"
+   },
+   "110":  {
+      "label":  "Shelter",
+      "group":  "Sectors",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "1"
+   },
+   "111":  {
+      "label":  "WASH",
+      "group":  "Sectors",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "1"
+   },
+   "201":  {
+      "label":  "Environment",
+      "group":  "Context",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "202":  {
+      "label":  "Socio Cultural",
+      "group":  "Context",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "203":  {
+      "label":  "Economy",
+      "group":  "Context",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "204":  {
+      "label":  "Demography",
+      "group":  "Context",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "205":  {
+      "label":  "Legal & Policy",
+      "group":  "Context",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "206":  {
+      "label":  "Security & Stability",
+      "group":  "Context",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "207":  {
+      "label":  "Politics",
+      "group":  "Context",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "208":  {
+      "label":  "Type And Characteristics",
+      "group":  "Shock/Event",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "209":  {
+      "label":  "Underlying/Aggravating Factors",
+      "group":  "Shock/Event",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "210":  {
+      "label":  "Hazard & Threats",
+      "group":  "Shock/Event",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "212":  {
+      "label":  "Type/Numbers/Movements",
+      "group":  "Displacement",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "213":  {
+      "label":  "Push Factors",
+      "group":  "Displacement",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "214":  {
+      "label":  "Pull Factors",
+      "group":  "Displacement",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "215":  {
+      "label":  "Intentions",
+      "group":  "Displacement",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "216":  {
+      "label":  "Local Integration",
+      "group":  "Displacement",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "217":  {
+      "label":  "Injured",
+      "group":  "Casualties",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "218":  {
+      "label":  "Missing",
+      "group":  "Casualties",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "219":  {
+      "label":  "Dead",
+      "group":  "Casualties",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "220":  {
+      "label":  "Relief To Population",
+      "group":  "Humanitarian Access",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "221":  {
+      "label":  "Population To Relief",
+      "group":  "Humanitarian Access",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "222":  {
+      "label":  "Physical Constraints",
+      "group":  "Humanitarian Access",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "223":  {
+      "label":  "Number Of People Facing Humanitarian Access Constraints/Humanitarian Access Gaps",
+      "group":  "Humanitarian Access",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "224":  {
+      "label":  "Communication Means And Preferences",
+      "group":  "Information And Communication",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "225":  {
+      "label":  "Information Challenges And Barriers",
+      "group":  "Information And Communication",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "226":  {
+      "label":  "Knowledge And Info Gaps (Pop)",
+      "group":  "Information And Communication",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "227":  {
+      "label":  "Knowledge And Info Gaps (Hum)",
+      "group":  "Information And Communication",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "228":  {
+      "label":  "Cases",
+      "group":  "Covid-19",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "229":  {
+      "label":  "Contact Tracing",
+      "group":  "Covid-19",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "230":  {
+      "label":  "Deaths",
+      "group":  "Covid-19",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "231":  {
+      "label":  "Hospitalization & Care",
+      "group":  "Covid-19",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "232":  {
+      "label":  "Restriction Measures",
+      "group":  "Covid-19",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "233":  {
+      "label":  "Testing",
+      "group":  "Covid-19",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "234":  {
+      "label":  "Vaccination",
+      "group":  "Covid-19",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "2"
+   },
+   "301":  {
+      "label":  "Number Of People At Risk",
+      "group":  "At Risk",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "3"
+   },
+   "302":  {
+      "label":  "Risk And Vulnerabilities",
+      "group":  "At Risk",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "3"
+   },
+   "303":  {
+      "label":  "International Response",
+      "group":  "Capacities & Response",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "3"
+   },
+   "304":  {
+      "label":  "Local Response",
+      "group":  "Capacities & Response",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "3"
+   },
+   "305":  {
+      "label":  "National Response",
+      "group":  "Capacities & Response",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "3"
+   },
+   "306":  {
+      "label":  "Number Of People Reached/Response Gaps",
+      "group":  "Capacities & Response",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "3"
+   },
+   "307":  {
+      "label":  "Coping Mechanisms",
+      "group":  "Humanitarian Conditions",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "3"
+   },
+   "308":  {
+      "label":  "Living Standards",
+      "group":  "Humanitarian Conditions",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "3"
+   },
+   "309":  {
+      "label":  "Number Of People In Need",
+      "group":  "Humanitarian Conditions",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "3"
+   },
+   "310":  {
+      "label":  "Physical And Mental Well Being",
+      "group":  "Humanitarian Conditions",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "3"
+   },
+   "311":  {
+      "label":  "Driver/Aggravating Factors",
+      "group":  "Impact",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "3"
+   },
+   "312":  {
+      "label":  "Impact On People",
+      "group":  "Impact",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "3"
+   },
+   "313":  {
+      "label":  "Impact On Systems, Services And Networks",
+      "group":  "Impact",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "3"
+   },
+   "314":  {
+      "label":  "Number Of People Affected",
+      "group":  "Impact",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "3"
+   },
+   "315":  {
+      "label":  "Expressed By Humanitarian Staff",
+      "group":  "Priority Interventions",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "3"
+   },
+   "316":  {
+      "label":  "Expressed By Population",
+      "group":  "Priority Interventions",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "3"
+   },
+   "317":  {
+      "label":  "Expressed By Humanitarian Staff",
+      "group":  "Priority Needs",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "3"
+   },
+   "318":  {
+      "label":  "Expressed By Population",
+      "group":  "Priority Needs",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "3"
+   },
+   "401":  {
+      "label":  "Child Head of Household",
+      "group":  "Specific Needs Group",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "4"
+   },
+   "402":  {
+      "label":  "Chronically Ill",
+      "group":  "Specific Needs Group",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "4"
+   },
+   "403":  {
+      "label":  "Elderly Head of Household",
+      "group":  "Specific Needs Group",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "4"
+   },
+   "404":  {
+      "label":  "Female Head of Household",
+      "group":  "Specific Needs Group",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "4"
+   },
+   "405":  {
+      "label":  "GBV survivors",
+      "group":  "Specific Needs Group",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "4"
+   },
+   "406":  {
+      "label":  "Indigenous people",
+      "group":  "Specific Needs Group",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "4"
+   },
+   "407":  {
+      "label":  "LGBTQI+",
+      "group":  "Specific Needs Group",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "4"
+   },
+   "408":  {
+      "label":  "Minorities",
+      "group":  "Specific Needs Group",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "4"
+   },
+   "409":  {
+      "label":  "Persons with Disability",
+      "group":  "Specific Needs Group",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "4"
+   },
+   "410":  {
+      "label":  "Pregnant or Lactating Women",
+      "group":  "Specific Needs Group",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "4"
+   },
+   "411":  {
+      "label":  "Single Women (including Widows)",
+      "group":  "Specific Needs Group",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "4"
+   },
+   "412":  {
+      "label":  "Unaccompanied or Separated Children",
+      "group":  "Specific Needs Group",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "4"
+   },
+   "901":  {
+      "label":  "Infants/Toddlers (<5 years old) ",
+      "group":  "Demographic Groups",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "9"
+   },
+   "902":  {
+      "label":  "Female Children/Youth (5 to 17 years old)",
+      "group":  "Demographic Groups",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "9"
+   },
+   "903":  {
+      "label":  "Male Children/Youth (5 to 17 years old)",
+      "group":  "Demographic Groups",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "9"
+   },
+   "904":  {
+      "label":  "Female Adult (18 to 59 years old)",
+      "group":  "Demographic Groups",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "9"
+   },
+   "905":  {
+      "label":  "Male Adult (18 to 59 years old)",
+      "group":  "Demographic Groups",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "9"
+   },
+   "906":  {
+      "label":  "Female Older Persons (60+ years old)",
+      "group":  "Demographic Groups",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "9"
+   },
+   "907":  {
+      "label":  "Male Older Persons (60+ years old)",
+      "group":  "Demographic Groups",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "9"
+   },
+   "701":  {
+      "label":  "Critical",
+      "group":  "Severity",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "7"
+   },
+   "702":  {
+      "label":  "Major",
+      "group":  "Severity",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "7"
+   },
+   "703":  {
+      "label":  "Minor Problem",
+      "group":  "Severity",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "7"
+   },
+   "704":  {
+      "label":  "No problem",
+      "group":  "Severity",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "7"
+   },
+   "705":  {
+      "label":  "Of Concern",
+      "group":  "Severity",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "7"
+   },
+   "801":  {
+      "label":  "Asylum Seekers",
+      "group":  "Affected Groups",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "8"
+   },
+   "802":  {
+      "label":  "Host",
+      "group":  "Affected Groups",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "8"
+   },
+   "803":  {
+      "label":  "IDP",
+      "group":  "Affected Groups",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "8"
+   },
+   "804":  {
+      "label":  "Migrants",
+      "group":  "Affected Groups",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "8"
+   },
+   "805":  {
+      "label":  "Refugees",
+      "group":  "Affected Groups",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "8"
+   },
+   "806":  {
+      "label":  "Returnees",
+      "group":  "Affected Groups",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "8"
+   },
+   "1001":  {
+      "label":  "Completely reliable",
+      "group":  "Reliability",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "10"
+   },
+   "1002":  {
+      "label":  "Usually reliable",
+      "group":  "Reliability",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "10"
+   },
+   "1003":  {
+      "label":  "Fairly Reliable",
+      "group":  "Reliability",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "10"
+   },
+   "1004":  {
+      "label":  "Unreliable",
+      "group":  "Reliability",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "10"
+   },
+   "501":  {
+      "label":  "Female",
+      "group":  "Gender",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "5"
+   },
+   "502":  {
+      "label":  "Male",
+      "group":  "Gender",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "5"
+   },
+   "601":  {
+      "label":  "Adult (18 to 59 years old)",
+      "group":  "Age",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "6"
+   },
+   "602":  {
+      "label":  "Children/Youth (5 to 17 years old)",
+      "group":  "Age",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "6"
+   },
+   "603":  {
+      "label":  "Infants/Toddlers (<5 years old)",
+      "group":  "Age",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "6"
+   },
+   "604":  {
+      "label":  "Older Persons (60+ years old)",
+      "group":  "Age",
+      "hide_in_analysis_framework_mapping":  false,
+      "is_category":  false,
+      "parent_id":  "6"
    }
 }
 ```
