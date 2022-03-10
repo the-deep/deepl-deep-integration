@@ -1233,3 +1233,26 @@ NOTE: **extraction status** -> 0 = Falied, 1 = Success
    }
 }
 ```
+
+### Model Info
+##### Request: GET `/model_info` [Req from DEEP to DEEPL]
+```json
+
+{
+   "statusCode": 200,
+   "body": {
+      "main_model": {
+         "id": "all_tags_model",
+         "version": "1.0.0"
+      },
+      "geolocation": {
+         "id": "geolocation",
+         "version": "1.0.0"
+      },
+      "reliability": {
+         "id": "reliability",
+         "version": "1.0.0"
+      }
+   }
+}
+```
