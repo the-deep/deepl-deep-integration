@@ -381,7 +381,7 @@ def entry_predict_output_handler(event, context):
                 timeout=60
             )
             if response.status_code == 200:
-                logging.info(f"Successfully sent the request on callback url with entry id {entry_id}")
+                logging.info(f"Successfully sent the request on callback url {callback_url} with entry id {entry_id}")
             else:
                 logging.error("Request not sent successfully.")
         except requests.exceptions.RequestException as e:
