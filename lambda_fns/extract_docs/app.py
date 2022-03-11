@@ -201,7 +201,7 @@ def get_extracted_text_web_links(link, file_name, mock=False):
     entries_list = [item for sublist in entries for item in sublist]
     extracted_text = "\n".join(entries_list)
 
-    total_pages = -1
+    total_pages = 1
     total_words_count = get_words_count(extracted_text)
 
     date_today = str(datetime.now().date())
