@@ -119,7 +119,8 @@ module "predict_entry_fn" {
                     aws_sqs_queue.entry_input_processed_queue_predict.arn,
                     "arn:aws:sagemaker:us-east-1:${data.aws_caller_identity.current.account_id}:endpoint/${var.model_endpoint_name}",
                     "arn:aws:lambda:us-east-1:${data.aws_caller_identity.current.account_id}:function:${var.geolocation_fn_name}",
-                    "arn:aws:lambda:us-east-1:${data.aws_caller_identity.current.account_id}:function:${var.reliability_fn_name}"
+                    "arn:aws:lambda:us-east-1:${data.aws_caller_identity.current.account_id}:function:${var.reliability_fn_name}",
+                    "arn:aws:lambda:${var.aws_region}:${data.aws_caller_identity.current.account_id}:function:${var.model_info_fn_name}-${var.environment}"
                 ]
             }
         ]
@@ -130,6 +131,7 @@ module "predict_entry_fn" {
         MODEL_ENDPOINT_NAME = var.model_endpoint_name
         GEOLOCATION_FN_NAME = var.geolocation_fn_name
         RELIABILITY_FN_NAME = var.reliability_fn_name
+        MODEL_INFO_FN_NAME = "${var.model_info_fn_name}-${var.environment}"
     }
 }
 
@@ -259,7 +261,7 @@ module "vf_tags_fn" {
 
 module "model_info_fn" {
     source = "terraform-aws-modules/lambda/aws"
-    function_name = "model-info-${var.environment}"
+    function_name = "${var.model_info_fn_name}-${var.environment}"
     handler = "app.lambda_handler"
     runtime = "python3.8"
     timeout = 30

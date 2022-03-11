@@ -2,6 +2,11 @@ import requests
 import json
 import logging
 from mappings.tags_mapping import get_all_mappings, get_categories
+try:
+    from lambda_fns.model_info.app import lambda_handler
+    model_info_mock_data = lambda_handler({"mock": True}, None)
+except ImportError:
+    pass
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -345,20 +350,21 @@ def entry_predict_output_handler(event, context):
         prediction_status = record['messageAttributes']['prediction_status']['stringValue']
         geolocations = json.loads(record['messageAttributes']['geolocations']['stringValue'])
         reliability_score = record['messageAttributes']['reliability_score']['stringValue']
+        model_info = json.loads(record['messageAttributes']['model_info']['stringValue'])
 
         all_models = []
         main_model_preds = {}
         main_model_preds["tags"] = get_model_enum_mappings(pred_tags, pred_thresholds, tags_selected)
         main_model_preds["prediction_status"] = prediction_status
-        main_model_preds["model_info"] = model_info_mock["main_model"]
+        main_model_preds["model_info"] = model_info["main_model"]
 
         geolocation_preds = {}
-        geolocation_preds["model_info"] = model_info_mock["geolocation"]
+        geolocation_preds["model_info"] = model_info["geolocation"]
         geolocation_preds["values"] = geolocations
         geolocation_preds["prediction_status"] = 1
 
         reliability_preds = {}
-        reliability_preds["model_info"] = model_info_mock["reliability"]
+        reliability_preds["model_info"] = model_info["reliability"]
         reliability_preds["tags"] = get_reliability_enum_mappings(reliability_score)
         reliability_preds["prediction_status"] = 1 if reliability_score.strip() else 0
 

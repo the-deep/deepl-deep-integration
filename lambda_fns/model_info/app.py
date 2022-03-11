@@ -23,7 +23,7 @@ def lambda_handler(event, context):
     else:
         return {
             "statusCode": 200,
-            'body': json.dumps({
+            'body': {
                 "main_model": {
                     "id": "all_tags_model",
                     "version": "1.0.0"
@@ -36,5 +36,5 @@ def lambda_handler(event, context):
                     "id": "reliability",
                     "version": "1.0.0"
                 }
-            })
+            }
         }

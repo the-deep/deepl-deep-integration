@@ -17,12 +17,14 @@ PREDICTION_QUEUE_NAME = os.environ.get("PREDICTION_QUEUE")
 MODEL_ENDPOINT_NAME = os.environ.get("MODEL_ENDPOINT_NAME")
 GEOLOCATION_FN_NAME = os.environ.get("GEOLOCATION_FN_NAME")
 RELIABILITY_FN_NAME = os.environ.get("RELIABILITY_FN_NAME")
+MODEL_INFO_FN_NAME = os.environ.get("MODEL_INFO_FN_NAME")
 
 sqs_client = boto3.client('sqs', region_name=AWS_REGION)
 
 sagemaker_rt = boto3.client("runtime.sagemaker", region_name="us-east-1")  # todo: update the region later.
 geolocation_client = boto3.client("lambda", region_name="us-east-1")
 reliability_client = boto3.client("lambda", region_name="us-east-1")
+model_info_client = boto3.client("lambda", region_name=AWS_REGION)
 
 
 class PredictionStatus(Enum):
@@ -39,7 +41,8 @@ def send_message2sqs(
     callback_url,
     prediction_status,
     geolocations,
-    reliability_score
+    reliability_score,
+    model_info
 ):
     message_attributes = {}
     message_attributes['entry'] = {
@@ -72,6 +75,10 @@ def send_message2sqs(
     message_attributes['reliability_score'] = {
         'DataType': 'String',
         'StringValue': reliability_score if reliability_score.strip() else " "
+    }
+    message_attributes['model_info'] = {
+        'DataType': 'String',
+        'StringValue': json.dumps(model_info)
     }
     if callback_url:
         message_attributes['callback_url'] = {
@@ -119,6 +126,19 @@ def get_reliability_score(publishing_org, authoring_org):
     except ClientError as error:
         logging.error(f"Error occurred while fetching reliablity score {error}")
         return {"score": ""}
+
+
+def get_model_info():
+    try:
+        response = model_info_client.invoke(
+            FunctionName=MODEL_INFO_FN_NAME
+        )
+        json_response = response["Payload"].read().decode("utf-8")
+        return json.loads(json_response)["body"]
+
+    except ClientError as error:
+        logging.error(f"Error occurred while fetching model info {error}")
+        return {}
 
 
 def get_predictions(entry):
@@ -186,6 +206,7 @@ def predict_entry_handler(event, context):
             'callback_url': callback_url,
             'prediction_status': prediction_status,
             'geolocations': geolocations,
-            'reliability_score': reliability_score
+            'reliability_score': reliability_score,
+            'model_info': get_model_info()
         }
         send_message2sqs(**sqs_message)

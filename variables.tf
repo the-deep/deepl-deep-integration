@@ -14,4 +14,6 @@ variable geolocation_fn_name {}
 
 variable reliability_fn_name {}
 
+variable model_info_fn_name {}
+
 variable docs_extract_fn_image_name {}

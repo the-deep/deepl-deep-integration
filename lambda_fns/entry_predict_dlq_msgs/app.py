@@ -1,5 +1,4 @@
 import os
-import json
 import boto3
 import logging
 
@@ -24,7 +23,8 @@ def send_message2sqs(
     callback_url,
     prediction_status,
     geolocations,
-    reliability_score
+    reliability_score,
+    model_info
 ):
     message_attributes = {}
     message_attributes['entry'] = {
@@ -64,6 +64,10 @@ def send_message2sqs(
         'DataType': 'String',
         'StringValue': reliability_score if reliability_score.strip() else " "
     }
+    message_attributes['model_info'] = {
+        'DataType': 'String',
+        'StringValue': model_info
+    }
     if PREDICTION_QUEUE_NAME:
         sqs_client.send_message(
             QueueUrl=PREDICTION_QUEUE_NAME,
@@ -88,6 +92,7 @@ def entry_predict_dlq_msgs_handler(event, context):
         prediction_status = record['messageAttributes']['prediction_status']['stringValue']
         geolocations = record['messageAttributes']['geolocations']['stringValue']
         reliability_score = record['messageAttributes']['reliability_score']['stringValue']
+        model_info = record['messageAttributes']['model_info']['stringValue']
 
         logging.info(f"Sending the entry id {entry_id} message to Processing Queue")
 
@@ -100,7 +105,8 @@ def entry_predict_dlq_msgs_handler(event, context):
             'callback_url': callback_url,
             'prediction_status': prediction_status,
             'geolocations': geolocations,
-            'reliability_score': reliability_score
+            'reliability_score': reliability_score,
+            'model_info': model_info
         }
         send_message2sqs(**sqs_message)
 
