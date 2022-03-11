@@ -6,7 +6,7 @@ resource "aws_sqs_queue" "input_queue" {
   max_message_size          = 262144
   message_retention_seconds = 86400
   receive_wait_time_seconds = 5
-  visibility_timeout_seconds = 60
+  visibility_timeout_seconds = 300
 
   tags = {
     Environment = "${var.environment}"
@@ -85,20 +85,19 @@ resource "aws_lambda_event_source_mapping" "sqs_to_extract_lambda_trigger" {
 
 module "extract_docs_fn" {
     source  = "terraform-aws-modules/lambda/aws"
-
     function_name = "te-extract-docs-func-${var.environment}"
+    handler       = "app.process_docs"
     runtime       = "python3.8"
-    timeout       = 60
+    timeout       = 300
 
-    image_uri     = "${data.aws_caller_identity.current_user.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.docs_extract_fn_image_name}:latest"
-    package_type  = "Image"
-
-    create_package = false
+    source_path = [{
+        path = "${path.module}/../../lambda_fns/extract_docs"
+        pip_requirements = "${path.module}/../../lambda_fns/extract_docs/requirements.txt"
+    }]
 
     memory_size    = 512
 
     attach_policy_json    = true
-
     policy_json = jsonencode({
         "Version": "2012-10-17",
         "Statement": [
@@ -124,6 +123,7 @@ module "extract_docs_fn" {
         ]
     })
 
+    build_in_docker = true
     environment_variables = {
         INPUT_QUEUE = aws_sqs_queue.input_queue.id
         DEST_S3_BUCKET = "${var.processed_docs_bucket}"
