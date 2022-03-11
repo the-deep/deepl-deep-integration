@@ -813,28 +813,32 @@ def get_vf_list():
                 temp[int_id] = {}
                 temp[int_id]["label"] = d["key"].split("->")[1]
                 temp[int_id]["group"] = d["key"].split("->")[0]
-                temp[int_id]["hide_in_analysis_framework_mapping"] = False
+
                 if d["is_category"]:
                     temp[int_id]["is_category"] = True
+                    temp[int_id]["hide_in_analysis_framework_mapping"] = True
                 else:
                     temp[int_id]["is_category"] = False
                     temp[int_id]["parent_id"] = d["category_id"]
+                    temp[int_id]["hide_in_analysis_framework_mapping"] = False
             else:
                 int_id = d["id"]
                 temp[int_id] = {}
                 temp[int_id]["label"] = d["key"]
                 temp[int_id]["group"] = id_to_alias[d["category_id"]] if "category_id" in d else d["alias"]
-                temp[int_id]["hide_in_analysis_framework_mapping"] = False
+
                 if d["is_category"]:
                     temp[int_id]["is_category"] = True
+                    temp[int_id]["hide_in_analysis_framework_mapping"] = True
                 else:
                     temp[int_id]["is_category"] = False
                     temp[int_id]["parent_id"] = d["category_id"]
+                    temp[int_id]["hide_in_analysis_framework_mapping"] = False
 
             vf_tags_temp.update(temp)
         return vf_tags_temp
 
-    hide_tags = Tags.gender_list() + Tags.age_list()
+    hide_tags = Categories.all_models() + Tags.gender_list() + Tags.age_list()
     final_vf_tags = handle_mapping(show_tags)
     final_vf_tags.update(handle_mapping(hide_tags))
 
