@@ -3,9 +3,11 @@ import json
 import uuid
 import logging
 import boto3
+from math import ceil
 
 logging.getLogger().setLevel(logging.INFO)
 
+MSG_GROUP_SIZE = 10
 DEFAULT_AWS_REGION = "us-east-1"
 
 aws_region = os.environ.get("AWS_REGION", DEFAULT_AWS_REGION)
@@ -38,10 +40,13 @@ def send_msg_sqs(event, context):
                     }
                 }
             } for item in urls]
-            sqs_client.send_message_batch(
-                QueueUrl=queue_url,
-                Entries=entries
-            )
+            i = 0
+            for _ in range(ceil(len(entries) / MSG_GROUP_SIZE)):
+                sqs_client.send_message_batch(
+                    QueueUrl=queue_url,
+                    Entries=entries[i: i + MSG_GROUP_SIZE]
+                )
+                i += MSG_GROUP_SIZE
             return {
                 'statusCode': 200,
                 'body': 'Message Enqueued Successfully'
