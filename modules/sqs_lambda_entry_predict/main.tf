@@ -190,10 +190,11 @@ module "entry_predict_output_fn" {
 }
 
 resource "aws_lambda_layer_version" "lambda_layer_mappings" {
-  filename   = "${path.module}/../../lambda_layers/mappings/python.zip"
-  layer_name = "tags_mapping_layer"
+    filename   = "${path.module}/../../lambda_layers/mappings/python.zip"
+    layer_name = "tags_mapping_layer"
 
-  compatible_runtimes = ["python3.8"]
+    compatible_runtimes = ["python3.8"]
+    source_code_hash = base64sha256("${path.module}/../../lambda_layers/mappings/python.zip")
 }
 
 module "entry_predict_transfer_dlq_msg" {
