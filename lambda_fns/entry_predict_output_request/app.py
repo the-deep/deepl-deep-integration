@@ -4,7 +4,7 @@ import logging
 from mappings.tags_mapping import get_all_mappings, get_categories
 try:
     from lambda_fns.model_info.app import lambda_handler
-    model_info_mock_data = lambda_handler({"mock": True}, None)
+    model_info_mock_data = json.loads(lambda_handler({"mock": True}, None))
 except ImportError:
     pass
 

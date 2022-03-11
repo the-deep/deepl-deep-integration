@@ -78,7 +78,7 @@ def send_message2sqs(
     }
     message_attributes['model_info'] = {
         'DataType': 'String',
-        'StringValue': json.dumps(model_info)
+        'StringValue': model_info  # already serialized
     }
     if callback_url:
         message_attributes['callback_url'] = {
