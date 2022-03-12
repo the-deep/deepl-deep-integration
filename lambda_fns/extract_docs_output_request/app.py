@@ -116,14 +116,22 @@ def output_request(event, context):
                 timeout=60
             )
             if response.status_code == 200:
-                logging.info(f"Successfully sent the request with client_id: {client_id}")
+                logging.info(f"Successfully sent the request on {callback_url} with client_id: {client_id}")
             else:
-                logging.error("Request not sent successfully.")
-                raise Exception(f"Exception occurred while sending request: StatusCode {response.status_code}")
+                logging.error(f"Request not sent successfully on {callback_url} with {response.content}")
+                err_resp = response.json()
+                if "errors" in err_resp and "clientId" not in err_resp["errors"]:
+                    raise Exception(f"Exception occurred while sending request with StatusCode {response.status_code}")
+                else:
+                    logging.info('ClientId is invalid. Not sending the request anymore.')
+                    return {
+                        "statusCode": 200,
+                        "body": "ClientId is invalid. Not sending the request anymore."
+                    }
         except requests.exceptions.RequestException as e:
             raise Exception(f"Exception occurred while sending request - {e}")
 
     return {
-        'statusCode': 200,
-        'body': 'Successfully sent on the callback url'
+        "statusCode": 200,
+        "body": "Successfully sent on the callback url"
     }

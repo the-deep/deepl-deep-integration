@@ -4,7 +4,7 @@ import logging
 from mappings.tags_mapping import get_all_mappings, get_categories
 try:
     from lambda_fns.model_info.app import lambda_handler
-    model_info_mock_data = json.loads(lambda_handler({"mock": True}, None))
+    model_info_mock_data = json.loads(lambda_handler({"mock": True}, None)["body"])
 except ImportError:
     pass
 
@@ -212,21 +212,6 @@ fake_selected_tags = {
     ]
 }
 
-model_info_mock = {
-    "main_model": {
-        "id": "all_tags_model",
-        "version": "1.0.0"
-    },
-    "geolocation": {
-        "id": "geolocation",
-        "version": "1.0.0"
-    },
-    "reliability": {
-        "id": "reliability",
-        "version": "1.0.0"
-    }
-}
-
 
 def get_model_enum_mappings(pred_data, thresholds, selected_tags):
     def get_threshold_primary_value(pt_key, t_key):
@@ -312,15 +297,15 @@ def entry_predict_output_handler(event, context):
             main_model_preds = {}
             main_model_preds["tags"] = get_model_enum_mappings(fake_data, fake_data_thresholds, fake_selected_tags)
             main_model_preds["prediction_status"] = prediction_status
-            main_model_preds["model_info"] = model_info_mock["main_model"]
+            main_model_preds["model_info"] = model_info_mock_data["main_model"]
 
             geolocation_preds = {}
-            geolocation_preds["model_info"] = model_info_mock["geolocation"]
+            geolocation_preds["model_info"] = model_info_mock_data["geolocation"]
             geolocation_preds["values"] = geolocations_mock
             geolocation_preds["prediction_status"] = 1
 
             reliability_preds = {}
-            reliability_preds["model_info"] = model_info_mock["reliability"]
+            reliability_preds["model_info"] = model_info_mock_data["reliability"]
             reliability_preds["tags"] = get_reliability_enum_mappings(reliability_mock)
             reliability_preds["prediction_status"] = 1
 
@@ -387,12 +372,22 @@ def entry_predict_output_handler(event, context):
                 timeout=60
             )
             if response.status_code == 200:
-                logging.info(f"Successfully sent the request on callback url {callback_url} with entry id {entry_id}")
+                logging.info(f"Successfully sent the request on callback url {callback_url} with client id {entry_id}")
             else:
-                logging.error("Request not sent successfully.")
+                logging.error(f"Request not sent successfully on {callback_url} with {response.content}")
+                err_resp = response.json()
+                if "errors" in err_resp and "clientId" not in err_resp["errors"]:
+                    raise Exception(f"Exception occurred while sending request with StatusCode {response.status_code}")
+                else:
+                    logging.info('ClientId is invalid. Not sending the request anymore.')
+                    return {
+                        "statusCode": 200,
+                        "body": "ClientId is invalid. Not sending the request anymore."
+                    }
         except requests.exceptions.RequestException as e:
             raise Exception(f"Exception occurred while sending request - {e}")
 
     return {
-        'statusCode': 200
+        "statusCode": 200,
+        "body": "Successfully sent on the callback url"
     }
