@@ -38,6 +38,8 @@ module "sqs_lambda_module" {
   docs_extract_fn_image_name = var.docs_extract_fn_image_name
   aws_region = var.aws_region
 
+  docs_convert_lambda_fn_name = var.docs_convert_lambda_fn_name
+
   environment = var.environment
 }
 

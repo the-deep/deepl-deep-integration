@@ -12,3 +12,5 @@ variable "processed_docs_bucket" {}
 variable "processed_docs_bucket_arn" {}
 
 variable "docs_extract_fn_image_name" {}
+
+variable "docs_convert_lambda_fn_name" {}

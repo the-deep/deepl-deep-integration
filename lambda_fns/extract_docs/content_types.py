@@ -18,6 +18,8 @@ class ExtractContentType:
         self.content_types_pdf = ('application/pdf', 'pdf')
         self.content_types_html = ('text/html', 'text/html; charset=utf-8',
                                    'text/html; charset=UTF-8', 'text/html;charset=utf-8', 'text/plain')
+        self.content_types_docx = ('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        self.content_types_doc = ('application/msword')
 
     def get_content_type(self, url):
         try:
@@ -32,6 +34,10 @@ class ExtractContentType:
                 return UrlTypes.PDF.value
             elif content_type in self.content_types_html:
                 return UrlTypes.HTML.value
+            elif url.endswith(".docx") or content_type in self.content_types_docx:
+                return UrlTypes.DOCX.value
+            elif url.endswith(".doc") or content_type in self.content_types_doc:
+                return UrlTypes.MSWORD.value
             else:
                 logging.warn(f'Could not determine the content-type of the {url}')
                 return None

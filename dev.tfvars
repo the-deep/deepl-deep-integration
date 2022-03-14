@@ -14,3 +14,6 @@ model_info_fn_name = "model_info"
 
 # ecr image name
 docs_extract_fn_image_name = "extractor-tool"
+
+# docs convert lambda
+docs_convert_lambda_fn_name = "libreoffice-dev-libreoffice"

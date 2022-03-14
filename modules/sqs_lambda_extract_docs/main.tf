@@ -104,6 +104,7 @@ module "extract_docs_fn" {
             {
                 "Effect": "Allow",
                 "Action": [
+                    "lambda:InvokeFunction",
                     "sqs:SendMessage",
                     "sqs:ReceiveMessage",
                     "sqs:DeleteMessage",
@@ -117,7 +118,8 @@ module "extract_docs_fn" {
                     aws_sqs_queue.input_queue.arn,
                     aws_sqs_queue.processed_queue.arn,
                     "${var.processed_docs_bucket_arn}",
-                    "${var.processed_docs_bucket_arn}/*"
+                    "${var.processed_docs_bucket_arn}/*",
+                    "arn:aws:lambda:us-east-1:${data.aws_caller_identity.current_user.account_id}:function:${var.docs_convert_lambda_fn_name}"
                 ]
             }
         ]
@@ -127,7 +129,8 @@ module "extract_docs_fn" {
     environment_variables = {
         INPUT_QUEUE = aws_sqs_queue.input_queue.id
         DEST_S3_BUCKET = "${var.processed_docs_bucket}"
-        PROCESSED_QUEUE = aws_sqs_queue.processed_queue.id
+        PROCESSED_QUEUE = aws_sqs_queue.processed_queue.id,
+        DOCS_CONVERT_LAMBDA_FN_NAME = "${var.docs_convert_lambda_fn_name}"
     }
 }
 

@@ -1,6 +1,7 @@
 import os
 import requests
 import uuid
+import json
 import base64
 import logging
 import re
@@ -26,11 +27,13 @@ DEFAULT_AWS_REGION = "us-east-1"
 aws_region = os.environ.get("AWS_REGION", DEFAULT_AWS_REGION)
 dest_bucket_name = os.environ.get("DEST_S3_BUCKET")
 processed_queue_name = os.environ.get("PROCESSED_QUEUE")
+DOCS_CONVERT_LAMBDA_FN_NAME = os.environ.get("DOCS_CONVERT_LAMBDA_FN_NAME")
 
 domain_name = os.environ.get("EXTRACTOR_DOMAIN_NAME", "http://extractor:8001")
 
 s3_client = boto3.client('s3', region_name=aws_region)
 sqs_client = boto3.client('sqs', region_name=aws_region)
+lambda_client = boto3.client('lambda', region_name="us-east-1")
 
 extract_content_type = ExtractContentType()
 
@@ -276,6 +279,50 @@ def handle_urls(url, mock=False):
         except Exception:
             s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
             extraction_status = ExtractionStatus.FAILED.value
+    elif content_type == UrlTypes.DOCX.value or content_type == UrlTypes.MSWORD.value:
+        ext_type = "docx" if content_type == UrlTypes.DOCX.value else "doc"
+
+        response = requests.get(url, stream=True)
+
+        with tempfile.NamedTemporaryFile(mode='w+b') as temp:
+            for chunk in response.iter_content(chunk_size=128):
+                temp.write(chunk)
+            temp.seek(0)
+            try:
+                with open(pathlib.Path(temp.name), "rb") as f:
+                    binary = base64.b64encode(f.read())
+
+                    payload = json.dumps({
+                        "file": binary.decode(),
+                        "ext": ext_type
+                    })
+
+                    response_docx = lambda_client.invoke(
+                        FunctionName=DOCS_CONVERT_LAMBDA_FN_NAME,
+                        InvocationType="RequestResponse",
+                        Payload=payload
+                    )
+                    resp_docx_json = json.loads(response_docx["Payload"].read().decode("utf-8"))
+
+                    if resp_docx_json["statusCode"] == 200:
+                        data = resp_docx_json["file"]
+                        data_b64 = base64.b64decode(data)
+
+                        with tempfile.NamedTemporaryFile(mode="w+b") as tempf:
+                            tempf.write(data_b64)
+                            tempf.seek(0)
+
+                            s3_file_path, s3_images_path, total_pages, total_words_count = get_extracted_content_links(
+                                tempf.name, file_name, mock
+                            )
+                            extraction_status = ExtractionStatus.SUCCESS.value
+                    else:
+                        s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
+                        extraction_status = ExtractionStatus.FAILED.value
+            except Exception as e:
+                logging.error(f"Exception occurred {e}")
+                s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
+                extraction_status = ExtractionStatus.FAILED.value
     else:
         raise NotImplementedError
 
