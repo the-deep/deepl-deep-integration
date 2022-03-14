@@ -804,7 +804,7 @@ def get_vf_list():
 
     id_to_alias = id_to_alias_categories()
 
-    def handle_mapping(tags):
+    def handle_mapping(tags, hide_tag=False):
         vf_tags_temp = {}
         for d in tags:
             temp = {}
@@ -820,7 +820,7 @@ def get_vf_list():
                 else:
                     temp[int_id]["is_category"] = False
                     temp[int_id]["parent_id"] = d["category_id"]
-                    temp[int_id]["hide_in_analysis_framework_mapping"] = False
+                    temp[int_id]["hide_in_analysis_framework_mapping"] = hide_tag
             else:
                 int_id = d["id"]
                 temp[int_id] = {}
@@ -833,13 +833,13 @@ def get_vf_list():
                 else:
                     temp[int_id]["is_category"] = False
                     temp[int_id]["parent_id"] = d["category_id"]
-                    temp[int_id]["hide_in_analysis_framework_mapping"] = False
+                    temp[int_id]["hide_in_analysis_framework_mapping"] = hide_tag
 
             vf_tags_temp.update(temp)
         return vf_tags_temp
 
     hide_tags = Categories.all_models() + Tags.gender_list() + Tags.age_list()
     final_vf_tags = handle_mapping(show_tags)
-    final_vf_tags.update(handle_mapping(hide_tags))
+    final_vf_tags.update(handle_mapping(hide_tags, True))
 
     return final_vf_tags
