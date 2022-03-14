@@ -1306,42 +1306,42 @@ NOTE: **extraction status** -> 0 = Falied, 1 = Success
       "group": "Gender",
       "is_category": false,
       "parent_id": "5",
-      "hide_in_analysis_framework_mapping": false
+      "hide_in_analysis_framework_mapping": true
    },
    "502": {
       "label": "Male",
       "group": "Gender",
       "is_category": false,
       "parent_id": "5",
-      "hide_in_analysis_framework_mapping": false
+      "hide_in_analysis_framework_mapping": true
    },
    "601": {
       "label": "Adult (18 to 59 years old)",
       "group": "Age",
       "is_category": false,
       "parent_id": "6",
-      "hide_in_analysis_framework_mapping": false
+      "hide_in_analysis_framework_mapping": true
    },
    "602": {
       "label": "Children/Youth (5 to 17 years old)",
       "group": "Age",
       "is_category": false,
       "parent_id": "6",
-      "hide_in_analysis_framework_mapping": false
+      "hide_in_analysis_framework_mapping": true
    },
    "603": {
       "label": "Infants/Toddlers (<5 years old)",
       "group": "Age",
       "is_category": false,
       "parent_id": "6",
-      "hide_in_analysis_framework_mapping": false
+      "hide_in_analysis_framework_mapping": true
    },
    "604": {
       "label": "Older Persons (60+ years old)",
       "group": "Age",
       "is_category": false,
       "parent_id": "6",
-      "hide_in_analysis_framework_mapping": false
+      "hide_in_analysis_framework_mapping": true
    }
 }
 ```
