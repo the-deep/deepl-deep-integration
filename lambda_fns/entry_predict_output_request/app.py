@@ -265,8 +265,8 @@ def get_model_enum_mappings(pred_data, thresholds, selected_tags):
             if demographic_key in mappings:
                 tag = mappings[demographic_key][0]
                 tags[demographic_grp_id][tag] = {}
-                tags[demographic_grp_id][tag]["prediction"] = 0.5
-                tags[demographic_grp_id][tag]["threshold"] = 0.5
+                tags[demographic_grp_id][tag]["prediction"] = -1  # ignore the prediction value
+                tags[demographic_grp_id][tag]["threshold"] = -1   # ignore the threshold value
                 tags[demographic_grp_id][tag]["is_selected"] = check_demo_grp_selected_tag(gender_key, age_key)
     all_tags_pred.update(tags)
 
