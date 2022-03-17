@@ -6,7 +6,7 @@ resource "aws_sqs_queue" "input_queue" {
   max_message_size          = 262144
   message_retention_seconds = 86400
   receive_wait_time_seconds = 5
-  visibility_timeout_seconds = 300
+  visibility_timeout_seconds = 900
 
   tags = {
     Environment = "${var.environment}"
@@ -81,6 +81,7 @@ module "input_request_fn" {
 resource "aws_lambda_event_source_mapping" "sqs_to_extract_lambda_trigger" {
   event_source_arn = aws_sqs_queue.input_queue.arn
   function_name    = module.extract_docs_fn.lambda_function_arn
+  batch_size       = 1
 }
 
 module "extract_docs_fn" {
@@ -88,14 +89,14 @@ module "extract_docs_fn" {
     function_name = "te-extract-docs-func-${var.environment}"
     handler       = "app.process_docs"
     runtime       = "python3.8"
-    timeout       = 300
+    timeout       = 900
 
     source_path = [{
         path = "${path.module}/../../lambda_fns/extract_docs"
         pip_requirements = "${path.module}/../../lambda_fns/extract_docs/requirements.txt"
     }]
 
-    memory_size    = 512
+    memory_size    = 2048
 
     attach_policy_json    = true
     policy_json = jsonencode({
@@ -186,6 +187,7 @@ module "output_request_fn" {
 resource "aws_lambda_event_source_mapping" "sqs_to_output_lambda_trigger" {
   event_source_arn = aws_sqs_queue.processed_queue.arn
   function_name    = module.output_request_fn.lambda_function_arn
+  batch_size       = 1
 }
 
 module "transfer_dlq_msg" {
@@ -231,4 +233,5 @@ module "transfer_dlq_msg" {
 resource "aws_lambda_event_source_mapping" "transfer_dlq_msgs_lambda_trigger" {
   event_source_arn = aws_sqs_queue.failed_msgs_dlq.arn
   function_name    = module.transfer_dlq_msg.lambda_function_arn
+  batch_size       = 1
 }
