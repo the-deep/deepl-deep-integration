@@ -87,21 +87,22 @@ def output_request(event, context):
             )
             if s3_file_signed_url:
                 request_body['text_path'] = s3_file_signed_url
-
-        images_bucket_name, images_key_name = extract_path(s3_images_path)
-        if images_bucket_name and images_key_name:
-            response = s3_client.list_objects(
-                Bucket=images_bucket_name, Prefix=images_key_name
-            )
-            for content in response.get('Contents', []):
-                image_key_name = content.get('Key')
-                s3_image_signed_url = generate_signed_url(
-                    images_bucket_name, image_key_name
-                )
-                if s3_image_signed_url:
-                    image_urls.append(s3_image_signed_url)
-            if image_urls:
-                request_body['images_path'] = image_urls
+        # Note: enable if images are required to be sent to deep.
+        # images_bucket_name, images_key_name = extract_path(s3_images_path)
+        # if images_bucket_name and images_key_name:
+        #     response = s3_client.list_objects(
+        #         Bucket=images_bucket_name, Prefix=images_key_name
+        #     )
+        #     for content in response.get('Contents', []):
+        #         image_key_name = content.get('Key')
+        #         s3_image_signed_url = generate_signed_url(
+        #             images_bucket_name, image_key_name
+        #         )
+        #         if s3_image_signed_url:
+        #             image_urls.append(s3_image_signed_url)
+        #     if image_urls:
+        #         request_body['images_path'] = image_urls
+        request_body['images_path'] = [] if s3_images_path else None
 
         request_body['total_pages'] = total_pages
         request_body['total_words_count'] = total_words_count

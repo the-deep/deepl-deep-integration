@@ -160,11 +160,12 @@ def get_extracted_content_links(file_path, file_name, mock):
         s3_file_path = f'{domain_name}{str(dir_path)}/{file_name}'
 
         s3_images_path = []
-        for subdir, dirs, files in os.walk(dir_images_path):
-            for f in files:
-                full_path = os.path.join(subdir, f)
-                with open(full_path, 'rb') as data:
-                    s3_images_path.append(f"{domain_name}{str(dir_images_path)}/{f}")
+        # Note: commented for now
+        # for subdir, dirs, files in os.walk(dir_images_path):
+        #     for f in files:
+        #         full_path = os.path.join(subdir, f)
+        #         with open(full_path, 'rb') as data:
+        #             s3_images_path.append(f"{domain_name}{str(dir_images_path)}/{f}")
         return s3_file_path, s3_images_path, total_pages, total_words_count
     else:
         store_text_s3(
@@ -175,17 +176,18 @@ def get_extracted_content_links(file_path, file_name, mock):
 
         local_temp_directory = pathlib.Path('/tmp', file_name)
         local_temp_directory.mkdir(parents=True) if not local_temp_directory.exists() else None
-        images.save_images(directory_path=local_temp_directory)
+        # Note: commented for now
+        # images.save_images(directory_path=local_temp_directory)
 
-        for subdir, dirs, files in os.walk(local_temp_directory):
-            for f in files:
-                full_path = os.path.join(subdir, f)
-                with open(full_path, 'rb') as data:
-                    store_text_s3(
-                        data,
-                        dest_bucket_name,
-                        f"{str(s3_path_prefix)}/images/{f}"
-                    )
+        # for subdir, dirs, files in os.walk(local_temp_directory):
+        #     for f in files:
+        #         full_path = os.path.join(subdir, f)
+        #         with open(full_path, 'rb') as data:
+        #             store_text_s3(
+        #                 data,
+        #                 dest_bucket_name,
+        #                 f"{str(s3_path_prefix)}/images/{f}"
+        #             )
 
         s3_file_path = f"s3://{dest_bucket_name}/{str(s3_path_prefix)}/{file_name}"
         s3_images_path = f"s3://{dest_bucket_name}/{str(s3_path_prefix)}/images"
