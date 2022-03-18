@@ -139,6 +139,8 @@ def get_extracted_content_links(file_path, file_name, mock):
     entries_list = [item for sublist in entries for item in sublist]
     extracted_text = "\n".join(entries_list)
 
+    extracted_text = extracted_text.replace("\x00", "")  # remove null chars
+
     total_pages = len(entries)
     total_words_count = get_words_count(extracted_text)
 
@@ -205,6 +207,8 @@ def get_extracted_text_web_links(link, file_name, mock=False):
 
     entries_list = [item for sublist in entries for item in sublist]
     extracted_text = "\n".join(entries_list)
+
+    extracted_text = extracted_text.replace("\x00", "")  # remove null chars
 
     total_pages = 1
     total_words_count = get_words_count(extracted_text)
