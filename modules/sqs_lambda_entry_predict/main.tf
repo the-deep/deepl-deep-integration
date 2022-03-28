@@ -5,7 +5,7 @@ resource "aws_sqs_queue" "entry_input_queue_predict" {
   delay_seconds             = 0
   max_message_size          = 262144
   message_retention_seconds = 86400
-  receive_wait_time_seconds = 5
+  receive_wait_time_seconds = 2
   visibility_timeout_seconds = 60
 
   tags = {
@@ -18,7 +18,7 @@ resource "aws_sqs_queue" "entry_input_processed_queue_predict" {
   delay_seconds             = 0
   max_message_size          = 262144
   message_retention_seconds = 86400
-  receive_wait_time_seconds = 5
+  receive_wait_time_seconds = 2
   redrive_policy            = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.entry_failed_msgs_dlq_predict.arn
     maxReceiveCount     = 3
@@ -34,7 +34,7 @@ resource "aws_sqs_queue" "entry_failed_msgs_dlq_predict" {
   delay_seconds             = 0
   max_message_size          = 262144
   message_retention_seconds = 86400
-  receive_wait_time_seconds = 5
+  receive_wait_time_seconds = 2
 
   tags = {
       Environment = "${var.environment}"
@@ -68,13 +68,17 @@ module "entry_input_pred_request_fn" {
             "sqs:ListQueues",
             "sqs:SendMessageBatch"
         ],
-        "Resource": [aws_sqs_queue.entry_input_queue_predict.arn]
+        "Resource": [
+            aws_sqs_queue.entry_input_queue_predict.arn,
+            "${var.reserved_entry_input_queue_predict_arn}"
+        ]
     }
     ]
     })
 
     environment_variables = {
         ENTRY_PREDICT_INPUT_QUEUE = aws_sqs_queue.entry_input_queue_predict.id
+        RESERVED_ENTRY_PREDICT_INPUT_QUEUE = var.reserved_entry_input_queue_predict_id 
     }
 }
 
