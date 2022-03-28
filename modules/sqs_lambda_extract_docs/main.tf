@@ -5,7 +5,7 @@ resource "aws_sqs_queue" "input_queue" {
   delay_seconds             = 0
   max_message_size          = 262144
   message_retention_seconds = 86400
-  receive_wait_time_seconds = 5
+  receive_wait_time_seconds = 2
   visibility_timeout_seconds = 900
 
   tags = {
@@ -18,7 +18,7 @@ resource "aws_sqs_queue" "processed_queue" {
   delay_seconds             = 0
   max_message_size          = 262144
   message_retention_seconds = 86400
-  receive_wait_time_seconds = 5
+  receive_wait_time_seconds = 2
   redrive_policy            = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.failed_msgs_dlq.arn
     maxReceiveCount     = 3
@@ -34,7 +34,7 @@ resource "aws_sqs_queue" "failed_msgs_dlq" {
   delay_seconds             = 0
   max_message_size          = 262144
   message_retention_seconds = 86400
-  receive_wait_time_seconds = 5
+  receive_wait_time_seconds = 2
 
   tags = {
       Environment = "${var.environment}"
@@ -68,13 +68,17 @@ module "input_request_fn" {
             "sqs:ListQueues",
             "sqs:SendMessageBatch"
         ],
-        "Resource": [aws_sqs_queue.input_queue.arn]
+        "Resource": [
+            aws_sqs_queue.input_queue.arn,
+            "${var.reserved_input_queue_arn}"
+        ]
     }
     ]
     })
 
     environment_variables = {
         INPUT_QUEUE = aws_sqs_queue.input_queue.id
+        RESERVED_INPUT_QUEUE = var.reserved_input_queue_id
     }
 }
 

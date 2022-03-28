@@ -10,6 +10,7 @@ from datetime import datetime
 from enum import Enum
 import boto3
 import tempfile
+import signal
 
 from deep_parser.parser.base import TextFromFile
 from deep_parser import TextFromWeb
@@ -41,6 +42,10 @@ extract_content_type = ExtractContentType()
 class ExtractionStatus(Enum):
     FAILED = 0
     SUCCESS = 1
+
+
+def timeout_handler(_signal, _frame):
+    raise Exception("Lambda timeout occurred.")
 
 
 def extract_path(filepath):
@@ -89,23 +94,25 @@ def send_message2sqs(
     }
     message_attributes['extraction_status'] = {
         'DataType': 'Number',
-        'StringValue': extraction_status
+        'StringValue': extraction_status if s3_text_path else "0"
     }
+
     if s3_text_path:
         message_attributes['s3_text_path'] = {
             'DataType': 'String',
             'StringValue': s3_text_path
         }
+
     if s3_images_path:
         message_attributes['s3_images_path'] = {
             'DataType': 'String',
             'StringValue': s3_images_path
         }
-    if callback_url:
-        message_attributes['callback_url'] = {
-            'DataType': 'String',
-            'StringValue': callback_url
-        }
+
+    message_attributes['callback_url'] = {
+        'DataType': 'String',
+        'StringValue': callback_url
+    }
     message_attributes['total_pages'] = {
         'DataType': 'Number',
         'StringValue': total_pages
@@ -114,7 +121,7 @@ def send_message2sqs(
         'DataType': 'Number',
         'StringValue': total_words_count
     }
-    if processed_queue_name and s3_text_path:
+    if processed_queue_name:
         sqs_client.send_message(
             QueueUrl=processed_queue_name,
             MessageBody=client_id,
@@ -285,8 +292,11 @@ def handle_urls(url, mock=False):
         except Exception:
             s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
             extraction_status = ExtractionStatus.FAILED.value
-    elif content_type == UrlTypes.DOCX.value or content_type == UrlTypes.MSWORD.value:
-        ext_type = "docx" if content_type == UrlTypes.DOCX.value else "doc"
+    elif content_type == UrlTypes.DOCX.value or content_type == UrlTypes.MSWORD.value or \
+            content_type == UrlTypes.XLSX.value or content_type == UrlTypes.XLS.value or \
+            content_type == UrlTypes.PPTX.value or content_type == UrlTypes.PPT.value:
+
+        ext_type = content_type
 
         response = requests.get(url, stream=True)
 
@@ -354,29 +364,38 @@ def process_docs(event, context):
             'extraction_status': extraction_status
         }
     else:
-        records = event['Records']
+        try:
+            signal.alarm(int(context.get_remaining_time_in_millis() / 1000) - 120)
+            records = event['Records']
 
-        for record in records:
-            client_id = record['body']
-            url = record['messageAttributes']['url']['stringValue']
-            callback_url = record['messageAttributes']['callback_url']['stringValue']
-            logging.info(f"Processing {url}")
+            for record in records:
+                client_id = record['body']
+                url = record['messageAttributes']['url']['stringValue']
+                callback_url = record['messageAttributes']['callback_url']['stringValue']
+                logging.info(f"Processing {url}")
 
-            s3_text_path, s3_images_path, total_pages, total_words_count, extraction_status = handle_urls(url)
+                s3_text_path, s3_images_path, total_pages, total_words_count, extraction_status = handle_urls(url)
 
-            sqs_message = {
-                'client_id': client_id,
-                'url': url,
-                'callback_url': callback_url,
-                's3_text_path': s3_text_path,
-                's3_images_path': s3_images_path,
-                'total_pages': total_pages,
-                'total_words_count': total_words_count,
-                'extraction_status': extraction_status
-            }
-            send_message2sqs(**sqs_message)
+                sqs_message = {
+                    'client_id': client_id,
+                    'url': url,
+                    'callback_url': callback_url,
+                    's3_text_path': s3_text_path,
+                    's3_images_path': s3_images_path,
+                    'total_pages': total_pages,
+                    'total_words_count': total_words_count,
+                    'extraction_status': extraction_status
+                }
+                send_message2sqs(**sqs_message)
+        except Exception as e:
+            logging.error(f"Exception is {e}")
+
+        signal.alarm(0)
 
     return {
         'statusCode': 200,
         'body': 'Message processed successfully.'
     }
+
+
+signal.signal(signal.SIGALRM, timeout_handler)

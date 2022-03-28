@@ -10,7 +10,10 @@ class UrlTypes(str, Enum):
     PDF = 'pdf'
     DOCX = 'docx'
     PPTX = 'pptx'
+    PPT = 'ppt'
     MSWORD = 'doc'
+    XLSX = 'xlsx'
+    XLS = 'xls'
 
 
 class ExtractContentType:
@@ -20,6 +23,10 @@ class ExtractContentType:
                                    'text/html; charset=UTF-8', 'text/html;charset=utf-8', 'text/plain')
         self.content_types_docx = ('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
         self.content_types_doc = ('application/msword')
+        self.content_types_pptx = ('application/vnd.openxmlformats-officedocument.presentationml.presentation')
+        self.content_types_ppt = ('application/vnd.ms-powerpoint')
+        self.content_types_xlsx = ('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        self.content_types_xls = ('application/vnd.ms-excel')
 
     def get_content_type(self, url):
         try:
@@ -38,6 +45,14 @@ class ExtractContentType:
                 return UrlTypes.DOCX.value
             elif url.endswith(".doc") or content_type in self.content_types_doc:
                 return UrlTypes.MSWORD.value
+            elif url.endswith(".xlsx") or content_type in self.content_types_xlsx:
+                return UrlTypes.XLSX.value
+            elif url.endswith(".xls") or content_type in self.content_types_xls:
+                return UrlTypes.XLS.value
+            elif url.endswith(".pptx") or content_type in self.content_types_pptx:
+                return UrlTypes.PPTX.value
+            elif url.endswith(".ppt") or content_type in self.content_types_ppt:
+                return UrlTypes.PPT.value
             else:
                 logging.warn(f'Could not determine the content-type of the {url}')
                 return None

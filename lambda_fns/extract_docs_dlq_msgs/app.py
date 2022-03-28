@@ -56,7 +56,7 @@ def send_message2sqs(
         'DataType': 'Number',
         'StringValue': extraction_status
     }
-    if processed_queue_name and s3_text_path:
+    if processed_queue_name:
         sqs_client.send_message(
             QueueUrl=processed_queue_name,
             MessageBody=client_id,

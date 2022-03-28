@@ -87,6 +87,8 @@ def output_request(event, context):
             )
             if s3_file_signed_url:
                 request_body['text_path'] = s3_file_signed_url
+        else:
+            request_body['text_path'] = None
         # Note: enable if images are required to be sent to deep.
         # images_bucket_name, images_key_name = extract_path(s3_images_path)
         # if images_bucket_name and images_key_name:
@@ -101,8 +103,8 @@ def output_request(event, context):
         #         if s3_image_signed_url:
         #             image_urls.append(s3_image_signed_url)
         #     if image_urls:
-        #         request_body['images_path'] = image_urls
-        request_body['images_path'] = [] if s3_images_path else None
+        #         request_body['images_path'] = image_urlss
+        request_body['images_path'] = []  # if s3_images_path else None
 
         request_body['total_pages'] = total_pages
         request_body['total_words_count'] = total_words_count
