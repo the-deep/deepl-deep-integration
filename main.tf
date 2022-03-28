@@ -40,11 +40,43 @@ module "sqs_lambda_module" {
 
   docs_convert_lambda_fn_name = var.docs_convert_lambda_fn_name
 
+  reserved_input_queue_id = "${module.reserved_sqs_lambda_module.reserved_input_queue_id}"
+  reserved_input_queue_arn = "${module.reserved_sqs_lambda_module.reserved_input_queue_arn}"
+
+  environment = var.environment
+}
+
+module "reserved_sqs_lambda_module" {
+  source = "./modules/reserved_sqs_lambda_extract_docs"
+  processed_docs_bucket = "${module.s3_module.te_bucket_name}"
+  processed_docs_bucket_arn = "${module.s3_module.te_bucket_arn}"
+
+  docs_extract_fn_image_name = var.docs_extract_fn_image_name
+  aws_region = var.aws_region
+
+  docs_convert_lambda_fn_name = var.docs_convert_lambda_fn_name
+
   environment = var.environment
 }
 
 module "sqs_lambda_predict_module" {
   source = "./modules/sqs_lambda_entry_predict"
+  processed_docs_bucket = "${module.s3_module.te_bucket_name}"
+
+  model_endpoint_name = var.model_endpoint_name
+  geolocation_fn_name = var.geolocation_fn_name
+  reliability_fn_name = var.reliability_fn_name
+  model_info_fn_name = var.model_info_fn_name
+
+  reserved_entry_input_queue_predict_id = "${module.reserved_sqs_lambda_predict_module.reserved_entry_input_queue_predict_id}"
+  reserved_entry_input_queue_predict_arn = "${module.reserved_sqs_lambda_predict_module.reserved_entry_input_queue_predict_arn}"
+
+  aws_region = var.aws_region
+  environment = var.environment
+}
+
+module "reserved_sqs_lambda_predict_module" {
+  source = "./modules/reserved_lambda_entry_predict"
   processed_docs_bucket = "${module.s3_module.te_bucket_name}"
 
   model_endpoint_name = var.model_endpoint_name
