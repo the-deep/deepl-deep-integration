@@ -69,7 +69,7 @@ resource "aws_api_gateway_integration" "gateway_integration_1" {
   # Lambda invokes requires a POST method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = var.predict_entry_invoke_arn
+  uri                     = var.entry_input_pred_request_fn_alias_arn
 }
 
 resource "aws_api_gateway_integration" "gateway_integration_2" {
@@ -79,7 +79,7 @@ resource "aws_api_gateway_integration" "gateway_integration_2" {
   # Lambda invokes requires a POST method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = var.process_doc_invoke_arn
+  uri                     = var.input_te_lambda_fn_alias_arn
 }
 
 resource "aws_api_gateway_integration" "gateway_integration_3" {
@@ -105,12 +105,14 @@ resource "aws_lambda_permission" "allow_api_gateway" {
   action        = "lambda:InvokeFunction"
   function_name = var.predict_entry_lambda_fn_name
   principal     = "apigateway.amazonaws.com"
+  qualifier     = var.entry_input_pred_reqeust_fn_alias_name
 }
 
 resource "aws_lambda_permission" "allow_api_gateway2" {
   action        = "lambda:InvokeFunction"
   function_name = var.input_te_lambda_fn_name
   principal     = "apigateway.amazonaws.com"
+  qualifier     = var.input_te_lambda_fn_alias_name
 }
 
 resource "aws_lambda_permission" "allow_api_gateway3" {

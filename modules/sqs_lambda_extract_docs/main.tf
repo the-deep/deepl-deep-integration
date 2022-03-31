@@ -43,6 +43,7 @@ resource "aws_sqs_queue" "failed_msgs_dlq" {
 
 module "input_request_fn" {
     source = "terraform-aws-modules/lambda/aws"
+    publish = true
 
     function_name = "te-input-func-${var.environment}"
     handler = "app.send_msg_sqs"
@@ -76,10 +77,18 @@ module "input_request_fn" {
     ]
     })
 
+    provisioned_concurrent_executions = 1
+
     environment_variables = {
         INPUT_QUEUE = aws_sqs_queue.input_queue.id
         RESERVED_INPUT_QUEUE = var.reserved_input_queue_id
     }
+}
+
+resource "aws_lambda_alias" "input_request_fn_alias" {
+    name = "extract_initial_req"
+    function_name = module.input_request_fn.lambda_function_name
+    function_version = module.input_request_fn.lambda_function_version
 }
 
 resource "aws_lambda_event_source_mapping" "sqs_to_extract_lambda_trigger" {

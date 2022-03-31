@@ -16,6 +16,12 @@ variable "model_info" { default = "model_info" }
 variable "predict_entry_lambda_fn_name" {}
 variable "input_te_lambda_fn_name" {}
 
+variable "entry_input_pred_request_fn_alias_arn" {}
+variable "entry_input_pred_reqeust_fn_alias_name" {}
+
+variable "input_te_lambda_fn_alias_arn" {}
+variable "input_te_lambda_fn_alias_name" {}
+
 variable "vpce_id" {}
 
 variable "predict_entry_invoke_arn" {}

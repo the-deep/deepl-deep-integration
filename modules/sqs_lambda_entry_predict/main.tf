@@ -43,6 +43,7 @@ resource "aws_sqs_queue" "entry_failed_msgs_dlq_predict" {
 
 module "entry_input_pred_request_fn" {
     source = "terraform-aws-modules/lambda/aws"
+    publish = true
 
     function_name = "entry-input-pred-func-${var.environment}"
     handler = "app.entry_msg_sqs_handler"
@@ -76,10 +77,18 @@ module "entry_input_pred_request_fn" {
     ]
     })
 
+    provisioned_concurrent_executions = 1
+
     environment_variables = {
         ENTRY_PREDICT_INPUT_QUEUE = aws_sqs_queue.entry_input_queue_predict.id
         RESERVED_ENTRY_PREDICT_INPUT_QUEUE = var.reserved_entry_input_queue_predict_id 
     }
+}
+
+resource "aws_lambda_alias" "entry_input_pred_request_fn_alias" {
+    name = "pred_initial_req"
+    function_name = module.entry_input_pred_request_fn.lambda_function_name
+    function_version = module.entry_input_pred_request_fn.lambda_function_version
 }
 
 resource "aws_lambda_event_source_mapping" "entry_prediction_trigger" {

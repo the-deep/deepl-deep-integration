@@ -101,6 +101,12 @@ module "apigateway_module" {
   predict_entry_lambda_fn_name = "${module.sqs_lambda_predict_module.entry_input_pred_request_lambda_fn_name}"
   input_te_lambda_fn_name = "${module.sqs_lambda_module.input_te_lambda_fn_name}"
 
+  entry_input_pred_request_fn_alias_arn = "${module.sqs_lambda_predict_module.entry_input_pred_request_fn_alias_arn}"
+  entry_input_pred_reqeust_fn_alias_name = "${module.sqs_lambda_predict_module.entry_input_pred_reqeust_fn_alias_name}"
+
+  input_te_lambda_fn_alias_arn = "${module.sqs_lambda_module.input_te_lambda_fn_alias_arn}"
+  input_te_lambda_fn_alias_name = "${module.sqs_lambda_module.input_te_lambda_fn_alias_name}"
+
   vf_tags_invoke_arn = "${module.sqs_lambda_predict_module.vf_tags_invoke_arn}"
   vf_tags_fn_name = "${module.sqs_lambda_predict_module.vf_tags_fn_name}"
 
