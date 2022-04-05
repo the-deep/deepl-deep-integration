@@ -94,7 +94,7 @@ def predict_entry():
 def model_info():
     event = {}
     event["mock"] = True
-    return lambda_handler(event, None)
+    return json.dumps(json.loads(lambda_handler(event, None)["body"]))
 
 
 if __name__ == '__main__':
