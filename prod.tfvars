@@ -4,7 +4,7 @@ environment = "prod"
 
 # api gateway
 api_gateway_name = "rapi"
-vpce_id = "vpce-053ed1c5a7f24dacf"
+vpce_id = "vpce-000796c803825026c"
 
 # models
 model_endpoint_name = "test-all-models-rsh"
