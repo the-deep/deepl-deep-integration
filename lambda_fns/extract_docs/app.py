@@ -12,7 +12,7 @@ import boto3
 import tempfile
 import signal
 
-from deep_parser.parser.base import TextFromFile
+from deep_parser import TextFromFile
 from deep_parser import TextFromWeb
 
 try:
@@ -138,7 +138,7 @@ def get_extracted_content_links(file_path, file_name, mock):
             binary = base64.b64encode(f.read())
 
         document = TextFromFile(stream=binary, ext="pdf")
-        entries, images = document.extract_text(output_format="list")
+        entries, images = document.serial_extract_text(output_format="list")
     except Exception as e:
         logging.error(f"Extraction failed: {e}")
         return None, None, -1, -1
