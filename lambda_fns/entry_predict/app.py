@@ -104,7 +104,9 @@ def get_geolocations(entry):
             Payload=json.dumps({'entry': entry})
         )
         json_response = response['Payload'].read().decode("utf-8")
-        return {'locations': json.loads(json_response)['locations']}
+        loc_resp = json.loads(json_response)
+        geo_locations = loc_resp['locations'] if 'locations' in loc_resp else []
+        return {'locations': geo_locations}
     except ClientError as error:
         logging.error(f"Error occurred while fetching geolocations {error}. Returning empty list.")
         return {'locations': []}
