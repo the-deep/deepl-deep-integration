@@ -5,7 +5,7 @@ resource "aws_sqs_queue" "reserved_entry_input_queue_predict" {
   delay_seconds             = 0
   max_message_size          = 262144
   message_retention_seconds = 86400
-  receive_wait_time_seconds = 1
+  receive_wait_time_seconds = 0
   visibility_timeout_seconds = 60
 
   tags = {
@@ -18,7 +18,7 @@ resource "aws_sqs_queue" "reserved_entry_input_processed_queue_predict" {
   delay_seconds             = 0
   max_message_size          = 262144
   message_retention_seconds = 86400
-  receive_wait_time_seconds = 1
+  receive_wait_time_seconds = 0
   redrive_policy            = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.reserved_entry_failed_msgs_dlq_predict.arn
     maxReceiveCount     = 3
@@ -34,7 +34,7 @@ resource "aws_sqs_queue" "reserved_entry_failed_msgs_dlq_predict" {
   delay_seconds             = 0
   max_message_size          = 262144
   message_retention_seconds = 86400
-  receive_wait_time_seconds = 1
+  receive_wait_time_seconds = 0
 
   tags = {
       Environment = "${var.environment}"
@@ -131,8 +131,8 @@ module "reserved_predict_entry_fn" {
         ]
     })
 
-    #provisioned_concurrent_executions = 5
-    reserved_concurrent_executions = 20
+    provisioned_concurrent_executions = 10
+    reserved_concurrent_executions = 30
 
     environment_variables = {
         PREDICTION_QUEUE = aws_sqs_queue.reserved_entry_input_processed_queue_predict.id
@@ -144,8 +144,8 @@ module "reserved_predict_entry_fn" {
 }
 
 resource "aws_appautoscaling_target" "reserved_predict_entry_fn_autoscale" {
-    max_capacity       = 5
-    min_capacity       = 2
+    max_capacity       = 10
+    min_capacity       = 5
     resource_id        = "function:${module.reserved_predict_entry_fn.lambda_function_name}:${module.reserved_predict_entry_fn.lambda_function_version}"
     scalable_dimension = "lambda:function:ProvisionedConcurrency"
     service_namespace  = "lambda"
@@ -200,7 +200,7 @@ module "reserved_entry_predict_output_fn" {
         ]
     })
 
-    #provisioned_concurrent_executions = 2
+    provisioned_concurrent_executions = 5
 
     layers = ["${aws_lambda_layer_version.reserved_lambda_layer_mappings.arn}"]
 
@@ -218,8 +218,8 @@ resource "aws_lambda_layer_version" "reserved_lambda_layer_mappings" {
 }
 
 resource "aws_appautoscaling_target" "reserved_entry_predict_output_fn_autoscale" {
-    max_capacity       = 3
-    min_capacity       = 1
+    max_capacity       = 5
+    min_capacity       = 2
     resource_id        = "function:${module.reserved_entry_predict_output_fn.lambda_function_name}:${module.reserved_entry_predict_output_fn.lambda_function_version}"
     scalable_dimension = "lambda:function:ProvisionedConcurrency"
     service_namespace  = "lambda"
@@ -266,7 +266,7 @@ module "reserved_entry_predict_transfer_dlq_msg" {
         ]
     })
 
-    #provisioned_concurrent_executions = 2
+    provisioned_concurrent_executions = 5
 
     environment_variables = {
         PREDICTION_QUEUE = aws_sqs_queue.reserved_entry_input_processed_queue_predict.id
@@ -274,8 +274,8 @@ module "reserved_entry_predict_transfer_dlq_msg" {
 }
 
 resource "aws_appautoscaling_target" "reserved_entry_predict_transfer_dlq_msg_autoscale" {
-    max_capacity       = 3
-    min_capacity       = 1
+    max_capacity       = 5
+    min_capacity       = 2
     resource_id        = "function:${module.reserved_entry_predict_transfer_dlq_msg.lambda_function_name}:${module.reserved_entry_predict_transfer_dlq_msg.lambda_function_version}"
     scalable_dimension = "lambda:function:ProvisionedConcurrency"
     service_namespace  = "lambda"
