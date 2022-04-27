@@ -106,6 +106,7 @@ module "predict_entry_fn" {
     source_path = [
     {
         path = "${path.module}/../../lambda_fns/entry_predict"
+        pip_requirements = "${path.module}/../../lambda_fns/entry_predict/requirements.txt"
     }
     ]
 
@@ -145,6 +146,8 @@ module "predict_entry_fn" {
         GEOLOCATION_FN_NAME = var.geolocation_fn_name
         RELIABILITY_FN_NAME = var.reliability_fn_name
         MODEL_INFO_FN_NAME = "${var.model_info_fn_name}-${var.environment}"
+        ENVIRONMENT = "${var.environment}"
+        SENTRY_URL = "${var.sentry_url}"
     }
 }
 
@@ -200,6 +203,11 @@ module "entry_predict_output_fn" {
     build_in_docker = true
     #store_on_s3 = true
     #s3_bucket = "${var.processed_docs_bucket}"
+
+    environment_variables = {
+        ENVIRONMENT = "${var.environment}"
+        SENTRY_URL = "${var.sentry_url}"
+    }
 }
 
 resource "aws_lambda_layer_version" "lambda_layer_mappings" {

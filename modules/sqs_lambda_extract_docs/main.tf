@@ -143,8 +143,10 @@ module "extract_docs_fn" {
     environment_variables = {
         INPUT_QUEUE = aws_sqs_queue.input_queue.id
         DEST_S3_BUCKET = "${var.processed_docs_bucket}"
-        PROCESSED_QUEUE = aws_sqs_queue.processed_queue.id,
+        PROCESSED_QUEUE = aws_sqs_queue.processed_queue.id
         DOCS_CONVERT_LAMBDA_FN_NAME = "${var.docs_convert_lambda_fn_name}"
+        ENVIRONMENT = "${var.environment}"
+        SENTRY_URL = "${var.sentry_url}"
     }
 }
 
@@ -194,6 +196,8 @@ module "output_request_fn" {
 
     environment_variables = {
         SIGNED_URL_EXPIRY_SECS = "${var.signed_url_expiry_secs}"
+        ENVIRONMENT = "${var.environment}"
+        SENTRY_URL = "${var.sentry_url}"
     }
 }
 

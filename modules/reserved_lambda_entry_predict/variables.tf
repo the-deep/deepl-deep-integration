@@ -11,3 +11,5 @@ variable reliability_fn_name {}
 variable model_info_fn_name {}
 
 variable processed_docs_bucket {}
+
+variable sentry_url {}
