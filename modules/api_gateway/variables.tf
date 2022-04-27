@@ -23,6 +23,7 @@ variable "input_te_lambda_fn_alias_arn" {}
 variable "input_te_lambda_fn_alias_name" {}
 
 variable "vpce_id" {}
+variable "vpc_id" {}
 
 variable "predict_entry_invoke_arn" {}
 
