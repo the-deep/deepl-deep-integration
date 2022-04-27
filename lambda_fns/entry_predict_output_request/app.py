@@ -1,12 +1,19 @@
+import os
 import requests
 import json
 import logging
+import sentry_sdk
 from mappings.tags_mapping import get_all_mappings, get_categories
 try:
     from lambda_fns.model_info.app import lambda_handler
     model_info_mock_data = json.loads(lambda_handler({"mock": True}, None)["body"])
 except ImportError:
     pass
+
+SENTRY_URL = os.environ.get("SENTRY_URL")
+ENVIRONMENT = os.environ.get("ENVIRONMENT")
+
+sentry_sdk.init(SENTRY_URL, environment=ENVIRONMENT, traces_sample_rate=1.0)
 
 logging.getLogger().setLevel(logging.INFO)
 

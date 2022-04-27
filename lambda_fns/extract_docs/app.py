@@ -12,6 +12,8 @@ import boto3
 import tempfile
 import signal
 
+import sentry_sdk
+
 from deep_parser import TextFromFile
 from deep_parser import TextFromWeb
 
@@ -32,11 +34,16 @@ DOCS_CONVERT_LAMBDA_FN_NAME = os.environ.get("DOCS_CONVERT_LAMBDA_FN_NAME")
 
 domain_name = os.environ.get("EXTRACTOR_DOMAIN_NAME", "http://extractor:8001")
 
+SENTRY_URL = os.environ.get("SENTRY_URL")
+ENVIRONMENT = os.environ.get("ENVIRONMENT")
+
 s3_client = boto3.client('s3', region_name=aws_region)
 sqs_client = boto3.client('sqs', region_name=aws_region)
 lambda_client = boto3.client('lambda', region_name="us-east-1")
 
 extract_content_type = ExtractContentType()
+
+sentry_sdk.init(SENTRY_URL, environment=ENVIRONMENT, traces_sample_rate=1.0)
 
 
 class ExtractionStatus(Enum):
