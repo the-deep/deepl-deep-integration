@@ -98,6 +98,7 @@ module "reserved_predict_entry_fn" {
     source_path = [
     {
         path = "${path.module}/../../lambda_fns/entry_predict"
+        pip_requirements = "${path.module}/../../lambda_fns/entry_predict/requirements.txt"
     }
     ]
 
