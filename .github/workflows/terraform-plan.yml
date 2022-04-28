@@ -5,6 +5,7 @@ on:
     branches:
       - initial_setup
       - feat/sentry-integration
+      - fix/tfver
 
 jobs:
   terraform:
