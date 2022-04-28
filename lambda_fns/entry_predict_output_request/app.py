@@ -13,7 +13,7 @@ except ImportError:
 SENTRY_URL = os.environ.get("SENTRY_URL")
 ENVIRONMENT = os.environ.get("ENVIRONMENT")
 
-sentry_sdk.init(SENTRY_URL, environment=ENVIRONMENT, traces_sample_rate=1.0)
+sentry_sdk.init(SENTRY_URL, environment=ENVIRONMENT, attach_stacktrace=True, traces_sample_rate=1.0)
 
 logging.getLogger().setLevel(logging.INFO)
 
