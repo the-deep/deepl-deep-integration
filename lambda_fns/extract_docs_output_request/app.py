@@ -19,7 +19,7 @@ signed_url_expiry_secs = os.environ.get("SIGNED_URL_EXPIRY_SECS")
 SENTRY_URL = os.environ.get("SENTRY_URL")
 ENVIRONMENT = os.environ.get("ENVIRONMENT")
 
-sentry_sdk.init(SENTRY_URL, environment=ENVIRONMENT, traces_sample_rate=1.0)
+sentry_sdk.init(SENTRY_URL, environment=ENVIRONMENT, attach_stacktrace=True, traces_sample_rate=1.0)
 
 s3_client = boto3.client(
     's3',

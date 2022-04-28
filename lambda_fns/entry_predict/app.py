@@ -31,7 +31,7 @@ geolocation_client = boto3.client("lambda", region_name="us-east-1")
 reliability_client = boto3.client("lambda", region_name="us-east-1")
 model_info_client = boto3.client("lambda", region_name=AWS_REGION)
 
-sentry_sdk.init(SENTRY_URL, environment=ENVIRONMENT, traces_sample_rate=1.0)
+sentry_sdk.init(SENTRY_URL, environment=ENVIRONMENT, attach_stacktrace=True, traces_sample_rate=1.0)
 
 
 class PredictionStatus(Enum):

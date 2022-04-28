@@ -43,7 +43,7 @@ lambda_client = boto3.client('lambda', region_name="us-east-1")
 
 extract_content_type = ExtractContentType()
 
-sentry_sdk.init(SENTRY_URL, environment=ENVIRONMENT, traces_sample_rate=1.0)
+sentry_sdk.init(SENTRY_URL, environment=ENVIRONMENT, attach_stacktrace=True, traces_sample_rate=1.0)
 
 
 class ExtractionStatus(Enum):
@@ -346,6 +346,10 @@ def handle_urls(url, mock=False):
                 logging.error(f"Exception occurred {e}")
                 s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
                 extraction_status = ExtractionStatus.FAILED.value
+    elif content_type == UrlTypes.IMG.value:
+        logging.warn("Text extraction from Images is not available.")
+        s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
+        extraction_status = ExtractionStatus.FAILED.value
     else:
         raise NotImplementedError
 

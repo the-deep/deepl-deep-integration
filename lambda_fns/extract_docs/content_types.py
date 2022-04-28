@@ -14,6 +14,7 @@ class UrlTypes(str, Enum):
     MSWORD = 'doc'
     XLSX = 'xlsx'
     XLS = 'xls'
+    IMG = 'img'
 
 
 class ExtractContentType:
@@ -27,6 +28,7 @@ class ExtractContentType:
         self.content_types_ppt = ('application/vnd.ms-powerpoint')
         self.content_types_xlsx = ('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         self.content_types_xls = ('application/vnd.ms-excel')
+        self.content_types_img = ('image/jpeg', 'image/gif', 'image/png', 'image/svg+xml', 'image/webp', 'image/bmp', 'image/tiff')
 
     def get_content_type(self, url):
         try:
@@ -53,6 +55,9 @@ class ExtractContentType:
                 return UrlTypes.PPTX.value
             elif url.endswith(".ppt") or content_type in self.content_types_ppt:
                 return UrlTypes.PPT.value
+            elif url.endswith(".jpg") or url.endswith(".jpeg") or url.endswith(".png") or \
+                url.endswith(".gif") or url.endswith(".bmp") or content_type in self.content_types_img:
+                return UrlTypes.IMG.value
             else:
                 logging.warn(f'Could not determine the content-type of the {url}')
                 return None
