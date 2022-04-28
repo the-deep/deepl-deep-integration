@@ -399,7 +399,7 @@ def process_docs(event, context):
                 }
                 send_message2sqs(**sqs_message)
         except Exception as e:
-            logging.error(f"Exception is {e}")
+            logging.error(e, exc_info=True)
 
         signal.alarm(0)
 
