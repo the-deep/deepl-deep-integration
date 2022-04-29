@@ -19,7 +19,7 @@ urllib3 = "==1.26.6"
 Pillow = "==8.3.2"
 boto3 = "==1.19.0"
 celery = { version = "==5.2.3", extras = ["redis"] }
-deep-parser = { git = "https://github.com/the-deep/deepl-pdf-extraction.git", branch = "master" }
+deep-parser = { git = "https://github.com/the-deep/deepex.git", branch = "master" }
 
 [tool.poetry.dev-dependencies]
 
