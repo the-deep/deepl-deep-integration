@@ -1,6 +1,11 @@
+import os
 import requests
 from enum import Enum
 import logging
+try:
+    from wget import download
+except ImportError:
+    from .wget import download
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -59,8 +64,29 @@ class ExtractContentType:
                 url.endswith(".gif") or url.endswith(".bmp") or content_type in self.content_types_img:
                 return UrlTypes.IMG.value
             else:
-                logging.warn(f'Could not determine the content-type of the {url}')
-                return None
+                temp_filepath = download(url, out="/tmp/")
+                if os.path.exists(temp_filepath):
+                    os.remove(temp_filepath)
+                if temp_filepath.endswith(".pdf"):
+                    return UrlTypes.PDF.value
+                elif temp_filepath.endswith(".docx"):
+                    return UrlTypes.DOCX.value
+                elif temp_filepath.endswith(".doc"):
+                    return UrlTypes.MSWORD.value
+                elif temp_filepath.endswith(".xlsx"):
+                    return UrlTypes.XLSX.value
+                elif temp_filepath.endswith(".xls"):
+                    return UrlTypes.XLS.value
+                elif temp_filepath.endswith(".pptx"):
+                    return UrlTypes.PPTX.value
+                elif temp_filepath.endswith(".ppt"):
+                    return UrlTypes.PPT.value
+                elif temp_filepath.endswith(".jpg") or temp_filepath.endswith(".jpeg") or temp_filepath.endswith(".png") or \
+                    temp_filepath.endswith(".gif") or temp_filepath.endswith(".bmp"):
+                    return UrlTypes.IMG.value
+                else:
+                    logging.warn(f'Could not determine the content-type of the {url}')
+                    return None
         except requests.exceptions.RequestException:
             logging.error(f'Exception occurred. Could not determine the content-type of the {url}')
             return None
