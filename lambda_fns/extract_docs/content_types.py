@@ -1,6 +1,11 @@
+import os
 import requests
 from enum import Enum
 import logging
+try:
+    from wget import download
+except ImportError:
+    from .wget import download
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -14,6 +19,7 @@ class UrlTypes(str, Enum):
     MSWORD = 'doc'
     XLSX = 'xlsx'
     XLS = 'xls'
+    IMG = 'img'
 
 
 class ExtractContentType:
@@ -27,10 +33,11 @@ class ExtractContentType:
         self.content_types_ppt = ('application/vnd.ms-powerpoint')
         self.content_types_xlsx = ('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         self.content_types_xls = ('application/vnd.ms-excel')
+        self.content_types_img = ('image/jpeg', 'image/gif', 'image/png', 'image/svg+xml', 'image/webp', 'image/bmp', 'image/tiff')
 
-    def get_content_type(self, url):
+    def get_content_type(self, url, req_headers):
         try:
-            response = requests.head(url)
+            response = requests.head(url, headers=req_headers)
             content_type = response.headers['Content-Type']
 
             logging.info(f'The content type of {url} is {content_type}')
@@ -53,9 +60,33 @@ class ExtractContentType:
                 return UrlTypes.PPTX.value
             elif url.endswith(".ppt") or content_type in self.content_types_ppt:
                 return UrlTypes.PPT.value
+            elif url.endswith(".jpg") or url.endswith(".jpeg") or url.endswith(".png") or \
+                url.endswith(".gif") or url.endswith(".bmp") or content_type in self.content_types_img:
+                return UrlTypes.IMG.value
             else:
-                logging.warn(f'Could not determine the content-type of the {url}')
-                return None
+                temp_filepath = download(url, out="/tmp/")
+                if os.path.exists(temp_filepath):
+                    os.remove(temp_filepath)
+                if temp_filepath.endswith(".pdf"):
+                    return UrlTypes.PDF.value
+                elif temp_filepath.endswith(".docx"):
+                    return UrlTypes.DOCX.value
+                elif temp_filepath.endswith(".doc"):
+                    return UrlTypes.MSWORD.value
+                elif temp_filepath.endswith(".xlsx"):
+                    return UrlTypes.XLSX.value
+                elif temp_filepath.endswith(".xls"):
+                    return UrlTypes.XLS.value
+                elif temp_filepath.endswith(".pptx"):
+                    return UrlTypes.PPTX.value
+                elif temp_filepath.endswith(".ppt"):
+                    return UrlTypes.PPT.value
+                elif temp_filepath.endswith(".jpg") or temp_filepath.endswith(".jpeg") or temp_filepath.endswith(".png") or \
+                    temp_filepath.endswith(".gif") or temp_filepath.endswith(".bmp"):
+                    return UrlTypes.IMG.value
+                else:
+                    logging.warn(f'Could not determine the content-type of the {url}')
+                    return None
         except requests.exceptions.RequestException:
             logging.error(f'Exception occurred. Could not determine the content-type of the {url}')
             return None

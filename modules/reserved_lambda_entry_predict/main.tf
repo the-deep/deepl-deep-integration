@@ -98,6 +98,7 @@ module "reserved_predict_entry_fn" {
     source_path = [
     {
         path = "${path.module}/../../lambda_fns/entry_predict"
+        pip_requirements = "${path.module}/../../lambda_fns/entry_predict/requirements.txt"
     }
     ]
 
@@ -131,7 +132,7 @@ module "reserved_predict_entry_fn" {
         ]
     })
 
-    provisioned_concurrent_executions = 10
+    provisioned_concurrent_executions = var.environment == "dev" ? 1 : 10
     reserved_concurrent_executions = 30
 
     environment_variables = {
@@ -140,12 +141,14 @@ module "reserved_predict_entry_fn" {
         GEOLOCATION_FN_NAME = var.geolocation_fn_name
         RELIABILITY_FN_NAME = var.reliability_fn_name
         MODEL_INFO_FN_NAME = "${var.model_info_fn_name}-${var.environment}"
+        ENVIRONMENT = "${var.environment}"
+        SENTRY_URL = "${var.sentry_url}"
     }
 }
 
 resource "aws_appautoscaling_target" "reserved_predict_entry_fn_autoscale" {
-    max_capacity       = 10
-    min_capacity       = 5
+    max_capacity       = var.environment == "dev" ? 1 : 10
+    min_capacity       = var.environment == "dev" ? 1 : 5
     resource_id        = "function:${module.reserved_predict_entry_fn.lambda_function_name}:${module.reserved_predict_entry_fn.lambda_function_version}"
     scalable_dimension = "lambda:function:ProvisionedConcurrency"
     service_namespace  = "lambda"
@@ -200,13 +203,18 @@ module "reserved_entry_predict_output_fn" {
         ]
     })
 
-    provisioned_concurrent_executions = 5
+    provisioned_concurrent_executions = var.environment == "dev" ? 1 : 5
 
     layers = ["${aws_lambda_layer_version.reserved_lambda_layer_mappings.arn}"]
 
     build_in_docker = true
     #store_on_s3 = true
     #s3_bucket = "${var.processed_docs_bucket}"
+
+    environment_variables = {
+        ENVIRONMENT = "${var.environment}"
+        SENTRY_URL = "${var.sentry_url}"
+    }
 }
 
 resource "aws_lambda_layer_version" "reserved_lambda_layer_mappings" {
@@ -218,8 +226,8 @@ resource "aws_lambda_layer_version" "reserved_lambda_layer_mappings" {
 }
 
 resource "aws_appautoscaling_target" "reserved_entry_predict_output_fn_autoscale" {
-    max_capacity       = 5
-    min_capacity       = 2
+    max_capacity       = var.environment == "dev" ? 1 : 5
+    min_capacity       = var.environment == "dev" ? 1 : 2
     resource_id        = "function:${module.reserved_entry_predict_output_fn.lambda_function_name}:${module.reserved_entry_predict_output_fn.lambda_function_version}"
     scalable_dimension = "lambda:function:ProvisionedConcurrency"
     service_namespace  = "lambda"
@@ -266,7 +274,7 @@ module "reserved_entry_predict_transfer_dlq_msg" {
         ]
     })
 
-    provisioned_concurrent_executions = 5
+    provisioned_concurrent_executions = var.environment == "dev" ? 1 : 5
 
     environment_variables = {
         PREDICTION_QUEUE = aws_sqs_queue.reserved_entry_input_processed_queue_predict.id
@@ -274,8 +282,8 @@ module "reserved_entry_predict_transfer_dlq_msg" {
 }
 
 resource "aws_appautoscaling_target" "reserved_entry_predict_transfer_dlq_msg_autoscale" {
-    max_capacity       = 5
-    min_capacity       = 2
+    max_capacity       = var.environment == "dev" ? 1 : 5
+    min_capacity       = var.environment == "dev" ? 1 : 2
     resource_id        = "function:${module.reserved_entry_predict_transfer_dlq_msg.lambda_function_name}:${module.reserved_entry_predict_transfer_dlq_msg.lambda_function_version}"
     scalable_dimension = "lambda:function:ProvisionedConcurrency"
     service_namespace  = "lambda"

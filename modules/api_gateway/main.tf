@@ -137,10 +137,11 @@ resource "aws_api_gateway_rest_api_policy" "api_policy" {
         Effect = "Deny",
         Principal = "*",
         Action = "execute-api:Invoke",
-        Resource = "execute-api:/*/*/*",
+        Resource = "execute-api:/${var.environment}/*/*",
         Condition = {
           StringNotEquals = {
-            "aws:sourceVpce": var.vpce_id
+            "aws:sourceVpce": var.vpce_id,
+            "aws:sourceVpc": var.vpc_id
           }
         }
       },
@@ -148,7 +149,7 @@ resource "aws_api_gateway_rest_api_policy" "api_policy" {
         Effect = "Allow",
         Principal = "*",
         Action = "execute-api:Invoke",
-        Resource = "execute-api:/*/*/*"
+        Resource = "execute-api:/${var.environment}/*/*"
       }
     ]
   })

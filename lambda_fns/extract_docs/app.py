@@ -12,6 +12,8 @@ import boto3
 import tempfile
 import signal
 
+import sentry_sdk
+
 from deep_parser import TextFromFile
 from deep_parser import TextFromWeb
 
@@ -32,11 +34,20 @@ DOCS_CONVERT_LAMBDA_FN_NAME = os.environ.get("DOCS_CONVERT_LAMBDA_FN_NAME")
 
 domain_name = os.environ.get("EXTRACTOR_DOMAIN_NAME", "http://extractor:8001")
 
+SENTRY_URL = os.environ.get("SENTRY_URL")
+ENVIRONMENT = os.environ.get("ENVIRONMENT")
+
 s3_client = boto3.client('s3', region_name=aws_region)
 sqs_client = boto3.client('sqs', region_name=aws_region)
 lambda_client = boto3.client('lambda', region_name="us-east-1")
 
 extract_content_type = ExtractContentType()
+
+sentry_sdk.init(SENTRY_URL, environment=ENVIRONMENT, attach_stacktrace=True, traces_sample_rate=1.0)
+
+REQ_HEADERS = {
+    'user-agent': ('Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.163 Safari/535.1')
+}
 
 
 class ExtractionStatus(Enum):
@@ -245,7 +256,7 @@ def get_extracted_text_web_links(link, file_name, mock=False):
 def handle_urls(url, mock=False):
     file_name = None
 
-    content_type = extract_content_type.get_content_type(url)
+    content_type = extract_content_type.get_content_type(url, REQ_HEADERS)
 
     file_name = EXTRACTED_FILE_NAME
 
@@ -270,7 +281,7 @@ def handle_urls(url, mock=False):
         s3_file_path = None
         s3_images_path = None
 
-        response = requests.get(url, stream=True)
+        response = requests.get(url, headers=REQ_HEADERS, stream=True)
         with tempfile.NamedTemporaryFile(mode='w+b') as temp:
             for chunk in response.iter_content(chunk_size=128):
                 temp.write(chunk)
@@ -298,7 +309,7 @@ def handle_urls(url, mock=False):
 
         ext_type = content_type
 
-        response = requests.get(url, stream=True)
+        response = requests.get(url, headers=REQ_HEADERS, stream=True)
 
         with tempfile.NamedTemporaryFile(mode='w+b') as temp:
             for chunk in response.iter_content(chunk_size=128):
@@ -339,6 +350,10 @@ def handle_urls(url, mock=False):
                 logging.error(f"Exception occurred {e}")
                 s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
                 extraction_status = ExtractionStatus.FAILED.value
+    elif content_type == UrlTypes.IMG.value:
+        logging.warn("Text extraction from Images is not available.")
+        s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
+        extraction_status = ExtractionStatus.FAILED.value
     else:
         raise NotImplementedError
 
@@ -388,7 +403,7 @@ def process_docs(event, context):
                 }
                 send_message2sqs(**sqs_message)
         except Exception as e:
-            logging.error(f"Exception is {e}")
+            logging.error(e, exc_info=True)
 
         signal.alarm(0)
 

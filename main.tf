@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "4.8.0"
+      version = "4.9.0"
     }
   }
   required_version = "1.1.2"
@@ -44,6 +44,8 @@ module "sqs_lambda_module" {
   reserved_input_queue_arn = "${module.reserved_sqs_lambda_module.reserved_input_queue_arn}"
 
   environment = var.environment
+
+  sentry_url = var.sentry_url
 }
 
 module "reserved_sqs_lambda_module" {
@@ -57,6 +59,8 @@ module "reserved_sqs_lambda_module" {
   docs_convert_lambda_fn_name = var.docs_convert_lambda_fn_name
 
   environment = var.environment
+
+  sentry_url = var.sentry_url
 }
 
 module "sqs_lambda_predict_module" {
@@ -73,6 +77,8 @@ module "sqs_lambda_predict_module" {
 
   aws_region = var.aws_region
   environment = var.environment
+
+  sentry_url = var.sentry_url
 }
 
 module "reserved_sqs_lambda_predict_module" {
@@ -86,6 +92,8 @@ module "reserved_sqs_lambda_predict_module" {
 
   aws_region = var.aws_region
   environment = var.environment
+
+  sentry_url = var.sentry_url
 }
 
 module "apigateway_module" {
@@ -94,6 +102,7 @@ module "apigateway_module" {
   api_gateway_name = var.api_gateway_name
 
   vpce_id = var.vpce_id
+  vpc_id = var.vpc_id
 
   predict_entry_invoke_arn = "${module.sqs_lambda_predict_module.entry_input_pred_request_predict_invoke_arn}"
   process_doc_invoke_arn = "${module.sqs_lambda_module.extract_doc_invoke_arn}"

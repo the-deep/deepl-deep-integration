@@ -1,11 +1,11 @@
 aws_region = "us-east-1"
 aws_profile = "default"
-environment = "prod"
+environment = "staging"
 
 # api gateway
 api_gateway_name = "rapi"
-vpce_id = "vpce-05d8c268ef4c0c443"
-vpc_id = "vpc-0947f040a9d4692a7"
+vpce_id = "vpce-02c7bb08b571074e1"
+vpc_id = "vpc-0e65245d5e4c2deaf"
 
 # models
 model_endpoint_name = "test-all-models-rsh"

@@ -17,3 +17,5 @@ variable "docs_convert_lambda_fn_name" {}
 
 variable reserved_input_queue_id {}
 variable reserved_input_queue_arn {}
+
+variable sentry_url {}

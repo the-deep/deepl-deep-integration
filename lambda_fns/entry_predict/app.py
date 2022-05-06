@@ -6,6 +6,8 @@ from enum import Enum
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+import sentry_sdk
+
 from postprocess_raw_preds import get_predictions_all, get_clean_thresholds, get_clean_ratios
 
 logging.getLogger().setLevel(logging.INFO)
@@ -19,12 +21,17 @@ GEOLOCATION_FN_NAME = os.environ.get("GEOLOCATION_FN_NAME")
 RELIABILITY_FN_NAME = os.environ.get("RELIABILITY_FN_NAME")
 MODEL_INFO_FN_NAME = os.environ.get("MODEL_INFO_FN_NAME")
 
+SENTRY_URL = os.environ.get("SENTRY_URL")
+ENVIRONMENT = os.environ.get("ENVIRONMENT")
+
 sqs_client = boto3.client('sqs', region_name=AWS_REGION)
 
 sagemaker_rt = boto3.client("runtime.sagemaker", region_name="us-east-1")  # todo: update the region later.
 geolocation_client = boto3.client("lambda", region_name="us-east-1")
 reliability_client = boto3.client("lambda", region_name="us-east-1")
 model_info_client = boto3.client("lambda", region_name=AWS_REGION)
+
+sentry_sdk.init(SENTRY_URL, environment=ENVIRONMENT, attach_stacktrace=True, traces_sample_rate=1.0)
 
 
 class PredictionStatus(Enum):
