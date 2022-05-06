@@ -35,9 +35,9 @@ class ExtractContentType:
         self.content_types_xls = ('application/vnd.ms-excel')
         self.content_types_img = ('image/jpeg', 'image/gif', 'image/png', 'image/svg+xml', 'image/webp', 'image/bmp', 'image/tiff')
 
-    def get_content_type(self, url):
+    def get_content_type(self, url, req_headers):
         try:
-            response = requests.head(url)
+            response = requests.head(url, headers=req_headers)
             content_type = response.headers['Content-Type']
 
             logging.info(f'The content type of {url} is {content_type}')

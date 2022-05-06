@@ -45,6 +45,10 @@ extract_content_type = ExtractContentType()
 
 sentry_sdk.init(SENTRY_URL, environment=ENVIRONMENT, attach_stacktrace=True, traces_sample_rate=1.0)
 
+REQ_HEADERS = {
+    'user-agent': ('Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.163 Safari/535.1')
+}
+
 
 class ExtractionStatus(Enum):
     FAILED = 0
@@ -252,7 +256,7 @@ def get_extracted_text_web_links(link, file_name, mock=False):
 def handle_urls(url, mock=False):
     file_name = None
 
-    content_type = extract_content_type.get_content_type(url)
+    content_type = extract_content_type.get_content_type(url, REQ_HEADERS)
 
     file_name = EXTRACTED_FILE_NAME
 
@@ -277,7 +281,7 @@ def handle_urls(url, mock=False):
         s3_file_path = None
         s3_images_path = None
 
-        response = requests.get(url, stream=True)
+        response = requests.get(url, headers=REQ_HEADERS, stream=True)
         with tempfile.NamedTemporaryFile(mode='w+b') as temp:
             for chunk in response.iter_content(chunk_size=128):
                 temp.write(chunk)
@@ -305,7 +309,7 @@ def handle_urls(url, mock=False):
 
         ext_type = content_type
 
-        response = requests.get(url, stream=True)
+        response = requests.get(url, headers=REQ_HEADERS, stream=True)
 
         with tempfile.NamedTemporaryFile(mode='w+b') as temp:
             for chunk in response.iter_content(chunk_size=128):
