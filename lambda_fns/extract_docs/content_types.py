@@ -25,7 +25,7 @@ class UrlTypes(str, Enum):
 class ExtractContentType:
     def __init__(self):
         self.content_types_pdf = ('application/pdf', 'pdf')
-        self.content_types_html = ('text/html', 'text/html; charset=utf-8',
+        self.content_types_html = ('text/html', 'text/html; charset=utf-8', 'text/html;charset=UTF-8',
                                    'text/html; charset=UTF-8', 'text/html;charset=utf-8', 'text/plain')
         self.content_types_docx = ('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
         self.content_types_doc = ('application/msword')

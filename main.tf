@@ -43,6 +43,8 @@ module "sqs_lambda_module" {
   reserved_input_queue_id = "${module.reserved_sqs_lambda_module.reserved_input_queue_id}"
   reserved_input_queue_arn = "${module.reserved_sqs_lambda_module.reserved_input_queue_arn}"
 
+  docs_convert_bucket_name = var.docs_convert_bucket_name
+
   environment = var.environment
 
   sentry_url = var.sentry_url
@@ -57,6 +59,8 @@ module "reserved_sqs_lambda_module" {
   aws_region = var.aws_region
 
   docs_convert_lambda_fn_name = var.docs_convert_lambda_fn_name
+
+  docs_convert_bucket_name = var.docs_convert_bucket_name
 
   environment = var.environment
 

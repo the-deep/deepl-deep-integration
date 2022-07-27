@@ -126,13 +126,16 @@ module "extract_docs_fn" {
                     "sqs:GetQueueUrl",
                     "sqs:ListQueues",
                     "sqs:SendMessageBatch",
-                    "s3:PutObject"
+                    "s3:PutObject",
+                    "s3:GetObject"
                 ],
                 "Resource": [
                     aws_sqs_queue.input_queue.arn,
                     aws_sqs_queue.processed_queue.arn,
                     "${var.processed_docs_bucket_arn}",
                     "${var.processed_docs_bucket_arn}/*",
+                    "arn:aws:s3:::${var.docs_convert_bucket_name}",
+                    "arn:aws:s3:::${var.docs_convert_bucket_name}/*",
                     "arn:aws:lambda:us-east-1:${data.aws_caller_identity.current_user.account_id}:function:${var.docs_convert_lambda_fn_name}"
                 ]
             }
@@ -145,6 +148,7 @@ module "extract_docs_fn" {
         DEST_S3_BUCKET = "${var.processed_docs_bucket}"
         PROCESSED_QUEUE = aws_sqs_queue.processed_queue.id
         DOCS_CONVERT_LAMBDA_FN_NAME = "${var.docs_convert_lambda_fn_name}"
+        DOCS_CONVERSION_BUCKET_NAME = "${var.docs_convert_bucket_name}"
         ENVIRONMENT = "${var.environment}"
         SENTRY_URL = "${var.sentry_url}"
     }

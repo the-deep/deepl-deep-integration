@@ -15,4 +15,6 @@ variable "docs_extract_fn_image_name" {}
 
 variable "docs_convert_lambda_fn_name" {}
 
+variable docs_convert_bucket_name {}
+
 variable sentry_url {}
