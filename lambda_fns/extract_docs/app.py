@@ -11,7 +11,6 @@ from enum import Enum
 import boto3
 from botocore.exceptions import ClientError
 import tempfile
-import signal
 
 import sentry_sdk
 
@@ -28,20 +27,20 @@ logging.getLogger().setLevel(logging.INFO)
 EXTRACTED_FILE_NAME = "extract_text.txt"
 DEFAULT_AWS_REGION = "us-east-1"
 
-aws_region = os.environ.get("AWS_REGION", DEFAULT_AWS_REGION)
-dest_bucket_name = os.environ.get("DEST_S3_BUCKET")
-processed_queue_name = os.environ.get("PROCESSED_QUEUE")
+AWS_REGION = os.environ.get("AWS_REGION", DEFAULT_AWS_REGION)
+DEST_BUCKET_NAME = os.environ.get("DEST_S3_BUCKET")
+PROCESSED_QUEUE_NAME = os.environ.get("PROCESSED_QUEUE")
 DOCS_CONVERT_LAMBDA_FN_NAME = os.environ.get("DOCS_CONVERT_LAMBDA_FN_NAME")
 DOCS_CONVERSION_BUCKET_NAME = os.environ.get("DOCS_CONVERSION_BUCKET_NAME")
 
-domain_name = os.environ.get("EXTRACTOR_DOMAIN_NAME", "http://extractor:8001")
+DOMAIN_NAME = os.environ.get("EXTRACTOR_DOMAIN_NAME", "http://extractor:8001")
 
 SENTRY_URL = os.environ.get("SENTRY_URL")
 ENVIRONMENT = os.environ.get("ENVIRONMENT")
 
-s3_client = boto3.client('s3', region_name=aws_region)
-sqs_client = boto3.client('sqs', region_name=aws_region)
-lambda_client = boto3.client('lambda', region_name="us-east-1")
+s3_client = boto3.client('s3', region_name=AWS_REGION)
+sqs_client = boto3.client('sqs', region_name=AWS_REGION)
+lambda_client = boto3.client('lambda', region_name=AWS_REGION)
 
 extract_content_type = ExtractContentType()
 
@@ -55,10 +54,6 @@ REQ_HEADERS = {
 class ExtractionStatus(Enum):
     FAILED = 0
     SUCCESS = 1
-
-
-def timeout_handler(_signal, _frame):
-    raise Exception("Lambda timeout occurred.")
 
 
 def extract_path(filepath):
@@ -123,61 +118,6 @@ def get_words_count(text):
     return 0
 
 
-def send_message2sqs(
-    client_id,
-    url,
-    callback_url,
-    s3_text_path,
-    s3_images_path,
-    total_pages,
-    total_words_count,
-    extraction_status
-):
-    message_attributes = {}
-    message_attributes['url'] = {
-        'DataType': 'String',
-        'StringValue': url
-    }
-    message_attributes['extraction_status'] = {
-        'DataType': 'Number',
-        'StringValue': extraction_status if s3_text_path else "0"
-    }
-
-    if s3_text_path:
-        message_attributes['s3_text_path'] = {
-            'DataType': 'String',
-            'StringValue': s3_text_path
-        }
-
-    if s3_images_path:
-        message_attributes['s3_images_path'] = {
-            'DataType': 'String',
-            'StringValue': s3_images_path
-        }
-
-    message_attributes['callback_url'] = {
-        'DataType': 'String',
-        'StringValue': callback_url
-    }
-    message_attributes['total_pages'] = {
-        'DataType': 'Number',
-        'StringValue': total_pages
-    }
-    message_attributes['total_words_count'] = {
-        'DataType': 'Number',
-        'StringValue': total_words_count
-    }
-    if processed_queue_name:
-        sqs_client.send_message(
-            QueueUrl=processed_queue_name,
-            MessageBody=client_id,
-            DelaySeconds=0,
-            MessageAttributes=message_attributes
-        )
-    else:
-        logging.error("Message not sent to the processed SQS.")
-
-
 def get_extracted_content_links(file_path, file_name, mock):
     try:
         with open(pathlib.Path(file_path), "rb") as f:
@@ -212,7 +152,7 @@ def get_extracted_content_links(file_path, file_name, mock):
         dir_images_path.mkdir() if not dir_images_path.exists() else None
         images.save_images(directory_path=dir_images_path)
 
-        s3_file_path = f'{domain_name}{str(dir_path)}/{file_name}'
+        s3_file_path = f'{DOMAIN_NAME}{str(dir_path)}/{file_name}'
 
         s3_images_path = []
         # Note: commented for now
@@ -220,12 +160,12 @@ def get_extracted_content_links(file_path, file_name, mock):
         #     for f in files:
         #         full_path = os.path.join(subdir, f)
         #         with open(full_path, 'rb') as data:
-        #             s3_images_path.append(f"{domain_name}{str(dir_images_path)}/{f}")
+        #             s3_images_path.append(f"{DOMAIN_NAME}{str(dir_images_path)}/{f}")
         return s3_file_path, s3_images_path, total_pages, total_words_count
     else:
         store_text_s3(
             extracted_text,
-            dest_bucket_name,
+            DEST_BUCKET_NAME,
             f"{str(s3_path_prefix)}/{file_name}"
         )
 
@@ -240,12 +180,12 @@ def get_extracted_content_links(file_path, file_name, mock):
         #         with open(full_path, 'rb') as data:
         #             store_text_s3(
         #                 data,
-        #                 dest_bucket_name,
+        #                 DEST_BUCKET_NAME,
         #                 f"{str(s3_path_prefix)}/images/{f}"
         #             )
 
-        s3_file_path = f"s3://{dest_bucket_name}/{str(s3_path_prefix)}/{file_name}"
-        s3_images_path = f"s3://{dest_bucket_name}/{str(s3_path_prefix)}/images"
+        s3_file_path = f"s3://{DEST_BUCKET_NAME}/{str(s3_path_prefix)}/{file_name}"
+        s3_images_path = f"s3://{DEST_BUCKET_NAME}/{str(s3_path_prefix)}/images"
 
     return s3_file_path, s3_images_path, total_pages, total_words_count
 
@@ -277,20 +217,18 @@ def get_extracted_text_web_links(link, file_name, mock=False):
         # os.makedirs(f'{dir_path}/images')
         with open(dir_path / file_name, 'w') as f:
             f.write(extracted_text)
-        s3_file_path = f'{domain_name}{str(dir_path)}/{file_name}'
+        s3_file_path = f'{DOMAIN_NAME}{str(dir_path)}/{file_name}'
     else:
         store_text_s3(
             extracted_text,
-            dest_bucket_name,
+            DEST_BUCKET_NAME,
             f"{str(s3_path_prefix)}/{file_name}"
         )
-        s3_file_path = f"s3://{dest_bucket_name}/{str(s3_path_prefix)}/{file_name}"
+        s3_file_path = f"s3://{DEST_BUCKET_NAME}/{str(s3_path_prefix)}/{file_name}"
     return s3_file_path, None, total_pages, total_words_count  # No images extraction (lib doesn't support?)
 
 
 def handle_urls(url, mock=False):
-    file_name = None
-
     content_type = extract_content_type.get_content_type(url, REQ_HEADERS)
 
     file_name = EXTRACTED_FILE_NAME
@@ -409,6 +347,90 @@ def handle_urls(url, mock=False):
     return s3_file_path, s3_images_path, str(total_pages), str(total_words_count), str(extraction_status)
 
 
+def run_fargate_task(
+    client_id,
+    url,
+    callback_url
+):
+    VPC_PRIVATE_SUBNET = os.environ.get("VPC_PRIVATE_SUBNET")
+    ECS_CLUSTER_ID = os.environ.get("ECS_CLUSTER_ID")
+    ECS_TASK_DEFINITION = os.environ.get("ECS_TASK_DEFINITION")
+    ECS_CONTAINER_NAME = os.environ.get("ECS_CONTAINER_NAME")
+    
+    ecs_client = boto3.client('ecs', region_name=AWS_REGION)
+    
+    response = ecs_client.run_task(
+        cluster=ECS_CLUSTER_ID,
+        launchType='FARGATE',
+        taskDefinition=ECS_TASK_DEFINITION,
+        count = 1,
+        platformVersion='LATEST',
+        networkConfiguration={
+            'awsvpcConfiguration': {
+                'subnets': [
+                    VPC_PRIVATE_SUBNET
+                ],
+                'assignPublicIp': 'DISABLED'
+            }
+        },
+        overrides={
+            'containerOverrides': [
+                {
+                    'name': f"{ECS_CONTAINER_NAME}-{ENVIRONMENT}",
+                    'command': [
+                            'python',
+                            'app.py'
+                        ],
+                    "environment": [
+                        {
+                            "name": "CLIENT_ID",
+                            "value": client_id
+                        },
+                        {
+                            "name": "URL",
+                            "value":  url
+                        },
+                        {
+                            "name": "CALLBACK_URL",
+                            "value": callback_url
+                        },
+                        {
+                            "name": "AWS_REGION",
+                            "value": AWS_REGION
+                        },
+                        {
+                            "name": "ENVIRONMENT",
+                            "value": ENVIRONMENT
+                        },
+                        {
+                            "name": "DEST_S3_BUCKET",
+                            "value": DEST_BUCKET_NAME
+                        },
+                        {
+                            "name": "DOCS_CONVERSION_BUCKET_NAME",
+                            "value": DOCS_CONVERSION_BUCKET_NAME
+                        },
+                        {
+                            "name": "DOCS_CONVERT_LAMBDA_FN_NAME",
+                            "value": DOCS_CONVERT_LAMBDA_FN_NAME
+                        },
+                        {
+                            "name": "PROCESSED_QUEUE",
+                            "value": PROCESSED_QUEUE_NAME
+                        },
+                        {
+                            "name": "SENTRY_URL",
+                            "value": SENTRY_URL
+                        }
+                    ]
+                },
+            ],
+        },
+    )
+
+    return str(response) #handle the response status
+
+
 def process_docs(event, context):
     logging.debug(f"The event output is {event}")
 
@@ -426,37 +448,23 @@ def process_docs(event, context):
         }
     else:
         try:
-            signal.alarm(int(context.get_remaining_time_in_millis() / 1000) - 120)
             records = event['Records']
 
             for record in records:
                 client_id = record['body']
                 url = record['messageAttributes']['url']['stringValue']
                 callback_url = record['messageAttributes']['callback_url']['stringValue']
-                logging.info(f"Processing {url}")
 
-                s3_text_path, s3_images_path, total_pages, total_words_count, extraction_status = handle_urls(url)
+                logging.info(f"Processing {url} in the ecs fargate.")
 
-                sqs_message = {
-                    'client_id': client_id,
-                    'url': url,
-                    'callback_url': callback_url,
-                    's3_text_path': s3_text_path,
-                    's3_images_path': s3_images_path,
-                    'total_pages': total_pages,
-                    'total_words_count': total_words_count,
-                    'extraction_status': extraction_status
-                }
-                send_message2sqs(**sqs_message)
+                run_fargate_task(client_id, url, callback_url)
         except Exception as e:
             logging.error(e, exc_info=True)
-
-        signal.alarm(0)
-
+            return {
+                "statusCode": 500,
+                "body": f"Error occurred: {str(e)}"
+            }
     return {
-        'statusCode': 200,
-        'body': 'Message processed successfully.'
+        "statusCode": 200,
+        "body": "Message processed successfully."
     }
-
-
-signal.signal(signal.SIGALRM, timeout_handler)

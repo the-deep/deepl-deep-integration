@@ -25,3 +25,17 @@ variable docs_convert_lambda_fn_name {}
 variable docs_convert_bucket_name {}
 
 variable sentry_url {}
+
+variable az_count {}
+
+variable cidr_block {}
+
+variable ecs_task_execution_role {}
+
+variable fargate_cpu {}
+
+variable fargate_memory {}
+
+variable app_count {}
+
+variable app_image {}

@@ -24,3 +24,16 @@ docs_convert_bucket_name = "deep-large-docs-conversion"
 
 # sentry url
 sentry_url = "https://3b273f4c61ac4d94af28e85a66ea0b5a@o158798.ingest.sentry.io/1223576"
+
+# VPC
+az_count = 1
+cidr_block = "172.16.0.0/16"
+
+# ECS role
+ecs_task_execution_role = "ECSTaskExecutionRole"
+
+# ECS
+fargate_cpu = "2048"
+fargate_memory = "4096"
+app_count = 1
+app_image = "961104659532.dkr.ecr.us-east-1.amazonaws.com/deepex-parser"

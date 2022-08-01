@@ -101,7 +101,7 @@ module "reserved_extract_docs_fn" {
         pip_requirements = "${path.module}/../../lambda_fns/extract_docs/requirements.txt"
     }]
 
-    memory_size    = 4096
+    memory_size    = 2048
 
     attach_policy_json    = true
     policy_json = jsonencode({
@@ -119,7 +119,15 @@ module "reserved_extract_docs_fn" {
                     "sqs:ListQueues",
                     "sqs:SendMessageBatch",
                     "s3:PutObject",
-                    "s3:GetObject"
+                    "s3:GetObject",
+                    "ecr:GetAuthorizationToken",
+                    "ecr:BatchCheckLayerAvailability",
+                    "ecr:GetDownloadUrlForLayer",
+                    "ecr:BatchGetImage",
+                    "ecs:RunTask",
+                    "iam:PassRole",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
                 ],
                 "Resource": [
                     aws_sqs_queue.reserved_input_queue.arn,
@@ -128,7 +136,10 @@ module "reserved_extract_docs_fn" {
                     "${var.processed_docs_bucket_arn}/*",
                     "arn:aws:s3:::${var.docs_convert_bucket_name}",
                     "arn:aws:s3:::${var.docs_convert_bucket_name}/*",
-                    "arn:aws:lambda:us-east-1:${data.aws_caller_identity.reserved_current_user.account_id}:function:${var.docs_convert_lambda_fn_name}"
+                    "arn:aws:lambda:us-east-1:${data.aws_caller_identity.reserved_current_user.account_id}:function:${var.docs_convert_lambda_fn_name}",
+                    "${var.ecs_cluster_id}",
+                    "${var.ecs_task_definition}",
+                    "arn:aws:iam::${data.aws_caller_identity.reserved_current_user.account_id}:role/*"
                 ]
             }
         ]
@@ -144,6 +155,10 @@ module "reserved_extract_docs_fn" {
         PROCESSED_QUEUE = aws_sqs_queue.reserved_processed_queue.id
         DOCS_CONVERT_LAMBDA_FN_NAME = "${var.docs_convert_lambda_fn_name}"
         DOCS_CONVERSION_BUCKET_NAME = "${var.docs_convert_bucket_name}"
+        VPC_PRIVATE_SUBNET = "${var.vpc_private_subnet}"
+        ECS_CLUSTER_ID = "${var.ecs_cluster_id}"
+        ECS_TASK_DEFINITION = "${var.ecs_task_definition}"
+        ECS_CONTAINER_NAME = "${var.ecs_container_name}"
         ENVIRONMENT = "${var.environment}"
         SENTRY_URL = "${var.sentry_url}"
     }

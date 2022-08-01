@@ -17,6 +17,14 @@ variable "docs_convert_lambda_fn_name" {}
 
 variable docs_convert_bucket_name {}
 
+variable vpc_private_subnet {}
+
+variable ecs_cluster_id {}
+
+variable ecs_task_definition {}
+
+variable ecs_container_name {}
+
 variable reserved_input_queue_id {}
 variable reserved_input_queue_arn {}
 

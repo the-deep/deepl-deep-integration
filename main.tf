@@ -45,6 +45,14 @@ module "sqs_lambda_module" {
 
   docs_convert_bucket_name = var.docs_convert_bucket_name
 
+  vpc_private_subnet = "${module.ecs_module.private_subnet_id}"
+
+  ecs_cluster_id = "${module.ecs_module.ecs_cluster_id}"
+
+  ecs_task_definition = "${module.ecs_module.ecs_task_definition}"
+
+  ecs_container_name = "${module.ecs_module.ecs_container_name}"
+
   environment = var.environment
 
   sentry_url = var.sentry_url
@@ -61,6 +69,14 @@ module "reserved_sqs_lambda_module" {
   docs_convert_lambda_fn_name = var.docs_convert_lambda_fn_name
 
   docs_convert_bucket_name = var.docs_convert_bucket_name
+
+  vpc_private_subnet = "${module.ecs_module.private_subnet_id}"
+
+  ecs_cluster_id = "${module.ecs_module.ecs_cluster_id}"
+
+  ecs_task_definition = "${module.ecs_module.ecs_task_definition}"
+
+  ecs_container_name = "${module.ecs_module.ecs_container_name}"
 
   environment = var.environment
 
@@ -133,4 +149,24 @@ module "s3_module" {
   source = "./modules/s3"
 
   environment = var.environment
+}
+
+module "ecs_module" {
+    source = "./modules/ecs"
+
+    environment = var.environment
+    aws_region = var.aws_region
+
+    # VPC
+    az_count = var.az_count
+    cidr_block = var.cidr_block
+
+    # ECS role
+    ecs_task_execution_role = var.ecs_task_execution_role
+
+    # ECS
+    fargate_cpu = var.fargate_cpu
+    fargate_memory = var.fargate_memory
+    app_count = var.app_count
+    app_image = var.app_image
 }
