@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "deepl-parser"
+version = "0.1.0"
+description = ""
+authors = ["deep-dev <dev@thedeep.io>"]
+
+[tool.poetry.dependencies]
+python = ">=3.10, <3.11"
+anytree = "==2.8.0"
+certifi = "==2021.5.30"
+charset-normalizer = "==2.0.4"
+idna = "==3.2"
+numpy = "==1.21.2"
+PyMuPDF = "==1.18.17"
+PyYAML = "==5.4.1"
+requests = "==2.26.0"
+urllib3 = "==1.26.6"
+Pillow = "==8.3.2"
+boto3 = "==1.19.0"
+deep-parser = { git = "https://github.com/the-deep/deepex.git", branch = "master" }
+sentry-sdk = "==1.5.8"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
