@@ -145,7 +145,7 @@ module "reserved_extract_docs_fn" {
         ]
     })
 
-    provisioned_concurrent_executions = var.environment == "dev" ? 1 : 10
+    provisioned_concurrent_executions = var.environment == "dev" ? 1 : 5
     reserved_concurrent_executions = 30
 
     build_in_docker = true
@@ -177,8 +177,8 @@ module "reserved_extract_docs_fn" {
 # }
 
 resource "aws_appautoscaling_target" "reserved_extract_docs_autoscale" {
-    max_capacity       = var.environment == "dev" ? 1 : 10
-    min_capacity       = var.environment == "dev" ? 1 : 5
+    max_capacity       = var.environment == "dev" ? 1 : 5
+    min_capacity       = var.environment == "dev" ? 1 : 3
     resource_id        = "function:${module.reserved_extract_docs_fn.lambda_function_name}:${module.reserved_extract_docs_fn.lambda_function_version}"
     scalable_dimension = "lambda:function:ProvisionedConcurrency"
     service_namespace  = "lambda"
