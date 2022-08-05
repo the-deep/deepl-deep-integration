@@ -64,7 +64,11 @@ class ExtractContentType:
                 url.endswith(".gif") or url.endswith(".bmp") or content_type in self.content_types_img:
                 return UrlTypes.IMG.value
             else:
-                temp_filepath = download(url, out="/tmp/")
+                try:
+                    temp_filepath = download(url, out="/tmp/")
+                except Exception as e:
+                    logging.error(f"Error while downloading the file from {url} to check the file extension.")
+                    return None
                 if os.path.exists(temp_filepath):
                     os.remove(temp_filepath)
                 if temp_filepath.endswith(".pdf"):

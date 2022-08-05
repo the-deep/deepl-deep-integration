@@ -374,7 +374,7 @@ def handle_urls(url):
         s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
         extraction_status = ExtractionStatus.FAILED.value
     else:
-        logging.error("Text extraction is not available for this datatype.")
+        logging.error(f"Text extraction is not available for this content type - {content_type}")
         s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
         extraction_status = ExtractionStatus.FAILED.value
 
