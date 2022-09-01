@@ -78,8 +78,8 @@ def store_text_s3(data, bucket_name, key):
 
 def upload_file_to_s3(
     url,
-    key="temporaryfile.pdf",
-    bucketname="deep-large-docs-conversion"
+    key,
+    bucketname
 ):
     try:
         session = boto3.Session()

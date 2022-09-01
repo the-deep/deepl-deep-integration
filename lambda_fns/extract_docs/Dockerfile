@@ -25,4 +25,4 @@ RUN apt-get update -y \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 
-COPY deepex_ecs/app.py content_types.py wget.py /code/
+COPY deepex_ecs/app.py content_types.py wget.py s3_handler.py /code/

@@ -19,8 +19,10 @@ from deep_parser import TextFromWeb
 
 try:
     from content_types import ExtractContentType, UrlTypes
+    from s3_handler import Storage
 except ImportError:
     from .content_types import ExtractContentType, UrlTypes
+    from .s3_handler import Storage
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -58,6 +60,37 @@ class ExtractionStatus(Enum):
     SUCCESS = 1
 
 
+def invoke_conversion_lambda(tmp_filename, ext_type):
+    payload = json.dumps({
+        "file": tmp_filename,
+        "bucket": DOCS_CONVERSION_BUCKET_NAME,
+        "ext": ext_type,
+        "fromS3": 1
+    })
+
+    docs_conversion_lambda_response = lambda_client.invoke(
+        FunctionName=DOCS_CONVERT_LAMBDA_FN_NAME,
+        InvocationType="RequestResponse",
+        Payload=payload
+    )
+    docs_conversion_lambda_response_json = json.loads(
+        docs_conversion_lambda_response["Payload"].read().decode("utf-8")
+    )
+    return docs_conversion_lambda_response_json
+
+
+def create_tempfile(response):
+    tempf = tempfile.NamedTemporaryFile(mode="w+b")
+    for chunk in response.iter_content(chunk_size=128):
+        tempf.write(chunk)
+    tempf.seek(0)
+    return tempf
+
+def preprocess_extracted_texts(text):
+    extracted_text = text.replace("\x00", "")  # remove null chars
+    extracted_text = extracted_text.encode('utf-8', 'ignore').decode('utf-8')
+    return extracted_text
+
 def extract_path(filepath):
     """
     Extracts bucket and key names from the s3 URI
@@ -71,18 +104,10 @@ def extract_path(filepath):
     return None, None, None
 
 
-def store_text_s3(data, bucket_name, key):
-    s3_client.put_object(
-        Body=data,
-        Bucket=bucket_name,
-        Key=key
-    )
-
-
 def upload_file_to_s3(
     url,
-    key="temporaryfile.pdf",
-    bucketname="deep-large-docs-conversion"
+    key,
+    bucketname
 ):
     try:
         session = boto3.Session()
@@ -178,7 +203,13 @@ def send_message2sqs(
         logging.error("Message not sent to the processed SQS.")
 
 
-def get_extracted_content_links(file_path, file_name):
+def generate_s3_path(s3_path_prefix, file_name):
+    s3_file_path = f"s3://{DEST_BUCKET_NAME}/{str(s3_path_prefix)}/{file_name}"
+    s3_images_path = f"s3://{DEST_BUCKET_NAME}/{str(s3_path_prefix)}/images"
+    return s3_file_path, s3_images_path
+
+
+def get_extracted_text(file_path, file_name):
     try:
         with open(pathlib.Path(file_path), "rb") as f:
             binary = base64.b64encode(f.read())
@@ -186,14 +217,14 @@ def get_extracted_content_links(file_path, file_name):
         document = TextFromFile(stream=binary, ext="pdf")
         entries, images = document.serial_extract_text(output_format="list")
     except Exception as e:
-        logging.error(f"Extraction failed: {str(e)}")
-        return None, None, -1, -1
+        logging.error(f"Extraction failed: {str(e)}", exc_info=True)
+        return None, None, -1, -1, 0
 
     entries_list = [item for sublist in entries for item in sublist]
     extracted_text = "\n".join(entries_list)
 
-    extracted_text = extracted_text.replace("\x00", "")  # remove null chars
-    extracted_text = extracted_text.encode('utf-8', 'ignore').decode('utf-8')
+    extracted_text = preprocess_extracted_texts(extracted_text)
+
     total_pages = len(entries)
     total_words_count = get_words_count(extracted_text)
 
@@ -203,14 +234,17 @@ def get_extracted_content_links(file_path, file_name):
 
     s3_path_prefix = pathlib.Path(date_today, dir_name)
 
-    store_text_s3(
-        extracted_text,
-        DEST_BUCKET_NAME,
-        f"{str(s3_path_prefix)}/{file_name}"
-    )
+    # Upload file to the s3 bucket
+    s3_uploader = Storage(DEST_BUCKET_NAME, "")
+    tempf = tempfile.NamedTemporaryFile(mode="w")
+    tempf.write(extracted_text)
+    tempf.seek(0)
 
-    local_temp_directory = pathlib.Path('/tmp', file_name)
-    local_temp_directory.mkdir(parents=True) if not local_temp_directory.exists() else None
+    with open(tempf.name, "rb") as f:
+        file_path = s3_uploader.upload(f"{str(s3_path_prefix)}/{file_name}", f)
+
+    #local_temp_directory = pathlib.Path('/tmp', file_name)
+    #local_temp_directory.mkdir(parents=True) if not local_temp_directory.exists() else None
     # Note: commented for now
     # images.save_images(directory_path=local_temp_directory)
 
@@ -224,24 +258,22 @@ def get_extracted_content_links(file_path, file_name):
     #                 f"{str(s3_path_prefix)}/images/{f}"
     #             )
 
-    s3_file_path = f"s3://{DEST_BUCKET_NAME}/{str(s3_path_prefix)}/{file_name}"
-    s3_images_path = f"s3://{DEST_BUCKET_NAME}/{str(s3_path_prefix)}/images"
-
-    return s3_file_path, s3_images_path, total_pages, total_words_count
+    s3_file_path, s3_images_path = generate_s3_path(s3_path_prefix, file_name)
+    return s3_file_path, s3_images_path, total_pages, total_words_count, 1
 
 
-def get_extracted_text_web_links(link, file_name):
+def get_extracted_text_html_links(link, file_name):
     try:
         web_text = TextFromWeb(url=link)
         entries = web_text.extract_text(output_format="list")
     except Exception as e:
-        logging.error(f"Extraction from website failed {e}")
-        return None, None, -1, -1
+        logging.error(f"Extraction from website failed {e}", exc_info=True)
+        return None, None, -1, -1, 0
 
     entries_list = [item for sublist in entries for item in sublist]
     extracted_text = "\n".join(entries_list)
 
-    extracted_text = extracted_text.replace("\x00", "")  # remove null chars
+    extracted_text = preprocess_extracted_texts(extracted_text)
 
     total_pages = 1
     total_words_count = get_words_count(extracted_text)
@@ -252,13 +284,17 @@ def get_extracted_text_web_links(link, file_name):
 
     s3_path_prefix = pathlib.Path(date_today, dir_name)
 
-    store_text_s3(
-        extracted_text,
-        DEST_BUCKET_NAME,
-        f"{str(s3_path_prefix)}/{file_name}"
-    )
-    s3_file_path = f"s3://{DEST_BUCKET_NAME}/{str(s3_path_prefix)}/{file_name}"
-    return s3_file_path, None, total_pages, total_words_count  # No images extraction (lib doesn't support?)
+    # Upload file to the s3 bucket
+    s3_uploader = Storage(DEST_BUCKET_NAME, "")
+    tempf = tempfile.NamedTemporaryFile(mode="w")
+    tempf.write(extracted_text)
+    tempf.seek(0)
+
+    with open(tempf.name, "rb") as f:
+        file_path = s3_uploader.upload(f"{str(s3_path_prefix)}/{file_name}", f)
+
+    s3_file_path, _ = generate_s3_path(s3_path_prefix, file_name) # image path is not required as is not supported
+    return s3_file_path, None, total_pages, total_words_count, 1  # No images extraction (lib doesn't support?)
 
 
 def handle_urls(url):
@@ -266,111 +302,57 @@ def handle_urls(url):
 
     file_name = EXTRACTED_FILE_NAME
 
-    if url.startswith("s3"):
-        bucket_name, file_path, file_name = extract_path(url)
-        local_file_path = f"/tmp/{file_name}"
-        s3_client.download_file(
-            bucket_name,
-            file_path,
-            local_file_path
-        )
-        try:
-            s3_file_path, s3_images_path, total_pages, total_words_count = get_extracted_content_links(
-                local_file_path, file_name
-            )
-            extraction_status = ExtractionStatus.SUCCESS.value
-        except Exception as e:
-            logging.error(e, exc_info=True)
-            s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
-            extraction_status = ExtractionStatus.FAILED.value
-
-    elif content_type == UrlTypes.PDF.value:  # assume it is http/https pdf weblink
-        s3_file_path = None
-        s3_images_path = None
-
+    if content_type == UrlTypes.PDF.value:  # assume it is http/https pdf weblink
         response = requests.get(url, headers=REQ_HEADERS, stream=True)
-        with tempfile.NamedTemporaryFile(mode='w+b') as temp:
-            for chunk in response.iter_content(chunk_size=128):
-                temp.write(chunk)
-            temp.seek(0)
+        tempf = create_tempfile(response)
 
-            try:
-                s3_file_path, s3_images_path, total_pages, total_words_count = get_extracted_content_links(
-                    temp.name, file_name
-                )
-                if s3_file_path:
-                    extraction_status = ExtractionStatus.SUCCESS.value
-                else:
-                    extraction_status = ExtractionStatus.FAILED.value
-            except Exception as e:
-                logging.error(f"Error occurred during text extraction. {str(e)}", exc_info=True)
-                s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
-                extraction_status = ExtractionStatus.FAILED.value
+        s3_file_path, s3_images_path, total_pages, total_words_count, extraction_status = get_extracted_text(
+            tempf.name, file_name
+        )
     elif content_type == UrlTypes.HTML.value:  # assume it is a static webpage
-        try:
-            s3_file_path, s3_images_path, total_pages, total_words_count = get_extracted_text_web_links(
-                url, file_name
-            )
-            if s3_file_path:
-                extraction_status = ExtractionStatus.SUCCESS.value
-            else:
-                extraction_status = ExtractionStatus.FAILED.value
-        except Exception:
-            logging.error(f"Error occurred during text extraction. {str(e)}", exc_info=True)
-            s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
-            extraction_status = ExtractionStatus.FAILED.value
-    elif content_type == UrlTypes.DOCX.value or content_type == UrlTypes.MSWORD.value or \
-            content_type == UrlTypes.XLSX.value or content_type == UrlTypes.XLS.value or \
-            content_type == UrlTypes.PPTX.value or content_type == UrlTypes.PPT.value:
-
+        s3_file_path, s3_images_path, total_pages, total_words_count, extraction_status = get_extracted_text_html_links(
+            url, file_name
+        )
+    elif content_type in [
+        UrlTypes.DOCX.value,
+        UrlTypes.MSWORD.value,
+        UrlTypes.XLSX.value,
+        UrlTypes.XLS.value,
+        UrlTypes.PPTX.value,
+        UrlTypes.PPT.value
+    ]:
         ext_type = content_type
         tmp_filename = f"{uuid.uuid4().hex}.{ext_type}"
         flag = False
-        if upload_file_to_s3(url, key=tmp_filename, bucketname=DOCS_CONVERSION_BUCKET_NAME):
-            payload = json.dumps({
-                "file": tmp_filename,
-                "bucket": DOCS_CONVERSION_BUCKET_NAME,
-                "ext": ext_type,
-                "fromS3": 1
-            })
+        response = requests.get(url, headers=REQ_HEADERS, stream=True)
 
-            docs_conversion_lambda_response = lambda_client.invoke(
-                FunctionName=DOCS_CONVERT_LAMBDA_FN_NAME,
-                InvocationType="RequestResponse",
-                Payload=payload
-            )
-            docs_conversion_lambda_response_json = json.loads(
-                docs_conversion_lambda_response["Payload"].read().decode("utf-8")
-            )
+        s3_uploader = Storage(DOCS_CONVERSION_BUCKET_NAME, "")
+        tempf = create_tempfile(response)
+        with open(tempf.name, "rb") as f:
+            s3_uploader.upload(tmp_filename, f)
+            # Converts docx, xlsx, doc, xls, ppt, pptx type files to pdf using lambda
+            docs_conversion_lambda_response_json = invoke_conversion_lambda(tmp_filename, ext_type)
 
-            if "statusCode" in docs_conversion_lambda_response_json and \
-                docs_conversion_lambda_response_json["statusCode"] == 200:
+            if ("statusCode" in docs_conversion_lambda_response_json and
+                docs_conversion_lambda_response_json["statusCode"] == 200):
                 bucket_name = docs_conversion_lambda_response_json["bucket"]
                 file_path = docs_conversion_lambda_response_json["file"]
                 filename = file_path.split("/")[-1]
 
                 if download_file(file_path, bucket_name, f"/tmp/{filename}"):
-                    s3_file_path, s3_images_path, total_pages, total_words_count = get_extracted_content_links(
+                    s3_file_path, s3_images_path, total_pages, total_words_count, extraction_status = get_extracted_text(
                         f"/tmp/{filename}", file_name
                     )
-                    if s3_file_path:
-                        extraction_status = ExtractionStatus.SUCCESS.value
-                    else:
-                        extraction_status = ExtractionStatus.FAILED.value
                 else:
                     flag = True
             else:
                 logging.error(f"Error occurred during file conversion. {docs_conversion_lambda_response_json['error']}")
                 flag = True
-        else:
-            logging.warn("Could not upload the file to s3.")
-            flag = True
-
         if flag:
             s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
             extraction_status = ExtractionStatus.FAILED.value
     elif content_type == UrlTypes.IMG.value:
-        logging.warn("Text extraction from Images is not available.")
+        logging.warning("Text extraction from Images is not available.")
         s3_file_path, s3_images_path, total_pages, total_words_count = None, None, -1, -1
         extraction_status = ExtractionStatus.FAILED.value
     else:

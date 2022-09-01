@@ -60,8 +60,13 @@ class ExtractContentType:
                 return UrlTypes.PPTX.value
             elif url.endswith(".ppt") or content_type in self.content_types_ppt:
                 return UrlTypes.PPT.value
-            elif url.endswith(".jpg") or url.endswith(".jpeg") or url.endswith(".png") or \
-                url.endswith(".gif") or url.endswith(".bmp") or content_type in self.content_types_img:
+            elif (content_type in self.content_types_img or 
+                any([
+                    url.endswith(f".{extension}") for extension in [
+                        "jpg", "jpeg", "png", "gif", "bmp"
+                    ]
+                ])
+            ):
                 return UrlTypes.IMG.value
             else:
                 try:
@@ -69,28 +74,26 @@ class ExtractContentType:
                 except Exception as e:
                     logging.error(f"Error while downloading the file from {url} to check the file extension.")
                     return None
-                if os.path.exists(temp_filepath):
-                    os.remove(temp_filepath)
-                if temp_filepath.endswith(".pdf"):
-                    return UrlTypes.PDF.value
-                elif temp_filepath.endswith(".docx"):
-                    return UrlTypes.DOCX.value
-                elif temp_filepath.endswith(".doc"):
-                    return UrlTypes.MSWORD.value
-                elif temp_filepath.endswith(".xlsx"):
-                    return UrlTypes.XLSX.value
-                elif temp_filepath.endswith(".xls"):
-                    return UrlTypes.XLS.value
-                elif temp_filepath.endswith(".pptx"):
-                    return UrlTypes.PPTX.value
-                elif temp_filepath.endswith(".ppt"):
-                    return UrlTypes.PPT.value
-                elif temp_filepath.endswith(".jpg") or temp_filepath.endswith(".jpeg") or temp_filepath.endswith(".png") or \
-                    temp_filepath.endswith(".gif") or temp_filepath.endswith(".bmp"):
-                    return UrlTypes.IMG.value
-                else:
-                    logging.warn(f'Could not determine the content-type of the {url}')
+                EXTENSION_TO_ENUM_MAP = {
+                    "pdf": UrlTypes.PDF,
+                    "docx": UrlTypes.DOCX,
+                    "doc": UrlTypes.MSWORD,
+                    "xlsx": UrlTypes.XLSX,
+                    "xls": UrlTypes.XLS,
+                    "pptx": UrlTypes.PPTX,
+                    "ppt": UrlTypes.PPT,
+                    # Images
+                    "jpg": UrlTypes.IMG,
+                    "jpeg": UrlTypes.IMG,
+                    "png": UrlTypes.IMG,
+                    "gif": UrlTypes.IMG,
+                    "bmp": UrlTypes.IMG,
+                }
+                file_extension = temp_filepath.split(".")[-1]
+                if file_extension not in EXTENSION_TO_ENUM_MAP:
+                    logging.warn(f"Could not determine the content-type of the {url}")
                     return None
-        except requests.exceptions.RequestException:
-            logging.error(f'Exception occurred. Could not determine the content-type of the {url}')
+                return EXTENSION_TO_ENUM_MAP[file_extension].value
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Exception occurred: {str(e)}. Could not determine the content-type of the {url}.", exc_info=True)
             return None
