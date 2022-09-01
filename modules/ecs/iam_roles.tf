@@ -23,7 +23,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
 }
 
 resource "aws_iam_role" "ecs-custom-tasks" {
-  name = "ecs-custom-tasks"
+  name = "ecs-custom-tasks-${var.environment}"
 
   assume_role_policy = <<EOF
 {
