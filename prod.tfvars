@@ -23,7 +23,7 @@ docs_convert_lambda_fn_name = "libreoffice-dev-libreoffice"
 docs_convert_bucket_name = "deep-large-docs-conversion"
 
 # sentry url
-sentry_url = "https://3b273f4c61ac4d94af28e85a66ea0b5a@o158798.ingest.sentry.io/1223576"
+sentry_secret_name = "prod/sentry_url"  # get the name from secrets manager
 
 # VPC
 az_count = 1

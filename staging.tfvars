@@ -23,7 +23,7 @@ docs_convert_lambda_fn_name = "libreoffice-dev-libreoffice"
 docs_convert_bucket_name = "deep-large-docs-conversion"
 
 # sentry url
-sentry_secret_name = "staging/sentry_url"
+sentry_secret_name = "staging/sentry_url" # get the name from secrets manager
 
 # VPC
 az_count = 1
