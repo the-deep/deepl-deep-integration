@@ -127,7 +127,8 @@ module "reserved_extract_docs_fn" {
                     "ecs:RunTask",
                     "iam:PassRole",
                     "logs:CreateLogStream",
-                    "logs:PutLogEvents"
+                    "logs:PutLogEvents",
+                    "secretsmanager:*"
                 ],
                 "Resource": [
                     aws_sqs_queue.reserved_input_queue.arn,
@@ -139,13 +140,14 @@ module "reserved_extract_docs_fn" {
                     "arn:aws:lambda:us-east-1:${data.aws_caller_identity.reserved_current_user.account_id}:function:${var.docs_convert_lambda_fn_name}",
                     "${var.ecs_cluster_id}",
                     "${var.ecs_task_definition}",
-                    "arn:aws:iam::${data.aws_caller_identity.reserved_current_user.account_id}:role/*"
+                    "arn:aws:iam::${data.aws_caller_identity.reserved_current_user.account_id}:role/*",
+                    "arn:aws:secretsmanager:us-east-1::secret:*"
                 ]
             }
         ]
     })
 
-    provisioned_concurrent_executions = var.environment == "dev" ? 1 : 5
+    provisioned_concurrent_executions = var.environment == "staging" ? 1 : 5
     reserved_concurrent_executions = 30
 
     build_in_docker = true
@@ -160,7 +162,7 @@ module "reserved_extract_docs_fn" {
         ECS_TASK_DEFINITION = "${var.ecs_task_definition}"
         ECS_CONTAINER_NAME = "${var.ecs_container_name}"
         ENVIRONMENT = "${var.environment}"
-        SENTRY_URL = "${var.sentry_url}"
+        SENTRY_URL = var.sentry_url_value
     }
 }
 
@@ -177,8 +179,8 @@ module "reserved_extract_docs_fn" {
 # }
 
 resource "aws_appautoscaling_target" "reserved_extract_docs_autoscale" {
-    max_capacity       = var.environment == "dev" ? 1 : 5
-    min_capacity       = var.environment == "dev" ? 1 : 3
+    max_capacity       = var.environment == "staging" ? 1 : 5
+    min_capacity       = var.environment == "staging" ? 1 : 3
     resource_id        = "function:${module.reserved_extract_docs_fn.lambda_function_name}:${module.reserved_extract_docs_fn.lambda_function_version}"
     scalable_dimension = "lambda:function:ProvisionedConcurrency"
     service_namespace  = "lambda"
@@ -225,7 +227,7 @@ module "reserved_output_request_fn" {
         ]
     })
 
-    provisioned_concurrent_executions = var.environment == "dev" ? 1 : 5
+    provisioned_concurrent_executions = var.environment == "staging" ? 1 : 5
 
     build_in_docker = true
     #store_on_s3 = true
@@ -234,13 +236,13 @@ module "reserved_output_request_fn" {
     environment_variables = {
         SIGNED_URL_EXPIRY_SECS = "${var.signed_url_expiry_secs}"
         ENVIRONMENT = "${var.environment}"
-        SENTRY_URL = "${var.sentry_url}"
+        SENTRY_URL = "${var.sentry_url_value}"
     }
 }
 
 resource "aws_appautoscaling_target" "reserved_output_fn_autoscale" {
-    max_capacity       = var.environment == "dev" ? 1 : 5
-    min_capacity       = var.environment == "dev" ? 1 : 2
+    max_capacity       = var.environment == "staging" ? 1 : 5
+    min_capacity       = var.environment == "staging" ? 1 : 2
     resource_id        = "function:${module.reserved_output_request_fn.lambda_function_name}:${module.reserved_output_request_fn.lambda_function_version}"
     scalable_dimension = "lambda:function:ProvisionedConcurrency"
     service_namespace  = "lambda"
@@ -288,7 +290,7 @@ module "reserved_transfer_dlq_msg" {
         ]
     })
 
-    provisioned_concurrent_executions = var.environment == "dev" ? 1 : 5
+    provisioned_concurrent_executions = var.environment == "staging" ? 1 : 5
 
     environment_variables = {
         PROCESSED_QUEUE = aws_sqs_queue.reserved_processed_queue.id
@@ -296,8 +298,8 @@ module "reserved_transfer_dlq_msg" {
 }
 
 resource "aws_appautoscaling_target" "reserved_transfer_dlq_msg_autoscale" {
-    max_capacity       = var.environment == "dev" ? 1 : 5
-    min_capacity       = var.environment == "dev" ? 1 : 2
+    max_capacity       = var.environment == "staging" ? 1 : 5
+    min_capacity       = var.environment == "staging" ? 1 : 2
     resource_id        = "function:${module.reserved_transfer_dlq_msg.lambda_function_name}:${module.reserved_transfer_dlq_msg.lambda_function_version}"
     scalable_dimension = "lambda:function:ProvisionedConcurrency"
     service_namespace  = "lambda"

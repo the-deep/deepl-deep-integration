@@ -30,6 +30,10 @@ provider "aws" {
   # profile = var.aws_profile
 }
 
+module "secrets_module" {
+  source = "./modules/secrets"
+}
+
 module "sqs_lambda_module" {
   source = "./modules/sqs_lambda_extract_docs"
   processed_docs_bucket = "${module.s3_module.te_bucket_name}"
@@ -81,6 +85,8 @@ module "reserved_sqs_lambda_module" {
   environment = var.environment
 
   sentry_url = var.sentry_url
+
+  sentry_url_value = "${module.secrets_module.sentry_url_value}" #var.sentry_url
 }
 
 module "sqs_lambda_predict_module" {

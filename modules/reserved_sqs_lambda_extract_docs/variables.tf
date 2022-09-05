@@ -26,3 +26,5 @@ variable ecs_container_name {}
 variable docs_convert_bucket_name {}
 
 variable sentry_url {}
+
+variable sentry_url_value {}
