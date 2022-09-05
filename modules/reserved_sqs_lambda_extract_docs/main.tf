@@ -162,7 +162,7 @@ module "reserved_extract_docs_fn" {
         ECS_TASK_DEFINITION = "${var.ecs_task_definition}"
         ECS_CONTAINER_NAME = "${var.ecs_container_name}"
         ENVIRONMENT = "${var.environment}"
-        SENTRY_URL = var.sentry_url_value
+        SENTRY_URL = "${var.sentry_url}"
     }
 }
 
@@ -236,7 +236,7 @@ module "reserved_output_request_fn" {
     environment_variables = {
         SIGNED_URL_EXPIRY_SECS = "${var.signed_url_expiry_secs}"
         ENVIRONMENT = "${var.environment}"
-        SENTRY_URL = "${var.sentry_url_value}"
+        SENTRY_URL = "${var.sentry_url}"
     }
 }
 

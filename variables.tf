@@ -24,7 +24,7 @@ variable docs_convert_lambda_fn_name {}
 
 variable docs_convert_bucket_name {}
 
-variable sentry_url {}
+variable sentry_secret_name {}
 
 variable az_count {}
 

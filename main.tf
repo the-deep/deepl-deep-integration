@@ -32,6 +32,7 @@ provider "aws" {
 
 module "secrets_module" {
   source = "./modules/secrets"
+  sentry_secret_name = var.sentry_secret_name
 }
 
 module "sqs_lambda_module" {
@@ -59,7 +60,7 @@ module "sqs_lambda_module" {
 
   environment = var.environment
 
-  sentry_url = var.sentry_url
+  sentry_url = "${module.secrets_module.sentry_url_value}"
 }
 
 module "reserved_sqs_lambda_module" {
@@ -84,9 +85,7 @@ module "reserved_sqs_lambda_module" {
 
   environment = var.environment
 
-  sentry_url = var.sentry_url
-
-  sentry_url_value = "${module.secrets_module.sentry_url_value}" #var.sentry_url
+  sentry_url = "${module.secrets_module.sentry_url_value}"
 }
 
 module "sqs_lambda_predict_module" {
@@ -104,7 +103,7 @@ module "sqs_lambda_predict_module" {
   aws_region = var.aws_region
   environment = var.environment
 
-  sentry_url = var.sentry_url
+  sentry_url = "${module.secrets_module.sentry_url_value}"
 }
 
 module "reserved_sqs_lambda_predict_module" {
@@ -119,7 +118,7 @@ module "reserved_sqs_lambda_predict_module" {
   aws_region = var.aws_region
   environment = var.environment
 
-  sentry_url = var.sentry_url
+  sentry_url = "${module.secrets_module.sentry_url_value}"
 }
 
 module "apigateway_module" {
