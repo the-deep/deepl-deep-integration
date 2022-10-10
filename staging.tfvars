@@ -8,7 +8,7 @@ vpce_id = "vpce-02c7bb08b571074e1"
 vpc_id = "vpc-0e65245d5e4c2deaf"
 
 # models
-model_endpoint_name = "test-all-models-rsh"
+model_endpoint_name = "main-model-cpu"
 geolocation_fn_name = "geolocations"
 reliability_fn_name = "reliability"
 model_info_fn_name = "model_info"
@@ -33,7 +33,7 @@ cidr_block = "172.16.0.0/16"
 ecs_task_execution_role = "ECSTaskExecutionRole"
 
 # ECS
-fargate_cpu = "2048"
-fargate_memory = "4096"
+fargate_cpu = "1024"
+fargate_memory = "2048"
 app_count = 1
 app_image = "961104659532.dkr.ecr.us-east-1.amazonaws.com/deepex-parser"

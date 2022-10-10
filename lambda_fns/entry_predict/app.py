@@ -8,7 +8,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import sentry_sdk
 
-from postprocess_raw_preds import get_predictions_all, get_clean_thresholds, get_clean_ratios
+from postprocess_cpu_model_outputs import output_all_preds
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -151,27 +151,14 @@ def get_model_info():
 
 
 def get_predictions(entry):
-    data = {
-        "columns": ["excerpt", "return_type"],
-        "index": [0],
-        "data": [[entry, "all_models"]]
-    }
-    try:
-        response = sagemaker_rt.invoke_endpoint(
-            EndpointName=MODEL_ENDPOINT_NAME,
-            ContentType="application/json; format=pandas-split",
-            Body=json.dumps(data)
-        )
-        pred_response = json.loads(response["Body"].read().decode("ascii"))
-        pred_tags = get_clean_ratios(pred_response['raw_predictions'])
-        pred_thresholds = get_clean_thresholds(pred_response['thresholds'])
-        tags_selected = get_predictions_all(pred_response['raw_predictions'])
+    pred_tags, pred_thresholds, tags_selected, error_status = output_all_preds(
+        entry,
+        MODEL_ENDPOINT_NAME
+    )
+    if not error_status:
         prediction_status = PredictionStatus.SUCCESS.value
-    except ClientError as error:
-        logging.error(f"Error occurred while getting predictions: {error}")
-        pred_response = None
+    else:
         prediction_status = PredictionStatus.FAILED.value
-
     return pred_tags, pred_thresholds, tags_selected, str(prediction_status)
 
 

@@ -132,7 +132,7 @@ module "reserved_predict_entry_fn" {
         ]
     })
 
-    provisioned_concurrent_executions = var.environment == "staging" ? 1 : 10
+    provisioned_concurrent_executions = var.environment == "staging" ? 1 : 5
     reserved_concurrent_executions = 30
 
     environment_variables = {
@@ -147,8 +147,8 @@ module "reserved_predict_entry_fn" {
 }
 
 resource "aws_appautoscaling_target" "reserved_predict_entry_fn_autoscale" {
-    max_capacity       = var.environment == "staging" ? 1 : 10
-    min_capacity       = var.environment == "staging" ? 1 : 5
+    max_capacity       = var.environment == "staging" ? 1 : 5
+    min_capacity       = var.environment == "staging" ? 1 : 2
     resource_id        = "function:${module.reserved_predict_entry_fn.lambda_function_name}:${module.reserved_predict_entry_fn.lambda_function_version}"
     scalable_dimension = "lambda:function:ProvisionedConcurrency"
     service_namespace  = "lambda"

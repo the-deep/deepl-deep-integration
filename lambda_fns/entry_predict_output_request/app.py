@@ -234,13 +234,13 @@ def get_model_enum_mappings(pred_data, thresholds, selected_tags):
         return True if gender in selected_tags["gender"][0] and age in selected_tags["age"][0] else False
 
     all_tags_pred = {}
-    for prim_tags_key, prim_key_val in pred_data["primary_tags"].items():
+    for prim_tags_key, prim_key_val in pred_data[0]["primary_tags"].items():
         tags = {}
         if prim_tags_key in categories:
             category = categories[prim_tags_key][0]
             tags[category] = {}
 
-            for tag_key, tag_val in prim_key_val[0].items():
+            for tag_key, tag_val in prim_key_val.items():
                 tag = mappings[tag_key][0]
                 tags[category][tag] = {}
                 tags[category][tag]["prediction"] = round(tag_val, 15)
@@ -248,13 +248,13 @@ def get_model_enum_mappings(pred_data, thresholds, selected_tags):
                 tags[category][tag]["is_selected"] = check_selected_tag(prim_tags_key, tag_key)
         all_tags_pred.update(tags)
 
-    for sec_tags_key, sec_tags_val in pred_data["secondary_tags"].items():
+    for sec_tags_key, sec_tags_val in pred_data[0]["secondary_tags"].items():
         tags = {}
         if sec_tags_key in categories:
             category = categories[sec_tags_key][0]
             tags[category] = {}
 
-            for tag_key, tag_val in sec_tags_val[0].items():
+            for tag_key, tag_val in sec_tags_val.items():
                 tag = mappings[tag_key][0]
                 tags[category][tag] = {}
                 tags[category][tag]["prediction"] = round(tag_val, 15)
@@ -265,8 +265,8 @@ def get_model_enum_mappings(pred_data, thresholds, selected_tags):
     demographic_grp_id = categories['demographic_group'][0]
     tags = {}
     tags[demographic_grp_id] = {}
-    for age_key, age_val in pred_data["secondary_tags"]["age"][0].items():
-        for gender_key, gender_val in pred_data["secondary_tags"]["gender"][0].items():
+    for age_key, age_val in pred_data[0]["secondary_tags"]["age"].items():
+        for gender_key, gender_val in pred_data[0]["secondary_tags"]["gender"].items():
             demographic_key = f"{gender_key} {age_key}"
 
             if demographic_key in mappings:
