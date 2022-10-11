@@ -20,27 +20,37 @@ from deep_parser import TextFromWeb
 try:
     from content_types import ExtractContentType, UrlTypes
     from s3_handler import Storage
+    from config import (
+        EXTRACTED_FILE_NAME,
+        AWS_REGION,
+        DEST_BUCKET_NAME,
+        PROCESSED_QUEUE_NAME,
+        DOCS_CONVERT_LAMBDA_FN_NAME,
+        DOCS_CONVERSION_BUCKET_NAME,
+        SENTRY_URL,
+        ENVIRONMENT,
+        CLIENT_ID,
+        URL,
+        CALLBACK_URL
+    )
 except ImportError:
     from .content_types import ExtractContentType, UrlTypes
     from .s3_handler import Storage
+    from .config import (
+        EXTRACTED_FILE_NAME,
+        AWS_REGION,
+        DEST_BUCKET_NAME,
+        PROCESSED_QUEUE_NAME,
+        DOCS_CONVERT_LAMBDA_FN_NAME,
+        DOCS_CONVERSION_BUCKET_NAME,
+        SENTRY_URL,
+        ENVIRONMENT,
+        CLIENT_ID,
+        URL,
+        CALLBACK_URL
+    )
 
 logging.getLogger().setLevel(logging.INFO)
-
-EXTRACTED_FILE_NAME = "extract_text.txt"
-DEFAULT_AWS_REGION = "us-east-1"
-
-AWS_REGION = os.environ.get("AWS_REGION", DEFAULT_AWS_REGION)
-DEST_BUCKET_NAME = os.environ.get("DEST_S3_BUCKET")
-PROCESSED_QUEUE_NAME = os.environ.get("PROCESSED_QUEUE")
-DOCS_CONVERT_LAMBDA_FN_NAME = os.environ.get("DOCS_CONVERT_LAMBDA_FN_NAME")
-DOCS_CONVERSION_BUCKET_NAME = os.environ.get("DOCS_CONVERSION_BUCKET_NAME")
-
-SENTRY_URL = os.environ.get("SENTRY_URL")
-ENVIRONMENT = os.environ.get("ENVIRONMENT")
-
-CLIENT_ID = os.environ.get("CLIENT_ID")
-URL = os.environ.get("URL")
-CALLBACK_URL = os.environ.get("CALLBACK_URL")
 
 s3_client = boto3.client('s3', region_name=AWS_REGION)
 sqs_client = boto3.client('sqs', region_name=AWS_REGION)
