@@ -1,34 +1,32 @@
-import os
 import boto3
-from botocore.exceptions import ClientError
 import json
-from enum import Enum
-import logging
-from concurrent.futures import ThreadPoolExecutor, as_completed
-
 import sentry_sdk
+import logging
 
+from enum import Enum
+from botocore.exceptions import ClientError
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from postprocess_cpu_model_outputs import output_all_preds
+
+from config import (
+    DEFAULT_AWS_REGION,
+    AWS_REGION,
+    PREDICTION_QUEUE_NAME,
+    MODEL_ENDPOINT_NAME,
+    GEOLOCATION_FN_NAME,
+    RELIABILITY_FN_NAME,
+    MODEL_INFO_FN_NAME,
+    SENTRY_URL,
+    ENVIRONMENT
+)
 
 logging.getLogger().setLevel(logging.INFO)
 
-DEFAULT_AWS_REGION = "us-east-1"
-
-AWS_REGION = os.environ.get("AWS_REGION", DEFAULT_AWS_REGION)
-PREDICTION_QUEUE_NAME = os.environ.get("PREDICTION_QUEUE")
-MODEL_ENDPOINT_NAME = os.environ.get("MODEL_ENDPOINT_NAME")
-GEOLOCATION_FN_NAME = os.environ.get("GEOLOCATION_FN_NAME")
-RELIABILITY_FN_NAME = os.environ.get("RELIABILITY_FN_NAME")
-MODEL_INFO_FN_NAME = os.environ.get("MODEL_INFO_FN_NAME")
-
-SENTRY_URL = os.environ.get("SENTRY_URL")
-ENVIRONMENT = os.environ.get("ENVIRONMENT")
-
 sqs_client = boto3.client('sqs', region_name=AWS_REGION)
 
-sagemaker_rt = boto3.client("runtime.sagemaker", region_name="us-east-1")  # todo: update the region later.
-geolocation_client = boto3.client("lambda", region_name="us-east-1")
-reliability_client = boto3.client("lambda", region_name="us-east-1")
+sagemaker_rt = boto3.client("runtime.sagemaker", region_name=DEFAULT_AWS_REGION)
+geolocation_client = boto3.client("lambda", region_name=DEFAULT_AWS_REGION)
+reliability_client = boto3.client("lambda", region_name=DEFAULT_AWS_REGION)
 model_info_client = boto3.client("lambda", region_name=AWS_REGION)
 
 sentry_sdk.init(SENTRY_URL, environment=ENVIRONMENT, attach_stacktrace=True, traces_sample_rate=1.0)
