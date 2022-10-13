@@ -8,7 +8,7 @@ vpce_id = "vpce-05d8c268ef4c0c443"
 vpc_id = "vpc-0947f040a9d4692a7"
 
 # models
-model_endpoint_name = "test-all-models-rsh"
+model_endpoint_name = "main-model-cpu"
 geolocation_fn_name = "geolocations"
 reliability_fn_name = "reliability"
 model_info_fn_name = "model_info"
@@ -20,7 +20,7 @@ docs_extract_fn_image_name = "extract-tool"
 docs_convert_lambda_fn_name = "libreoffice-dev-libreoffice"
 
 # docs convert bucket name
-docs_convert_bucket_name = "deep-large-docs-conversion"
+docs_convert_bucket_name = "deep-large-docs-conversion-prod"
 
 # sentry url
 sentry_secret_name = "prod/sentry_url"  # get the name from secrets manager
