@@ -138,7 +138,7 @@ class Storage():
         params = {}
         _type, encoding = mimetypes.guess_type(name)
         content_type = getattr(content, 'content_type', None)
-        content_type = content_type or _type or self.DEFAULT_CONTENT_TYPE
+        content_type = "text/plain; charset=utf-8" #content_type or _type or self.DEFAULT_CONTENT_TYPE
         params['ContentType'] = content_type
         if encoding:
             params['ContentEncoding'] = encoding
