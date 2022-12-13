@@ -36,4 +36,4 @@ ecs_task_execution_role = "ECSTaskExecutionRole"
 fargate_cpu = "2048"
 fargate_memory = "4096"
 app_count = 1
-app_image = "961104659532.dkr.ecr.us-east-1.amazonaws.com/deepex-parser"
+app_image = "961104659532.dkr.ecr.us-east-1.amazonaws.com/deepex-parser-prod"
