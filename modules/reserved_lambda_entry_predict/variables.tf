@@ -13,3 +13,11 @@ variable model_info_fn_name {}
 variable processed_docs_bucket {}
 
 variable sentry_url {}
+
+variable lambda_concurrency_max {
+    default = 3
+}
+
+variable lambda_concurrency_min {
+    default = 2
+}

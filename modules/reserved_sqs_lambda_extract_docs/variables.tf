@@ -26,3 +26,11 @@ variable ecs_container_name {}
 variable docs_convert_bucket_name {}
 
 variable sentry_url {}
+
+variable lambda_concurrency_max {
+    default = 3
+}
+
+variable lambda_concurrency_min {
+    default = 2
+}

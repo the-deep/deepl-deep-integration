@@ -147,7 +147,7 @@ module "reserved_extract_docs_fn" {
         ]
     })
 
-    provisioned_concurrent_executions = var.environment == "staging" ? 1 : 5
+    provisioned_concurrent_executions = var.environment == "staging" ? 1 : var.lambda_concurrency_max
     reserved_concurrent_executions = 30
 
     build_in_docker = true
@@ -179,8 +179,8 @@ module "reserved_extract_docs_fn" {
 # }
 
 resource "aws_appautoscaling_target" "reserved_extract_docs_autoscale" {
-    max_capacity       = var.environment == "staging" ? 1 : 5
-    min_capacity       = var.environment == "staging" ? 1 : 3
+    max_capacity       = var.environment == "staging" ? 1 : var.lambda_concurrency_max
+    min_capacity       = var.environment == "staging" ? 1 : var.lambda_concurrency_min
     resource_id        = "function:${module.reserved_extract_docs_fn.lambda_function_name}:${module.reserved_extract_docs_fn.lambda_function_version}"
     scalable_dimension = "lambda:function:ProvisionedConcurrency"
     service_namespace  = "lambda"
@@ -227,7 +227,7 @@ module "reserved_output_request_fn" {
         ]
     })
 
-    provisioned_concurrent_executions = var.environment == "staging" ? 1 : 5
+    provisioned_concurrent_executions = var.environment == "staging" ? 1 : var.lambda_concurrency_max
 
     build_in_docker = true
     #store_on_s3 = true
@@ -241,8 +241,8 @@ module "reserved_output_request_fn" {
 }
 
 resource "aws_appautoscaling_target" "reserved_output_fn_autoscale" {
-    max_capacity       = var.environment == "staging" ? 1 : 5
-    min_capacity       = var.environment == "staging" ? 1 : 2
+    max_capacity       = var.environment == "staging" ? 1 : var.lambda_concurrency_max
+    min_capacity       = var.environment == "staging" ? 1 : var.lambda_concurrency_min
     resource_id        = "function:${module.reserved_output_request_fn.lambda_function_name}:${module.reserved_output_request_fn.lambda_function_version}"
     scalable_dimension = "lambda:function:ProvisionedConcurrency"
     service_namespace  = "lambda"
@@ -290,7 +290,7 @@ module "reserved_transfer_dlq_msg" {
         ]
     })
 
-    provisioned_concurrent_executions = var.environment == "staging" ? 1 : 5
+    provisioned_concurrent_executions = var.environment == "staging" ? 1 : var.lambda_concurrency_max
 
     environment_variables = {
         PROCESSED_QUEUE = aws_sqs_queue.reserved_processed_queue.id
@@ -298,8 +298,8 @@ module "reserved_transfer_dlq_msg" {
 }
 
 resource "aws_appautoscaling_target" "reserved_transfer_dlq_msg_autoscale" {
-    max_capacity       = var.environment == "staging" ? 1 : 5
-    min_capacity       = var.environment == "staging" ? 1 : 2
+    max_capacity       = var.environment == "staging" ? 1 : var.lambda_concurrency_max
+    min_capacity       = var.environment == "staging" ? 1 : var.lambda_concurrency_min
     resource_id        = "function:${module.reserved_transfer_dlq_msg.lambda_function_name}:${module.reserved_transfer_dlq_msg.lambda_function_version}"
     scalable_dimension = "lambda:function:ProvisionedConcurrency"
     service_namespace  = "lambda"
