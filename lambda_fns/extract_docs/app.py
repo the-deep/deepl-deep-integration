@@ -139,7 +139,7 @@ def get_extracted_content_links(file_path, file_name, mock):
             binary = base64.b64encode(f.read())
 
         document = TextFromFile(stream=binary, ext="pdf")
-        entries, images = document.serial_extract_text(output_format="list")
+        entries, images = document.extract_text(output_format="list")
     except Exception as e:
         logging.error(f"Extraction failed: {str(e)}")
         return None, None, -1, -1
@@ -208,7 +208,7 @@ def get_extracted_content_links(file_path, file_name, mock):
 def get_extracted_text_web_links(link, file_name, mock=False):
     try:
         web_text = TextFromWeb(url=link)
-        entries = web_text.extract_text(output_format="list")
+        entries = web_text.extract_text(output_format="list", url=link)
     except Exception as e:
         logging.error(f"Extraction from website failed {e}")
         return None, None, -1, -1
