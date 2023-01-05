@@ -33,7 +33,7 @@ cidr_block = "172.18.0.0/16"
 ecs_task_execution_role = "ECSTaskExecutionRole"
 
 # ECS
-fargate_cpu = "2048"
-fargate_memory = "4096"
+fargate_cpu = "512"
+fargate_memory = "1024"
 app_count = 1
 app_image = "961104659532.dkr.ecr.us-east-1.amazonaws.com/deepex-parser-prod"
