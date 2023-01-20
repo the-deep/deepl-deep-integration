@@ -13,8 +13,7 @@ import tempfile
 
 import sentry_sdk
 
-from deep_parser import TextFromFile
-from deep_parser import TextFromWeb
+from deep_parser import TextFromFile, TextFromWeb
 
 try:
     from content_types import ExtractContentType, UrlTypes
