@@ -26,3 +26,5 @@ RUN apt-get update -y \
     && rm -rf /var/lib/apt/lists/*
 
 COPY deepex_ecs/app.py content_types.py wget.py s3_handler.py config.py /code/
+
+RUN download-chromium
