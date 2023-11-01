@@ -20,203 +20,278 @@ logging.getLogger().setLevel(logging.INFO)
 mappings = get_all_mappings()
 categories = get_categories()
 
-fake_data = {
-    'primary_tags': {
-        'sectors': [{
-            'Agriculture': 0.0013131533306455466, 'Education': 0.003010824160731357,
-            'Food Security': 0.002566287973119567, 'Health': 2.677955230077108,
-            'Livelihoods': 0.01722483797685096, 'Logistics': 0.003670748323202133,
-            'Nutrition': 0.0041013412481668045, 'Protection': 0.028100471686700296,
-            'Shelter': 0.0035644680749447573, 'WASH': 0.00885658950175879
-        }],
-        'subpillars_2d': [{
-            'At Risk->Number Of People At Risk': 0.00023104241032948875,
-            'At Risk->Risk And Vulnerabilities': 0.006840221311261014,
-            'Capacities & Response->International Response': 1.51390548675291,
-            'Capacities & Response->Local Response': 0.0024619154282845557,
-            'Capacities & Response->National Response': 0.19748103480006374,
-            'Capacities & Response->Number Of People Reached/Response Gaps': 0.1326687938096572,
-            'Humanitarian Conditions->Coping Mechanisms': 0.008473951473004289,
-            'Humanitarian Conditions->Living Standards': 0.014394345796770519,
-            'Humanitarian Conditions->Number Of People In Need': 0.002753498941479671,
-            'Humanitarian Conditions->Physical And Mental Well Being': 0.02261752535293742,
-            'Impact->Driver/Aggravating Factors': 0.0028069927602222093,
-            'Impact->Impact On People': 0.0035386373796923594,
-            'Impact->Impact On Systems, Services And Networks': 0.00474455507679118,
-            'Impact->Number Of People Affected': 0.002435182492869596,
-            'Priority Interventions->Expressed By Humanitarian Staff': 0.004984116689725355,
-            'Priority Interventions->Expressed By Population': 0.0034277827944606543,
-            'Priority Needs->Expressed By Humanitarian Staff': 0.0018360981872926156,
-            'Priority Needs->Expressed By Population': 0.007651697378605604
-        }],
-        'subpillars_1d': [{
-            'Casualties->Dead': 0.0018779816205746359,
-            'Casualties->Injured': 0.0009131004424908987,
-            'Casualties->Missing': 0.0010629182305330266,
-            'Context->Demography': 0.01951472795739466,
-            'Context->Economy': 0.002760568168014288,
-            'Context->Environment': 0.001610475469772753,
-            'Context->Legal & Policy': 0.0028414463984870143,
-            'Context->Politics': 0.0030019306965793175,
-            'Context->Security & Stability': 0.0028423364380035887,
-            'Context->Socio Cultural': 0.0024926103993921592,
-            'Covid-19->Cases': 0.004972799797542393,
-            'Covid-19->Contact Tracing': 0.00032880847216941987,
-            'Covid-19->Deaths': 0.001167356436152333,
-            'Covid-19->Hospitalization & Care': 0.0024493522487762497,
-            'Covid-19->Restriction Measures': 0.005428578056718992,
-            'Covid-19->Testing': 0.0018874364551392537,
-            'Covid-19->Vaccination': 0.0011778841898949057,
-            'Displacement->Intentions': 0.0004781786533146116,
-            'Displacement->Local Integration': 0.006963967811316252,
-            'Displacement->Pull Factors': 0.0003674881209635401,
-            'Displacement->Push Factors': 0.0002446720680234501,
-            'Displacement->Type/Numbers/Movements': 0.012378716890357043,
-            'Humanitarian Access->Number Of People Facing Humanitarian Access Constraints/Humanitarian Access Gaps': 0.001155513591390658,
-            'Humanitarian Access->Physical Constraints': 0.0014652756362920627,
-            'Humanitarian Access->Population To Relief': 0.001666667767016119,
-            'Humanitarian Access->Relief To Population': 0.011259256380385366,
-            'Information And Communication->Communication Means And Preferences': 0.007581055563475405,
-            'Information And Communication->Information Challenges And Barriers': 0.0003372832482758289,
-            'Information And Communication->Knowledge And Info Gaps (Hum)': 0.0009009759297542688,
-            'Information And Communication->Knowledge And Info Gaps (Pop)': 0.0007702910806983709,
-            'Shock/Event->Hazard & Threats': 0.006979638609387304,
-            'Shock/Event->Type And Characteristics': 0.00357941840775311,
-            'Shock/Event->Underlying/Aggravating Factors': 0.006321697112391976
-        }]
-    },
-    'secondary_tags': {
-        'age': [{
-            'Adult (18 to 59 years old)': 0.04068703080217044,
-            'Children/Youth (5 to 17 years old)': 0.024587836709212173,
-            'Infants/Toddlers (<5 years old)': 0.04259871318936348,
-            'Older Persons (60+ years old)': 0.006414494919972342
-        }],
-        'gender': [{
-            'Female': 1.403369450233352,
-            'Male': 0.007781315997073596
-        }],
-        'affected_groups': [{
-            'Asylum Seekers': 0.0002758237987769487, 'Host': 0.00997524285181002,
-            'IDP': 0.004761773787105261, 'Migrants': 0.000846206055333217,
-            'Refugees': 0.0007048035968182376, 'Returnees': 0.007033202674169585
-        }],
-        'specific_needs_groups': [{
-            'Child Head of Household': 0.0002081420534523204,
-            'Chronically Ill': 0.0029977605726312978,
-            'Elderly Head of Household': 0.0029921820636705627,
-            'Female Head of Household': 0.002415977602746959,
-            'GBV survivors': 0.020530499899998687,
-            'Indigenous people': 0.0028101496774559985,
-            'LGBTQI+': 0.00022843408415366598,
-            'Minorities': 0.009432899118480036,
-            'Persons with Disability': 0.000918924031014155,
-            'Pregnant or Lactating Women': 2.0397998848739936,
-            'Single Women (including Widows)': 0.007506779511459172,
-            'Unaccompanied or Separated Children': 0.00019092757914525768
-        }]
-    }
-}
+fake_data = [
+   {
+      "primary_tags":{
+         "sectors":{
+            "Agriculture":0.0015192615267421517,
+            "Cross":2.266681720228756,
+            "Education":0.02295325743034482,
+            "Food Security":0.061531245176281245,
+            "Health":0.140668327609698,
+            "Livelihoods":0.040182591016803465,
+            "Logistics":0.005464191199280322,
+            "Nutrition":9.93173974469149e-05,
+            "Protection":5.455834865570068,
+            "Shelter":0.01595675065699551,
+            "WASH":0.0018369699578865296
+         },
+         "subpillars_2d":{
+            "At Risk->Number Of People At Risk":7.958003038766037e-05,
+            "At Risk->Risk And Vulnerabilities":0.14909714121710171,
+            "Capacities & Response->International Response":0.0005300973977060302,
+            "Capacities & Response->Local Response":3.6785016277463e-05,
+            "Capacities & Response->National Response":0.002878893385915195,
+            "Capacities & Response->Number Of People Reached/Response Gaps":0.0015827980435763798,
+            "Humanitarian Conditions->Coping Mechanisms":0.006730915305929052,
+            "Humanitarian Conditions->Living Standards":0.13377755307234251,
+            "Humanitarian Conditions->Number Of People In Need":0.00030424525903072203,
+            "Humanitarian Conditions->Physical And Mental Well Being":3.557107225060463,
+            "Impact->Driver/Aggravating Factors":0.30262467761834466,
+            "Impact->Impact On People":0.1379885245114565,
+            "Impact->Impact On Systems, Services And Networks":0.05514782969839871,
+            "Impact->Number Of People Affected":0.006860913126729429,
+            "Priority Interventions->Expressed By Humanitarian Staff":7.764241470593131e-05,
+            "Priority Interventions->Expressed By Population":1.9618319887134326e-05,
+            "Priority Needs->Expressed By Humanitarian Staff":1.2330993318495788e-05,
+            "Priority Needs->Expressed By Population":0.0005511248533506519
+         },
+         "subpillars_1d":{
+            "Casualties->Dead":0.5277328766309298,
+            "Casualties->Injured":0.5389928352087736,
+            "Casualties->Missing":0.0024325139949926073,
+            "Context->Demography":0.03165506558226687,
+            "Context->Economy":0.010170067738120755,
+            "Context->Environment":0.010367161731290465,
+            "Context->Legal & Policy":0.001767287377585122,
+            "Context->Politics":0.012721888593990694,
+            "Context->Security & Stability":5.508916079998016,
+            "Context->Socio Cultural":0.003907638601958752,
+            "Covid-19->Cases":3.329320053227194e-05,
+            "Covid-19->Contact Tracing":1.0524275430932241e-07,
+            "Covid-19->Deaths":5.623477904248189e-05,
+            "Covid-19->Hospitalization & Care":9.923554292375533e-06,
+            "Covid-19->Restriction Measures":0.0002665956107312408,
+            "Covid-19->Testing":7.267150184845613e-05,
+            "Covid-19->Vaccination":7.220470042039569e-05,
+            "Displacement->Intentions":2.8656749388270937e-06,
+            "Displacement->Local Integration":7.402830026246823e-05,
+            "Displacement->Pull Factors":8.282385503359062e-06,
+            "Displacement->Push Factors":0.0006505369898290015,
+            "Displacement->Type/Numbers/Movements":0.011573675569267042,
+            "Humanitarian Access->Number Of People Facing Humanitarian Access Constraints/Humanitarian Access Gaps":0.0016117644716157683,
+            "Humanitarian Access->Physical Constraints":0.001055635675584199,
+            "Humanitarian Access->Population To Relief":3.701728701344109e-06,
+            "Humanitarian Access->Relief To Population":2.0293501537790608e-05,
+            "Information And Communication->Communication Means And Preferences":9.698896974441595e-06,
+            "Information And Communication->Information Challenges And Barriers":0.00012904413324577035,
+            "Information And Communication->Knowledge And Info Gaps (Hum)":0.002071594852688057,
+            "Information And Communication->Knowledge And Info Gaps (Pop)":0.008236645306977961,
+            "Shock/Event->Hazard & Threats":0.04653984991212686,
+            "Shock/Event->Type And Characteristics":0.005213278234891949,
+            "Shock/Event->Underlying/Aggravating Factors":0.08061402477324009
+         }
+      },
+      "secondary_tags":{
+         "age":{
+            "Adult (18 to 59 years old)":9.536670404486358e-05,
+            "Children/Youth (5 to 17 years old)":0.0010865677419739466,
+            "Infants/Toddlers (<5 years old)":5.143924949259278e-05,
+            "Older Persons (60+ years old)":0.00022308759071165696
+         },
+         "gender":{
+            "Female":0.007455993650688065,
+            "Male":0.02926515298895538
+         },
+         "affected_groups":{
+            "Asylum Seekers":2.1205758226835425e-07,
+            "Host":5.6676799431443214e-05,
+            "IDP":0.0016466826006459694,
+            "Migrants":4.5306819629331585e-06,
+            "Refugees":0.0003480630202202833,
+            "Returnees":0.0010307924821972847
+         },
+         "specific_needs_groups":{
+            "Child Head of Household":1.5001008864209293e-07,
+            "Chronically Ill":8.45890200354107e-06,
+            "Elderly Head of Household":2.563743350947334e-06,
+            "Female Head of Household":2.0595144726886407e-06,
+            "GBV survivors":4.9045229388866574e-05,
+            "Indigenous people":7.791085408825893e-06,
+            "LGBTQI+":1.3531972748686322e-06,
+            "Minorities":0.0001522377880808728,
+            "Persons with Disability":1.2454439340302108e-06,
+            "Pregnant or Lactating Women":7.379314550719399e-08,
+            "Single Women (including Widows)":2.3683933629096527e-06,
+            "Unaccompanied or Separated Children":9.06970538178737e-07
+         },
+         "severity":{
+            "Critical":0.45211867049888327,
+            "Major":0.028029342435977676,
+            "Minor Problem":0.0002331270297872834,
+            "No problem":0.006089172772287081,
+            "Of Concern":0.0023042623070068657
+         }
+      }
+   }
+]
 
 fake_data_thresholds = {
-    'primary_tags': {
-        'sectors': {
-            'Agriculture': 0.41000000000000003, 'Education': 0.46,
-            'Food Security': 0.48, 'Health': 0.36, 'Livelihoods': 0.38,
-            'Logistics': 0.5, 'Nutrition': 0.49, 'Protection': 0.58,
-            'Shelter': 0.42, 'WASH': 0.53
-        },
-        'subpillars_2d': {
-            'At Risk->Number Of People At Risk': 0.12,
-            'At Risk->Risk And Vulnerabilities': 0.41000000000000003,
-            'Capacities & Response->International Response': 0.62,
-            'Capacities & Response->Local Response': 0.1,
-            'Capacities & Response->National Response': 0.43,
-            'Capacities & Response->Number Of People Reached/Response Gaps': 0.49,
-            'Humanitarian Conditions->Coping Mechanisms': 0.36,
-            'Humanitarian Conditions->Living Standards': 0.45,
-            'Humanitarian Conditions->Number Of People In Need': 0.31,
-            'Humanitarian Conditions->Physical And Mental Well Being': 0.41000000000000003,
-            'Impact->Driver/Aggravating Factors': 0.38, 'Impact->Impact On People': 0.33,
-            'Impact->Impact On Systems, Services And Networks': 0.45,
-            'Impact->Number Of People Affected': 0.24,
-            'Priority Interventions->Expressed By Humanitarian Staff': 0.55,
-            'Priority Interventions->Expressed By Population': 0.15,
-            'Priority Needs->Expressed By Humanitarian Staff': 0.3,
-            'Priority Needs->Expressed By Population': 0.25
-        },
-        'subpillars_1d': {
-            'Casualties->Dead': 0.28,
-            'Casualties->Injured': 0.13,
-            'Casualties->Missing': 0.13, 'Context->Demography': 0.49,
-            'Context->Economy': 0.41000000000000003, 'Context->Environment': 0.38,
-            'Context->Legal & Policy': 0.31, 'Context->Politics': 0.3,
-            'Context->Security & Stability': 0.44, 'Context->Socio Cultural': 0.17,
-            'Covid-19->Cases': 0.8, 'Covid-19->Contact Tracing': 0.39,
-            'Covid-19->Deaths': 0.81, 'Covid-19->Hospitalization & Care': 0.41000000000000003,
-            'Covid-19->Restriction Measures': 0.46, 'Covid-19->Testing': 0.79,
-            'Covid-19->Vaccination': 0.54, 'Displacement->Intentions': 0.38,
-            'Displacement->Local Integration': 0.25, 'Displacement->Pull Factors': 0.29,
-            'Displacement->Push Factors': 0.37, 'Displacement->Type/Numbers/Movements': 0.38,
-            'Humanitarian Access->Number Of People Facing Humanitarian Access Constraints/Humanitarian Access Gaps': 0.47000000000000003,
-            'Humanitarian Access->Physical Constraints': 0.48,
-            'Humanitarian Access->Population To Relief': 0.19,
-            'Humanitarian Access->Relief To Population': 0.29,
-            'Information And Communication->Communication Means And Preferences': 0.21,
-            'Information And Communication->Information Challenges And Barriers': 0.15,
-            'Information And Communication->Knowledge And Info Gaps (Hum)': 0.18,
-            'Information And Communication->Knowledge And Info Gaps (Pop)': 0.18,
-            'Shock/Event->Hazard & Threats': 0.23, 'Shock/Event->Type And Characteristics': 0.2,
-            'Shock/Event->Underlying/Aggravating Factors': 0.17
-        }
-    },
-    'secondary_tags': {
-        'age': {
-            'Adult (18 to 59 years old)': 0.48, 'Children/Youth (5 to 17 years old)': 0.44,
-            'Infants/Toddlers (<5 years old)': 0.4, 'Older Persons (60+ years old)': 0.61
-        },
-        'gender': {
-            'Female': 0.71, 'Male': 0.44
-        },
-        'affected_groups': {
-            'Asylum Seekers': 0.73, 'Host': 0.55, 'IDP': 0.67, 'Migrants': 0.75,
-            'Refugees': 0.64, 'Returnees': 0.53
-        },
-        'specific_needs_groups': {
-            'Child Head of Household': 0.25, 'Chronically Ill': 0.58, 'Elderly Head of Household': 0.14,
-            'Female Head of Household': 0.48, 'GBV survivors': 0.78, 'Indigenous people': 0.13,
-            'LGBTQI+': 0.41000000000000003, 'Minorities': 0.59, 'Persons with Disability': 0.56,
-            'Pregnant or Lactating Women': 0.49, 'Single Women (including Widows)': 0.2,
-            'Unaccompanied or Separated Children': 0.6
-        }
-    }
+   "primary_tags":{
+      "sectors":{
+         "Agriculture":0.14,
+         "Cross":0.17,
+         "Education":0.1,
+         "Food Security":0.14,
+         "Health":0.18,
+         "Livelihoods":0.14,
+         "Logistics":0.1,
+         "Nutrition":0.12,
+         "Protection":0.15,
+         "Shelter":0.18,
+         "WASH":0.14
+      },
+      "subpillars_2d":{
+         "At Risk->Number Of People At Risk":0.01,
+         "At Risk->Risk And Vulnerabilities":0.11,
+         "Capacities & Response->International Response":0.38,
+         "Capacities & Response->Local Response":0.01,
+         "Capacities & Response->National Response":0.17,
+         "Capacities & Response->Number Of People Reached/Response Gaps":0.15,
+         "Humanitarian Conditions->Coping Mechanisms":0.09,
+         "Humanitarian Conditions->Living Standards":0.13,
+         "Humanitarian Conditions->Number Of People In Need":0.07,
+         "Humanitarian Conditions->Physical And Mental Well Being":0.16,
+         "Impact->Driver/Aggravating Factors":0.15,
+         "Impact->Impact On People":0.2,
+         "Impact->Impact On Systems, Services And Networks":0.16,
+         "Impact->Number Of People Affected":0.05,
+         "Priority Interventions->Expressed By Humanitarian Staff":0.45,
+         "Priority Interventions->Expressed By Population":0.06,
+         "Priority Needs->Expressed By Humanitarian Staff":0.28,
+         "Priority Needs->Expressed By Population":0.13
+      },
+      "subpillars_1d":{
+         "Casualties->Dead":0.13,
+         "Casualties->Injured":0.04,
+         "Casualties->Missing":0.09,
+         "Context->Demography":0.14,
+         "Context->Economy":0.24,
+         "Context->Environment":0.17,
+         "Context->Legal & Policy":0.47,
+         "Context->Politics":0.22,
+         "Context->Security & Stability":0.16,
+         "Context->Socio Cultural":0.15,
+         "Covid-19->Cases":0.72,
+         "Covid-19->Contact Tracing":0.55,
+         "Covid-19->Deaths":0.61,
+         "Covid-19->Hospitalization & Care":0.3,
+         "Covid-19->Restriction Measures":0.23,
+         "Covid-19->Testing":0.31,
+         "Covid-19->Vaccination":0.39,
+         "Displacement->Intentions":0.15,
+         "Displacement->Local Integration":0.13,
+         "Displacement->Pull Factors":0.09,
+         "Displacement->Push Factors":0.26,
+         "Displacement->Type/Numbers/Movements":0.31,
+         "Humanitarian Access->Number Of People Facing Humanitarian Access Constraints/Humanitarian Access Gaps":0.09,
+         "Humanitarian Access->Physical Constraints":0.16,
+         "Humanitarian Access->Population To Relief":0.16,
+         "Humanitarian Access->Relief To Population":0.22,
+         "Information And Communication->Communication Means And Preferences":0.21,
+         "Information And Communication->Information Challenges And Barriers":0.04,
+         "Information And Communication->Knowledge And Info Gaps (Hum)":0.07,
+         "Information And Communication->Knowledge And Info Gaps (Pop)":0.09,
+         "Shock/Event->Hazard & Threats":0.24,
+         "Shock/Event->Type And Characteristics":0.21,
+         "Shock/Event->Underlying/Aggravating Factors":0.05
+      }
+   },
+   "secondary_tags":{
+      "age":{
+         "Adult (18 to 59 years old)":0.06,
+         "Children/Youth (5 to 17 years old)":0.48,
+         "Infants/Toddlers (<5 years old)":0.34,
+         "Older Persons (60+ years old)":0.16
+      },
+      "gender":{
+         "Female":0.45,
+         "Male":0.48
+      },
+      "affected_groups":{
+         "Asylum Seekers":0.66,
+         "Host":0.3,
+         "IDP":0.36,
+         "Migrants":0.23,
+         "Refugees":0.58,
+         "Returnees":0.3
+      },
+      "specific_needs_groups":{
+         "Child Head of Household":0.29,
+         "Chronically Ill":0.45,
+         "Elderly Head of Household":0.03,
+         "Female Head of Household":0.34,
+         "GBV survivors":0.37,
+         "Indigenous people":0.25,
+         "LGBTQI+":0.07,
+         "Minorities":0.11,
+         "Persons with Disability":0.43,
+         "Pregnant or Lactating Women":0.23,
+         "Single Women (including Widows)":0.06,
+         "Unaccompanied or Separated Children":0.36
+      },
+      "severity":{
+         "Critical":0.27,
+         "Major":0.11,
+         "Minor Problem":0.05,
+         "No problem":0.24,
+         "Of Concern":0.12
+      }
+   }
 }
 
 fake_selected_tags = {
-    'sectors': [
-        ['Health']
-    ],
-    'subpillars_2d': [
-        ['Capacities & Response->International Response']
-    ],
-    'subpillars_1d': [
-        []
-    ],
-    'gender': [
-        ['Female']
-    ],
-    'age': [
-        ['Adult (18 to 59 years old)']
-    ],
-    'severity': [
-        []
-    ],
-    'specific_needs_groups': [
-        ['Pregnant or Lactating Women']
-    ],
-    'affected_groups': [
-        []
-    ]
+   "sectors":[
+      [
+         "Cross",
+         "Protection"
+      ]
+   ],
+   "subpillars_2d":[
+      [
+         "Humanitarian Conditions->Physical And Mental Well Being"
+      ]
+   ],
+   "subpillars_1d":[
+      [
+         "Context->Security & Stability"
+      ]
+   ],
+   "age":[
+      [
+         
+      ]
+   ],
+   "gender":[
+      [
+         
+      ]
+   ],
+   "affected_groups":[
+      [
+         
+      ]
+   ],
+   "specific_needs_groups":[
+      [
+         
+      ]
+   ],
+   "severity":[
+      [
+         "Critical"
+      ]
+   ]
 }
 
 
