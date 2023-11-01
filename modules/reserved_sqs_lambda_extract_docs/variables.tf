@@ -14,3 +14,23 @@ variable "processed_docs_bucket_arn" {}
 variable "docs_extract_fn_image_name" {}
 
 variable "docs_convert_lambda_fn_name" {}
+
+variable vpc_private_subnet {}
+
+variable ecs_cluster_id {}
+
+variable ecs_task_definition {}
+
+variable ecs_container_name {}
+
+variable docs_convert_bucket_name {}
+
+variable sentry_url {}
+
+variable lambda_concurrency_max {
+    default = 3
+}
+
+variable lambda_concurrency_min {
+    default = 2
+}

@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "4.8.0"
+      version = "4.9.0"
     }
   }
   required_version = "1.1.2"
@@ -30,6 +30,11 @@ provider "aws" {
   # profile = var.aws_profile
 }
 
+module "secrets_module" {
+  source = "./modules/secrets"
+  sentry_secret_name = var.sentry_secret_name
+}
+
 module "sqs_lambda_module" {
   source = "./modules/sqs_lambda_extract_docs"
   processed_docs_bucket = "${module.s3_module.te_bucket_name}"
@@ -43,7 +48,19 @@ module "sqs_lambda_module" {
   reserved_input_queue_id = "${module.reserved_sqs_lambda_module.reserved_input_queue_id}"
   reserved_input_queue_arn = "${module.reserved_sqs_lambda_module.reserved_input_queue_arn}"
 
+  docs_convert_bucket_name = var.docs_convert_bucket_name
+
+  vpc_private_subnet = "${module.ecs_module.private_subnet_id}"
+
+  ecs_cluster_id = "${module.ecs_module.ecs_cluster_id}"
+
+  ecs_task_definition = "${module.ecs_module.ecs_task_definition}"
+
+  ecs_container_name = "${module.ecs_module.ecs_container_name}"
+
   environment = var.environment
+
+  sentry_url = "${module.secrets_module.sentry_url_value}"
 }
 
 module "reserved_sqs_lambda_module" {
@@ -56,7 +73,19 @@ module "reserved_sqs_lambda_module" {
 
   docs_convert_lambda_fn_name = var.docs_convert_lambda_fn_name
 
+  docs_convert_bucket_name = var.docs_convert_bucket_name
+
+  vpc_private_subnet = "${module.ecs_module.private_subnet_id}"
+
+  ecs_cluster_id = "${module.ecs_module.ecs_cluster_id}"
+
+  ecs_task_definition = "${module.ecs_module.ecs_task_definition}"
+
+  ecs_container_name = "${module.ecs_module.ecs_container_name}"
+
   environment = var.environment
+
+  sentry_url = "${module.secrets_module.sentry_url_value}"
 }
 
 module "sqs_lambda_predict_module" {
@@ -73,6 +102,8 @@ module "sqs_lambda_predict_module" {
 
   aws_region = var.aws_region
   environment = var.environment
+
+  sentry_url = "${module.secrets_module.sentry_url_value}"
 }
 
 module "reserved_sqs_lambda_predict_module" {
@@ -86,6 +117,8 @@ module "reserved_sqs_lambda_predict_module" {
 
   aws_region = var.aws_region
   environment = var.environment
+
+  sentry_url = "${module.secrets_module.sentry_url_value}"
 }
 
 module "apigateway_module" {
@@ -94,6 +127,7 @@ module "apigateway_module" {
   api_gateway_name = var.api_gateway_name
 
   vpce_id = var.vpce_id
+  vpc_id = var.vpc_id
 
   predict_entry_invoke_arn = "${module.sqs_lambda_predict_module.entry_input_pred_request_predict_invoke_arn}"
   process_doc_invoke_arn = "${module.sqs_lambda_module.extract_doc_invoke_arn}"
@@ -120,4 +154,24 @@ module "s3_module" {
   source = "./modules/s3"
 
   environment = var.environment
+}
+
+module "ecs_module" {
+    source = "./modules/ecs"
+
+    environment = var.environment
+    aws_region = var.aws_region
+
+    # VPC
+    az_count = var.az_count
+    cidr_block = var.cidr_block
+
+    # ECS role
+    ecs_task_execution_role = var.ecs_task_execution_role
+
+    # ECS
+    fargate_cpu = var.fargate_cpu
+    fargate_memory = var.fargate_memory
+    app_count = var.app_count
+    app_image = var.app_image
 }

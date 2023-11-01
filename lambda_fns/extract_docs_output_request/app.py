@@ -6,23 +6,30 @@ import boto3
 from botocore.exceptions import ClientError
 from botocore.client import Config
 
+import sentry_sdk
+
 logging.getLogger().setLevel(logging.INFO)
 
 REQUEST_TIMEOUT = 60
 DEFAULT_AWS_REGION = "us-east-1"
 
-aws_region = os.environ.get("AWS_REGION", DEFAULT_AWS_REGION)
-signed_url_expiry_secs = os.environ.get("SIGNED_URL_EXPIRY_SECS")
+AWS_REGION = os.environ.get("AWS_REGION", DEFAULT_AWS_REGION)
+SIGNED_URL_EXPIRY_SECS = os.environ.get("SIGNED_URL_EXPIRY_SECS")
+
+SENTRY_URL = os.environ.get("SENTRY_URL")
+ENVIRONMENT = os.environ.get("ENVIRONMENT")
+
+sentry_sdk.init(SENTRY_URL, environment=ENVIRONMENT, attach_stacktrace=True, traces_sample_rate=1.0)
 
 s3_client = boto3.client(
     's3',
-    region_name=aws_region,
+    region_name=AWS_REGION,
     config=Config(
         signature_version='s3v4',
         s3={'addressing_style': 'path'}
     )
 )
-sqs_client = boto3.client('sqs', region_name=aws_region)
+sqs_client = boto3.client('sqs', region_name=AWS_REGION)
 
 
 def extract_path(filepath):
@@ -47,7 +54,7 @@ def generate_signed_url(bucket_name, key_name):
                 'Bucket': bucket_name,
                 'Key': key_name
             },
-            ExpiresIn=signed_url_expiry_secs
+            ExpiresIn=SIGNED_URL_EXPIRY_SECS
         )
     except ClientError as e:
         logging.error(f"ClientError: {e}")

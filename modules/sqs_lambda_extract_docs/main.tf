@@ -126,14 +126,28 @@ module "extract_docs_fn" {
                     "sqs:GetQueueUrl",
                     "sqs:ListQueues",
                     "sqs:SendMessageBatch",
-                    "s3:PutObject"
+                    "s3:PutObject",
+                    "s3:GetObject",
+                    "ecr:GetAuthorizationToken",
+                    "ecr:BatchCheckLayerAvailability",
+                    "ecr:GetDownloadUrlForLayer",
+                    "ecr:BatchGetImage",
+                    "ecs:RunTask",
+                    "iam:PassRole",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
                 ],
                 "Resource": [
                     aws_sqs_queue.input_queue.arn,
                     aws_sqs_queue.processed_queue.arn,
                     "${var.processed_docs_bucket_arn}",
                     "${var.processed_docs_bucket_arn}/*",
-                    "arn:aws:lambda:us-east-1:${data.aws_caller_identity.current_user.account_id}:function:${var.docs_convert_lambda_fn_name}"
+                    "arn:aws:s3:::${var.docs_convert_bucket_name}",
+                    "arn:aws:s3:::${var.docs_convert_bucket_name}/*",
+                    "arn:aws:lambda:us-east-1:${data.aws_caller_identity.current_user.account_id}:function:${var.docs_convert_lambda_fn_name}",
+                    "${var.ecs_cluster_id}",
+                    "${var.ecs_task_definition}",
+                    "arn:aws:iam::${data.aws_caller_identity.current_user.account_id}:role/*"
                 ]
             }
         ]
@@ -143,8 +157,15 @@ module "extract_docs_fn" {
     environment_variables = {
         INPUT_QUEUE = aws_sqs_queue.input_queue.id
         DEST_S3_BUCKET = "${var.processed_docs_bucket}"
-        PROCESSED_QUEUE = aws_sqs_queue.processed_queue.id,
+        PROCESSED_QUEUE = aws_sqs_queue.processed_queue.id
         DOCS_CONVERT_LAMBDA_FN_NAME = "${var.docs_convert_lambda_fn_name}"
+        DOCS_CONVERSION_BUCKET_NAME = "${var.docs_convert_bucket_name}"
+        VPC_PRIVATE_SUBNET = "${var.vpc_private_subnet}"
+        ECS_CLUSTER_ID = "${var.ecs_cluster_id}"
+        ECS_TASK_DEFINITION = "${var.ecs_task_definition}"
+        ECS_CONTAINER_NAME = "${var.ecs_container_name}"
+        ENVIRONMENT = "${var.environment}"
+        SENTRY_URL = "${var.sentry_url}"
     }
 }
 
@@ -194,6 +215,8 @@ module "output_request_fn" {
 
     environment_variables = {
         SIGNED_URL_EXPIRY_SECS = "${var.signed_url_expiry_secs}"
+        ENVIRONMENT = "${var.environment}"
+        SENTRY_URL = "${var.sentry_url}"
     }
 }
 

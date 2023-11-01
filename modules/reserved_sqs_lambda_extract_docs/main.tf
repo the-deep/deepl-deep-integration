@@ -118,28 +118,51 @@ module "reserved_extract_docs_fn" {
                     "sqs:GetQueueUrl",
                     "sqs:ListQueues",
                     "sqs:SendMessageBatch",
-                    "s3:PutObject"
+                    "s3:PutObject",
+                    "s3:GetObject",
+                    "ecr:GetAuthorizationToken",
+                    "ecr:BatchCheckLayerAvailability",
+                    "ecr:GetDownloadUrlForLayer",
+                    "ecr:BatchGetImage",
+                    "ecs:RunTask",
+                    "iam:PassRole",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents",
+                    "secretsmanager:*"
                 ],
                 "Resource": [
                     aws_sqs_queue.reserved_input_queue.arn,
                     aws_sqs_queue.reserved_processed_queue.arn,
                     "${var.processed_docs_bucket_arn}",
                     "${var.processed_docs_bucket_arn}/*",
-                    "arn:aws:lambda:us-east-1:${data.aws_caller_identity.reserved_current_user.account_id}:function:${var.docs_convert_lambda_fn_name}"
+                    "arn:aws:s3:::${var.docs_convert_bucket_name}",
+                    "arn:aws:s3:::${var.docs_convert_bucket_name}/*",
+                    "arn:aws:lambda:us-east-1:${data.aws_caller_identity.reserved_current_user.account_id}:function:${var.docs_convert_lambda_fn_name}",
+                    "${var.ecs_cluster_id}",
+                    "${var.ecs_task_definition}",
+                    "arn:aws:iam::${data.aws_caller_identity.reserved_current_user.account_id}:role/*",
+                    "arn:aws:secretsmanager:us-east-1::secret:*"
                 ]
             }
         ]
     })
 
-    provisioned_concurrent_executions = 10
+    provisioned_concurrent_executions = var.environment == "staging" ? 1 : var.lambda_concurrency_max
     reserved_concurrent_executions = 30
 
     build_in_docker = true
     environment_variables = {
         INPUT_QUEUE = aws_sqs_queue.reserved_input_queue.id
         DEST_S3_BUCKET = "${var.processed_docs_bucket}"
-        PROCESSED_QUEUE = aws_sqs_queue.reserved_processed_queue.id,
+        PROCESSED_QUEUE = aws_sqs_queue.reserved_processed_queue.id
         DOCS_CONVERT_LAMBDA_FN_NAME = "${var.docs_convert_lambda_fn_name}"
+        DOCS_CONVERSION_BUCKET_NAME = "${var.docs_convert_bucket_name}"
+        VPC_PRIVATE_SUBNET = "${var.vpc_private_subnet}"
+        ECS_CLUSTER_ID = "${var.ecs_cluster_id}"
+        ECS_TASK_DEFINITION = "${var.ecs_task_definition}"
+        ECS_CONTAINER_NAME = "${var.ecs_container_name}"
+        ENVIRONMENT = "${var.environment}"
+        SENTRY_URL = "${var.sentry_url}"
     }
 }
 
@@ -156,8 +179,8 @@ module "reserved_extract_docs_fn" {
 # }
 
 resource "aws_appautoscaling_target" "reserved_extract_docs_autoscale" {
-    max_capacity       = 10
-    min_capacity       = 5
+    max_capacity       = var.environment == "staging" ? 1 : var.lambda_concurrency_max
+    min_capacity       = var.environment == "staging" ? 1 : var.lambda_concurrency_min
     resource_id        = "function:${module.reserved_extract_docs_fn.lambda_function_name}:${module.reserved_extract_docs_fn.lambda_function_version}"
     scalable_dimension = "lambda:function:ProvisionedConcurrency"
     service_namespace  = "lambda"
@@ -204,7 +227,7 @@ module "reserved_output_request_fn" {
         ]
     })
 
-    provisioned_concurrent_executions = 5
+    provisioned_concurrent_executions = var.environment == "staging" ? 1 : var.lambda_concurrency_max
 
     build_in_docker = true
     #store_on_s3 = true
@@ -212,12 +235,14 @@ module "reserved_output_request_fn" {
 
     environment_variables = {
         SIGNED_URL_EXPIRY_SECS = "${var.signed_url_expiry_secs}"
+        ENVIRONMENT = "${var.environment}"
+        SENTRY_URL = "${var.sentry_url}"
     }
 }
 
 resource "aws_appautoscaling_target" "reserved_output_fn_autoscale" {
-    max_capacity       = 5
-    min_capacity       = 2
+    max_capacity       = var.environment == "staging" ? 1 : var.lambda_concurrency_max
+    min_capacity       = var.environment == "staging" ? 1 : var.lambda_concurrency_min
     resource_id        = "function:${module.reserved_output_request_fn.lambda_function_name}:${module.reserved_output_request_fn.lambda_function_version}"
     scalable_dimension = "lambda:function:ProvisionedConcurrency"
     service_namespace  = "lambda"
@@ -265,7 +290,7 @@ module "reserved_transfer_dlq_msg" {
         ]
     })
 
-    provisioned_concurrent_executions = 5
+    provisioned_concurrent_executions = var.environment == "staging" ? 1 : var.lambda_concurrency_max
 
     environment_variables = {
         PROCESSED_QUEUE = aws_sqs_queue.reserved_processed_queue.id
@@ -273,8 +298,8 @@ module "reserved_transfer_dlq_msg" {
 }
 
 resource "aws_appautoscaling_target" "reserved_transfer_dlq_msg_autoscale" {
-    max_capacity       = 5
-    min_capacity       = 2
+    max_capacity       = var.environment == "staging" ? 1 : var.lambda_concurrency_max
+    min_capacity       = var.environment == "staging" ? 1 : var.lambda_concurrency_min
     resource_id        = "function:${module.reserved_transfer_dlq_msg.lambda_function_name}:${module.reserved_transfer_dlq_msg.lambda_function_version}"
     scalable_dimension = "lambda:function:ProvisionedConcurrency"
     service_namespace  = "lambda"

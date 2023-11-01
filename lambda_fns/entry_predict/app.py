@@ -1,30 +1,35 @@
-import os
 import boto3
-from botocore.exceptions import ClientError
 import json
-from enum import Enum
+import sentry_sdk
 import logging
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from postprocess_raw_preds import get_predictions_all, get_clean_thresholds, get_clean_ratios
+from enum import Enum
+from botocore.exceptions import ClientError
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from postprocess_cpu_model_outputs import output_all_preds
+
+from config import (
+    DEFAULT_AWS_REGION,
+    AWS_REGION,
+    PREDICTION_QUEUE_NAME,
+    MODEL_ENDPOINT_NAME,
+    GEOLOCATION_FN_NAME,
+    RELIABILITY_FN_NAME,
+    MODEL_INFO_FN_NAME,
+    SENTRY_URL,
+    ENVIRONMENT
+)
 
 logging.getLogger().setLevel(logging.INFO)
 
-DEFAULT_AWS_REGION = "us-east-1"
-
-AWS_REGION = os.environ.get("AWS_REGION", DEFAULT_AWS_REGION)
-PREDICTION_QUEUE_NAME = os.environ.get("PREDICTION_QUEUE")
-MODEL_ENDPOINT_NAME = os.environ.get("MODEL_ENDPOINT_NAME")
-GEOLOCATION_FN_NAME = os.environ.get("GEOLOCATION_FN_NAME")
-RELIABILITY_FN_NAME = os.environ.get("RELIABILITY_FN_NAME")
-MODEL_INFO_FN_NAME = os.environ.get("MODEL_INFO_FN_NAME")
-
 sqs_client = boto3.client('sqs', region_name=AWS_REGION)
 
-sagemaker_rt = boto3.client("runtime.sagemaker", region_name="us-east-1")  # todo: update the region later.
-geolocation_client = boto3.client("lambda", region_name="us-east-1")
-reliability_client = boto3.client("lambda", region_name="us-east-1")
+sagemaker_rt = boto3.client("runtime.sagemaker", region_name=DEFAULT_AWS_REGION)
+geolocation_client = boto3.client("lambda", region_name=DEFAULT_AWS_REGION)
+reliability_client = boto3.client("lambda", region_name=DEFAULT_AWS_REGION)
 model_info_client = boto3.client("lambda", region_name=AWS_REGION)
+
+sentry_sdk.init(SENTRY_URL, environment=ENVIRONMENT, attach_stacktrace=True, traces_sample_rate=1.0)
 
 
 class PredictionStatus(Enum):
@@ -144,27 +149,14 @@ def get_model_info():
 
 
 def get_predictions(entry):
-    data = {
-        "columns": ["excerpt", "return_type"],
-        "index": [0],
-        "data": [[entry, "all_models"]]
-    }
-    try:
-        response = sagemaker_rt.invoke_endpoint(
-            EndpointName=MODEL_ENDPOINT_NAME,
-            ContentType="application/json; format=pandas-split",
-            Body=json.dumps(data)
-        )
-        pred_response = json.loads(response["Body"].read().decode("ascii"))
-        pred_tags = get_clean_ratios(pred_response['raw_predictions'])
-        pred_thresholds = get_clean_thresholds(pred_response['thresholds'])
-        tags_selected = get_predictions_all(pred_response['raw_predictions'])
+    pred_tags, pred_thresholds, tags_selected, error_status = output_all_preds(
+        entry,
+        MODEL_ENDPOINT_NAME
+    )
+    if not error_status:
         prediction_status = PredictionStatus.SUCCESS.value
-    except ClientError as error:
-        logging.error(f"Error occurred while getting predictions: {error}")
-        pred_response = None
+    else:
         prediction_status = PredictionStatus.FAILED.value
-
     return pred_tags, pred_thresholds, tags_selected, str(prediction_status)
 
 

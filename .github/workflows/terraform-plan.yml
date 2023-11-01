@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - initial_setup
+      - feat/sentry-integration
 
 jobs:
   terraform:
